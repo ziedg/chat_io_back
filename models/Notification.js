@@ -1,0 +1,25 @@
+var mongoose     = require('mongoose');
+var Schema       = mongoose.Schema;
+
+var profileSchema   = new Schema({
+     firstName : String,
+	 lastName : String,
+	 profilePicture : String,
+	 profilePictureMin : String,
+	 name : String
+}
+, { versionKey: false });
+
+
+var NotificationSchema   = new Schema({
+	 date_notification : Date,
+     type : String,
+     publId  : String,
+     profileId  : String,
+     raisonDelete  : String,
+	 profiles : [profileSchema],
+     isSeen : String
+}
+, { versionKey: false });
+module.exports = mongoose.model('Notifications', NotificationSchema);
+ 
