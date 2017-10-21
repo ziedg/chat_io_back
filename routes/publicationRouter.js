@@ -941,7 +941,7 @@ router.route('/getPublicationMeta')
                             title: title,
                             description: publication.publText,
                             profile: publication.profileFirstName + " " + publication.profileLastName,
-                            image: "http://91.121.69.130/images/" + publication.publPictureLink,
+                            image: "http://173.249.0.111/images/" + publication.publPictureLink,
                             height: dimensions.height,
                             width: dimensions.width
                         });
@@ -1019,7 +1019,7 @@ router.route('/getPublicationMeta')
                             title: title,
                             description: publication.publText,
                             profile: publication.profileFirstName + " " + publication.profileLastName,
-                            image: "http://91.121.69.130/images/speegar.png",
+                            image: "http://173.249.0.111/images/speegar.png",
                             height: 161,
                             width: 201
                         });
