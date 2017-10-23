@@ -71,9 +71,9 @@ app.use('/', router);
 
 
 var secureServer = https.createServer({
-	key: fs.readFileSync('./ssl/server.key'),
-	cert: fs.readFileSync('./ssl/server.crt'),
-	ca: fs.readFileSync('./ssl/ca.crt'),
+	key: fs.readFileSync('/usr/local/ssl/server.key'),
+	cert: fs.readFileSync('/usr/local/ssl/server.crt'),
+	ca: fs.readFileSync('/usr/local/ssl/ca.crt'),
 	requestCert: true,
 	rejectUnauthorized: false
 }, app).listen(port, function() {
