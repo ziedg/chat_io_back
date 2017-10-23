@@ -252,8 +252,8 @@ router.route('/updateProfilePicture')
 					}
 					else {
 						if (req.files.profilePicture[0]) {
-						profile.profilePicture = "http://173.249.0.111/images/"+req.files.profilePicture[0].filename;
-						profile.profilePictureMin = "http://173.249.0.111/images/"+ req.files.profilePicture[0].filename;
+						profile.profilePicture = "https://speegar.com/images/"+req.files.profilePicture[0].filename;
+						profile.profilePictureMin = "https://speegar.com/images/"+ req.files.profilePicture[0].filename;
 						}
 						profile.save();
 						res.json({
@@ -509,8 +509,8 @@ router.route('/updateProfilePictureSlimAPI') //profileId //base64Data
 						status: 1,
 						message : "profile picture updated"
 					});
-					profile.profilePicture="http://173.249.0.111/images/"+fileName;
-					profile.profilePictureMin="http://173.249.0.111/images/"+fileName;
+					profile.profilePicture="https://speegar.com/images/"+fileName;
+					profile.profilePictureMin="https://speegar.com/images/"+fileName;
 					profile.save();
 				}
 			});

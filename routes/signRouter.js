@@ -121,16 +121,16 @@ router.route('/signup')
 				var d = new Date();
 				var n = d.getTime();
 				if(n%3==0){
-					profile.profilePicture="http://173.249.0.111/images/avatars/alien.png";
-					profile.profilePictureMin="http://173.249.0.111/images/avatars/alien_min.png";
+					profile.profilePicture="https://speegar.com/images/avatars/alien.png";
+					profile.profilePictureMin="https://speegar.com/images/avatars/alien_min.png";
 				}
 				else if(n%3==1){
-					profile.profilePicture="http://173.249.0.111/images/avatars/clown1.png";
-					profile.profilePictureMin="http://173.249.0.111/images/avatars/clown1_min.png";
+					profile.profilePicture="https://speegar.com/images/avatars/clown1.png";
+					profile.profilePictureMin="https://speegar.com/images/avatars/clown1_min.png";
 				}
 				else{
-					profile.profilePicture="http://173.249.0.111/images/avatars/clown2.png";
-					profile.profilePictureMin="http://173.249.0.111/images/avatars/clown2_min.png";
+					profile.profilePicture="https://speegar.com/images/avatars/clown2.png";
+					profile.profilePictureMin="https://speegar.com/images/avatars/clown2_min.png";
 				}
 				profile.save(function(err) {
 					if (err){
@@ -335,7 +335,7 @@ router.route('/signupAdmin')
                 profile.isAdmin = 1;
 				profile.name = profile.firstName+' '+profile.lastName;
 				profile.dateInscription = new Date().toJSON().slice(0,10);
-				profile.profilePicture="http://173.249.0.111/speegar/assets/pictures/man.png";
+				profile.profilePicture="https://speegar.com/speegar/assets/pictures/man.png";
 				profile.profilePictureMin="http://www.speegar.com/speegar/assets/pictures/manMin.png";
                 
 				profile.save(function(err) {
