@@ -70,13 +70,8 @@ app.use('/', router);
 // =============================================================================
 
 
-var secureServer = https.createServer({
-	key: fs.readFileSync('/usr/local/ssl/server.key'),
-	cert: fs.readFileSync('/usr/local/ssl/server.crt'),
-	ca: fs.readFileSync('/usr/local/ssl/ca.crt'),
-	requestCert: true,
-	rejectUnauthorized: false
-}, app).listen(port, function() {
-	console.log("Secure Express server listening on port" + port+'  '+new Date());
-});
-//app.listen(port);
+https.createServer({ 
+        key: fs.readFileSync("/etc/letsencrypt/archive/speegar.com/privkey1.pem"),
+        cert: fs.readFileSync("/etc/letsencrypt/archive/speegar.com/fullchain1.pem"),
+        ca: fs.readFileSync("/etc/letsencrypt/archive/speegar.com/chain1.pem")
+}, app).listen(port);
