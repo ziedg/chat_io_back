@@ -6,8 +6,9 @@ var path = require('path');
 var passport = require('passport');
 var flash    = require('connect-flash');
 
-var https = require('https'),
-	fs = require('fs');
+var http = require('http');
+var https = require('https');
+var fs = require('fs');
 
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json({limit: '50mb'}));
@@ -31,7 +32,6 @@ var Notification = require('./models/Notification');
 var mongoose = require('mongoose');
 var db = mongoose.connect('mongodb://127.0.0.1/SpeegarDB');
 
-var port = 3000; // set our port (3000 pour l'integration et 7000 pour la producttion )
 
 // ROUTES FOR OUR API
 // ============================================================================
@@ -70,8 +70,16 @@ app.use('/', router);
 // =============================================================================
 
 
+var http_port = 3000;
+var https_port = 3005;
+
+http.createServer(function(req, res) {
+	res.writeHead(301, {"Location": "https://" + req.headers['host'] + req.url});
+	res.end();
+}).listen(http_port);
+
 https.createServer({ 
         key: fs.readFileSync("/etc/letsencrypt/archive/speegar.com/privkey1.pem"),
         cert: fs.readFileSync("/etc/letsencrypt/archive/speegar.com/fullchain1.pem"),
         ca: fs.readFileSync("/etc/letsencrypt/archive/speegar.com/chain1.pem")
-}, app).listen(port);
+}, app).listen(https_port);
