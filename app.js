@@ -6,8 +6,8 @@ var path = require('path');
 var passport = require('passport');
 var flash    = require('connect-flash');
 
-
-// create by Hamza Ghouili hamzaghouili@gmail.com
+var https = require('https'),
+	fs = require('fs');
 
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json({limit: '50mb'}));
@@ -68,5 +68,15 @@ app.use('/', router);
 
 // START THE SERVER
 // =============================================================================
-app.listen(port);
-console.log('Magic happens on port ' + port+'  '+new Date());
+
+
+var secureServer = https.createServer({
+	key: fs.readFileSync('./ssl/server.key'),
+	cert: fs.readFileSync('./ssl/server.crt'),
+	ca: fs.readFileSync('./ssl/ca.crt'),
+	requestCert: true,
+	rejectUnauthorized: false
+}, app).listen(port, function() {
+	console.log("Secure Express server listening on port" + port+'  '+new Date());
+});
+//app.listen(port);
