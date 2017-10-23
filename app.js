@@ -6,7 +6,6 @@ var path = require('path');
 var passport = require('passport');
 var flash    = require('connect-flash');
 
-var http = require('http');
 var https = require('https');
 var fs = require('fs');
 
@@ -66,17 +65,9 @@ app.use('/', router);
 var router = require('./routes/NotificationRouter');
 app.use('/', router);
 
-// START THE SERVER
-// =============================================================================
+//===START THE SERVER=================================
 
-
-var http_port = 3000;
 var https_port = 3005;
-
-http.createServer(function(req, res) {
-	res.writeHead(301, {"Location": "https://" + req.headers['host'] + req.url});
-	res.end();
-}).listen(http_port);
 
 https.createServer({ 
         key: fs.readFileSync("/etc/letsencrypt/archive/speegar.com/privkey1.pem"),
