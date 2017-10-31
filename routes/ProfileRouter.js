@@ -14,6 +14,8 @@ var Publication = require('../models/Publication');
 var ProfilesPasswords = require('../models/profilesPasswords');
 var notificationScript = require('../public/javascripts/notificationScript');
 
+var PropertiesReader = require('properties-reader');
+var properties = PropertiesReader('/usr/local/properties.file');
 
 router.route('/getProfileById')
     .get(function(req, res) {
@@ -252,7 +254,7 @@ router.route('/updateProfilePicture')
 					}
 					else {
 						if (req.files.profilePicture[0]) {
-						profile.profilePicture = "https://speegar.com/images/"+req.files.profilePicture[0].filename;
+						profile.profilePicture = properties.get('pictures.link')+req.files.profilePicture[0].filename;
 						profile.profilePictureMin = "https://speegar.com/images/"+ req.files.profilePicture[0].filename;
 						}
 						profile.save();
@@ -509,8 +511,8 @@ router.route('/updateProfilePictureSlimAPI') //profileId //base64Data
 						status: 1,
 						message : "profile picture updated"
 					});
-					profile.profilePicture="https://speegar.com/images/"+fileName;
-					profile.profilePictureMin="https://speegar.com/images/"+fileName;
+					profile.profilePicture= properties.get('pictures.link')+fileName;
+					profile.profilePictureMin= properties.get('pictures.link')+fileName;
 					profile.save();
 				}
 			});

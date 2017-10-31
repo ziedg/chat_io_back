@@ -1,0 +1,17 @@
+[server]
+port.http = 3001
+port.https = 3005
+
+[ssl]
+enable = false
+privkey1 = /etc/letsencrypt/archive/speegar.com/privkey1.pem
+fullchain1 = /etc/letsencrypt/archive/speegar.com/fullchain1.pem
+chain1 = /etc/letsencrypt/archive/speegar.com/chain1.pem
+
+[mongo]
+db.name = SpeegarDB
+url = 127.0.0.1
+
+[pictures]
+link = https://speegar.com/images/
+avatars.link = https://speegar.com/images/avatars/

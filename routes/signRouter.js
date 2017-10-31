@@ -12,6 +12,9 @@ var Profile = require('../models/Profile');
 var ProfilesPasswords = require('../models/profilesPasswords');
 var PublicationLikes = require('../models/PublicationLikes');
 
+var PropertiesReader = require('properties-reader');
+var properties = PropertiesReader('/usr/local/properties.file');
+
 
 var app = express();
 var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
@@ -121,16 +124,16 @@ router.route('/signup')
 				var d = new Date();
 				var n = d.getTime();
 				if(n%3==0){
-					profile.profilePicture="https://speegar.com/images/avatars/alien.png";
-					profile.profilePictureMin="https://speegar.com/images/avatars/alien_min.png";
+					profile.profilePicture= properties.get('pictures.avatars.link')+"alien.png";
+					profile.profilePictureMin=properties.get('pictures.avatars.link')+"alien_min.png";
 				}
 				else if(n%3==1){
-					profile.profilePicture="https://speegar.com/images/avatars/clown1.png";
-					profile.profilePictureMin="https://speegar.com/images/avatars/clown1_min.png";
+					profile.profilePicture=properties.get('pictures.avatars.link')+"clown1.png";
+					profile.profilePictureMin=properties.get('pictures.avatars.link')+"clown1_min.png";
 				}
 				else{
-					profile.profilePicture="https://speegar.com/images/avatars/clown2.png";
-					profile.profilePictureMin="https://speegar.com/images/avatars/clown2_min.png";
+					profile.profilePicture=properties.get('pictures.avatars.link')+"clown2.png";
+					profile.profilePictureMin=properties.get('pictures.avatars.link')+"clown2_min.png";
 				}
 				profile.save(function(err) {
 					if (err){
@@ -296,80 +299,8 @@ router.route('/signWithGoogle')
     });
 });
 
-router.route('/signupAdmin')
-
-.post(function(req, res) {
-	
-	
-	var email = req.body.email+"";
-    var profile = new Profile(); // create a new instance of the Profile model
-    if (email == "" || email == "undefined")
-        res.json({
-            status: 1,
-            message: "Email not found"
-        });
-    else {
-        Profile.findOne({
-            email: req.body.email
-        }, function(err, user) {
-            if (err)
-                res.json({
-                    status: 1,
-                    message: err
-                });
-
-            else if (user) {
-                res.json({
-                    status: 1,
-                    message: 'Email existe deja'
-                });
-            } else {
-                profile.firstName = req.body.firstName;
-                profile.lastName = req.body.lastName;
-                profile.email = req.body.email;
-                profile.nbSubscribers = 0;
-                profile.nbSuivi = 0;
-                profile.nbPublications = 0;
-                profile.nbLikes = 0;
-                profile.nbNotificationsNotSeen = 0;
-                profile.isAdmin = 1;
-				profile.name = profile.firstName+' '+profile.lastName;
-				profile.dateInscription = new Date().toJSON().slice(0,10);
-				profile.profilePicture="https://speegar.com/speegar/assets/pictures/man.png";
-				profile.profilePictureMin="http://www.speegar.com/speegar/assets/pictures/manMin.png";
-                
-				profile.save(function(err) {
-					if (err){
-						res.json({
-							status: 1,
-							message: err
-						});
-					}
-					var token = jwt.sign(profile, app.get('superSecret'), {
-					});
-					profile.isNewInscri="true";
-					res.json({
-						status: 0,
-						token: token,
-						user : profile
-					});
-				});
-				var profilePassword = new ProfilesPasswords();
-				profilePassword._id=profile._id;
-				profilePassword.password=passwordHash.generate(req.body.password);
-				profilePassword.save();
-					
-
-                
-            }
-        });
-    }
-});
-
-
 
 router.route('/resetPwdMail')  //email
-
 .post(function(req, res) {
 	var email = require('emailjs');
 	Profile.findOne({

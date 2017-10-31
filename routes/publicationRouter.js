@@ -15,6 +15,9 @@ var Comment = require('../models/Comment');
 var notificationScript = require('../public/javascripts/notificationScript');
 var Notification = require('../models/Notification');
 
+var PropertiesReader = require('properties-reader');
+var properties = PropertiesReader('./properties.file');
+
 var app = express();
 
 
@@ -941,7 +944,7 @@ router.route('/getPublicationMeta')
                             title: title,
                             description: publication.publText,
                             profile: publication.profileFirstName + " " + publication.profileLastName,
-                            image: "https://speegar.com/images/" + publication.publPictureLink,
+                            image: properties.get('pictures.link') + publication.publPictureLink,
                             height: dimensions.height,
                             width: dimensions.width
                         });
@@ -1019,7 +1022,7 @@ router.route('/getPublicationMeta')
                             title: title,
                             description: publication.publText,
                             profile: publication.profileFirstName + " " + publication.profileLastName,
-                            image: "https://speegar.com/images/speegar.png",
+                            image: properties.get('pictures.link')+"speegar.png",
                             height: 161,
                             width: 201
                         });

@@ -9,9 +9,11 @@ var flash    = require('connect-flash');
 var https = require('https');
 var fs = require('fs');
 
+var PropertiesReader = require('properties-reader');
+var properties = PropertiesReader('/usr/local/properties.file');
+
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json({limit: '50mb'}));
-
 
 
 var Abonnee = require('./models/Profile');
@@ -25,15 +27,11 @@ var Notification = require('./models/Notification');
 	app.use(passport.session()); // persistent login sessions
 	app.use(flash()); // use connect-flash for flash messages stored in session
 
-                                                    
 
-// connect to our database with mongoose
+// connection to mongoose database
 var mongoose = require('mongoose');
-var db = mongoose.connect('mongodb://127.0.0.1/SpeegarDB');
+var db = mongoose.connect('mongodb://'+properties.get('mongo.url')+'/'+properties.get('mongo.db.name'));
 
-
-// ROUTES FOR OUR API
-// ============================================================================
 
 app.use(function(req, res, next) { 
 	res.header('Access-Control-Allow-Origin', "*");
@@ -43,15 +41,18 @@ app.use(function(req, res, next) {
 	//jwtScript.JWT(req, res, next);
 })
 
-var router = require('./routes/signRouter');
-app.use('/', router);
-
-	
 
 /*
 app.use(function(req, res, next) {
     jwtScript.JWT(req, res, next);
 });*/
+
+
+// ROUTES FOR OUR API
+//============================================
+
+var router = require('./routes/signRouter');
+app.use('/', router);
 
 var router = require('./routes/CommentRouter');
 app.use('/', router);
@@ -65,12 +66,24 @@ app.use('/', router);
 var router = require('./routes/NotificationRouter');
 app.use('/', router);
 
-//===START THE SERVER=================================
 
-var https_port = 3005;
+// START SERVER
+//============================================
 
-https.createServer({ 
-        key: fs.readFileSync("/etc/letsencrypt/archive/speegar.com/privkey1.pem"),
-        cert: fs.readFileSync("/etc/letsencrypt/archive/speegar.com/fullchain1.pem"),
-        ca: fs.readFileSync("/etc/letsencrypt/archive/speegar.com/chain1.pem")
-}, app).listen(https_port);
+var https_port = properties.get('server.port.https');
+var http_port = properties.get('server.port.http');
+
+if(properties.get('ssl.enable')){
+	https.createServer({
+		key: fs.readFileSync(properties.get('ssl.privkey1').toString()),
+		cert: fs.readFileSync(properties.get('ssl.fullchain1').toString()),
+		ca: fs.readFileSync(properties.get('ssl.chain1').toString())
+	}, app).listen(https_port);
+} else {
+	app.listen(http_port);
+	console.log('the server is launched on the port ' + http_port+', mode ssl is disabled, '+new Date());
+}
+
+
+
+
