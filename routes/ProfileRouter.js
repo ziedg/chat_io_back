@@ -17,6 +17,8 @@ var notificationScript = require('../public/javascripts/notificationScript');
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('/usr/local/properties.file');
 
+var path = require('path');
+
 router.route('/getProfileById')
     .get(function(req, res) {
         Profile.findById(req.query.ProfileId, function(err, profile) {
@@ -224,7 +226,7 @@ router.route('/updateProfilePicture')
                 callback(null, '/var/www/html/images');
             },
             filename: function(req, file, callback) {
-                callback(null, file.fieldname + '_' + profile._id + '_' + file.originalname);
+                callback(null, profile._id + '_' + new Date().toISOString().replace(/:/g, "-").replace(/\./g, '') + path.extname(file.originalname) );
             }
         });
 
