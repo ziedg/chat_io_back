@@ -19,7 +19,7 @@ var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('./properties.file');
 
 var app = express();
-
+var path = require('path');
 
 router.route('/publish')
     .post(function(req, res) {
@@ -31,7 +31,7 @@ router.route('/publish')
                     callback(null, '/var/www/html/images');
                 },
                 filename: function(req, file, callback) {
-                    callback(null, publication.id + file.originalname.slice(file.originalname.lastIndexOf(".") * -1 + 1));
+                    callback(null, publication.id + path.extname(file.originalname));
                 }
             });
 
