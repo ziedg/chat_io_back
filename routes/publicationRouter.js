@@ -450,6 +450,8 @@ router.route('/getPublicationByProfileId')
                         message: err
                     });
                 } else {
+
+
                     if (!profile) {
                         return res.json({
                             status: 1,
@@ -461,23 +463,17 @@ router.route('/getPublicationByProfileId')
                         if (!req.query.last_publication_id) {
                             var publicationQuery = Publication.find({
                                     $or: [{
-                                        confidentiality: 'PUBLIC'
+                                        profileId: req.query.profileID
                                     }, {
-                                        $and: [{
-                                            profileId: {
-                                                $in: subscribers
-                                            }
-                                        }, {
-                                            confidentiality: 'PRIVATE'
-                                        }]
+                                        profileId: {
+                                            $in: subscribers
+                                        }
                                     }]
                                 })
                                 .limit(10)
                                 .sort({
                                     _id: -1
                                 });
-
-
                         } else {
                             var publicationQuery = Publication.find({
                                     $and: [{
@@ -486,15 +482,11 @@ router.route('/getPublicationByProfileId')
                                         }
                                     }, {
                                         $or: [{
-                                            confidentiality: 'PUBLIC'
+                                            profileId: req.query.profileID
                                         }, {
-                                            $and: [{
-                                                profileId: {
-                                                    $in: subscribers
-                                                }
-                                            }, {
-                                                confidentiality: 'PRIVATE'
-                                            }]
+                                            profileId: {
+                                                $in: subscribers
+                                            }
                                         }]
                                     }]
                                 })
