@@ -3,6 +3,9 @@ var passport = require('passport');
 var flash    = require('connect-flash');
 var passwordHash = require('password-hash');
 var email = require('emailjs');
+var jwt  = require('jsonwebtoken');
+var Cookies = require( "cookies" );
+
 
 var router = express.Router();
 
@@ -19,7 +22,7 @@ var properties = PropertiesReader('/usr/local/properties.file');
 var app = express();
 var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var jwtScript = require('../public/javascripts/jwtScript');
-app.set('superSecret', 'balgard');
+const util = require('util');
 
 
 	require('./passport')(passport); // pass passport for configuration
@@ -62,16 +65,20 @@ router.route('/signin')
 						});
 					} else {
 
-						// if user is found and password is right
-						// create a token
-						
-						var token = jwt.sign(user, app.get('superSecret'), {
-							//expiresIn: '1440m' // expires in 24 hours
-						});
+						var jwtSecret = properties.get('security.jwt.secret').toString();
+						var token = jwt.sign(user.toObject(), jwtSecret, {});
+
+						//new Cookies(req,res).set('ACCESS_TOKEN_COOKIE',token, {
+						//	httpOnly: true, //cookie not available through client js code
+						//	secure: false // true to force https
+						//});
+						//res.setHeader('X_SECRET', jwtSecret);
+
 						user.isNewInscri="false";
+
 						res.json({
 							status: 0,
-							token: token,
+							token : token,
 							user : user
 						});
 					}
@@ -135,6 +142,7 @@ router.route('/signup')
 					profile.profilePicture=properties.get('pictures.avatars.link')+"clown2.png";
 					profile.profilePictureMin=properties.get('pictures.avatars.link')+"clown2_min.png";
 				}
+
 				profile.save(function(err) {
 					if (err){
 						res.json({
@@ -142,15 +150,16 @@ router.route('/signup')
 							message: err
 						});
 					}
-					var token = jwt.sign(profile, app.get('superSecret'), {
-					});
 					profile.isNewInscri="true";
+					var jwtSecret = properties.get('security.jwt.secret').toString();
+					var token = jwt.sign(profile.toObject(), jwtSecret, {});
 					res.json({
 						status: 0,
 						token: token,
 						user : profile
 					});
 				});
+
 				var profilePassword = new ProfilesPasswords();
 				profilePassword._id=profile._id;
 				profilePassword.password=passwordHash.generate(req.body.password);
@@ -201,10 +210,9 @@ router.route('/signWithFacebook')
 			profile.dateInscription = new Date().toJSON().slice(0,10);
 			profile.save();
 			profile.isNewInscri="true";
-			
-			 var token = jwt.sign(profile, app.get('superSecret'), {
-                    //expiresIn: '1440m' // expires in 24 hours
-            });
+
+			var jwtSecret = properties.get('security.jwt.secret').toString();
+			var token = jwt.sign(profile.toObject(), jwtSecret, {});
 
 			
                 res.json({
@@ -214,13 +222,10 @@ router.route('/signWithFacebook')
                 });
 			
         } else if (user) {
-
-                // create a token
-				
-                var token = jwt.sign(user, app.get('superSecret'), {
-                    //expiresIn: '1440m' // expires in 24 hours
-                });
 				user.isNewInscri="false";
+				var jwtSecret = properties.get('security.jwt.secret').toString();
+				var token = jwt.sign(user.toObject(), jwtSecret, {});
+
                 res.json({
                     status: 0,
                     token: token,
@@ -267,12 +272,10 @@ router.route('/signWithGoogle')
 			profile.name = profile.firstName+' '+profile.lastName;
 			profile.dateInscription = new Date().toJSON().slice(0,10);
 			profile.save();
-			
-			 var token = jwt.sign(profile, app.get('superSecret'), {
-                    //expiresIn: '1440m' // expires in 24 hours
-            });
-
 			profile.isNewInscri="true";
+
+			var jwtSecret = properties.get('security.jwt.secret').toString();
+			var token = jwt.sign(profile.toObject(), jwtSecret, {});
                 res.json({
                     status: 0,
                     token: token,
@@ -282,10 +285,9 @@ router.route('/signWithGoogle')
         } else if (user) {
 
                 // create a token
-				
-                var token = jwt.sign(user, app.get('superSecret'), {
-                    //expiresIn: '1440m' // expires in 24 hours
-                });
+
+				var jwtSecret = properties.get('security.jwt.secret').toString();
+				var token = jwt.sign(user.toObject(), jwtSecret, {});
 				user.isNewInscri="false";
                 res.json({
                     status: 0,
@@ -308,9 +310,9 @@ router.route('/resetPwdMail')  //email
         }, function(err, user) {
 			if(user){
 				var server = email.server.connect({
-				  user: 'speegartest@gmail.com',
-				  password: 'lassad123',
-				  host: 'smtp.gmail.com',
+				  user: 'contact@speegar.com',
+				  password: 'contact',
+				  host: 'tls://speegar.com:587',
 				  ssl: true
 				});
 				

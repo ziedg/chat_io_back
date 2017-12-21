@@ -32,6 +32,7 @@
     "emailjs" : "latest",
     "fs" : "latest",
     "image-size" : "latest",
-    "properties-reader": "0.0.16"
+    "properties-reader": "0.0.16",
+    "cookies" : "latest"
   }
 }

@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 
-var bodyParser = require("body-parser");
 var multer = require('multer');
 
 var Comment = require('../models/Comment');
@@ -9,12 +8,42 @@ var Publication = require('../models/Publication');
 var Profile = require('../models/Profile');
 var notificationScript = require('../public/javascripts/notificationScript');
 
+var jwt = require('jsonwebtoken');
+var PropertiesReader = require('properties-reader');
+var properties = PropertiesReader('./properties.file');
+
 
 var app = express();
-var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
-var jwtScript = require('../public/javascripts/jwtScript');
-app.set('superSecret', 'balgard');
 
+
+
+// route middleware to verify a token
+router.use(function(req, res, next) {
+	if(req.method === 'OPTIONS'){
+		next();
+	}else {
+		var token = req.headers['x-access-token'];
+		if (token) {
+			var jwtSecret = properties.get('security.jwt.secret').toString();
+			jwt.verify(token, jwtSecret, function (err, decoded) {
+				if (err) {
+					return res.status(403).send({
+						success: false,
+						message: 'Failed to authenticate token.'
+					});
+				} else {
+					req._id = decoded['_id'];
+					next();
+				}
+			});
+		} else {
+			return res.status(403).send({
+				success: false,
+				message: 'No token provided.'
+			});
+		}
+	}
+});
 
 router.route('/addComment')
 

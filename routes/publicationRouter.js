@@ -21,6 +21,145 @@ var properties = PropertiesReader('./properties.file');
 var app = express();
 var path = require('path');
 
+var jwt = require('jsonwebtoken');
+const util = require('util');
+
+
+
+// route middleware to verify a token
+router.use(function(req, res, next) {
+    if(req.method === 'OPTIONS'){
+        next();
+    }else {
+        var token = req.headers['x-access-token'];
+        if (token) {
+            var jwtSecret = properties.get('security.jwt.secret').toString();
+            jwt.verify(token, jwtSecret, function (err, decoded) {
+                if (err) {
+                    return res.status(403).send({
+                        success: false,
+                        message: 'Failed to authenticate token.'
+                    });
+                } else {
+                    req._id = decoded['_id'];
+                    next();
+                }
+            });
+        } else {
+            return res.status(403).send({
+                success: false,
+                message: 'No token provided.'
+            });
+        }
+    }
+});
+
+router.route('/getPublicationByProfileId')
+    .get(function(req, res) {
+        try {
+            var publication = new Publication();
+            var profileQuery = Profile.findOne({
+                _id: req._id
+            });
+            profileQuery.exec(function(err, profile) {
+                if (err) {
+                    return res.json({
+                        status: 1,
+                        message: err
+                    });
+                } else {
+
+
+                    if (!profile) {
+                        return res.json({
+                            status: 1,
+                            message: "profile not found"
+                        });
+                    } else {
+                        var subscribers = profile.subscribers;
+
+                        if (!req.query.last_publication_id) {
+                            var publicationQuery = Publication.find({
+                                $or: [{
+                                    profileId: req._id
+                                }, {
+                                    profileId: {
+                                        $in: subscribers
+                                    }
+                                }]
+                            })
+                                .limit(10)
+                                .sort({
+                                    _id: -1
+                                });
+                        } else {
+                            var publicationQuery = Publication.find({
+                                $and: [{
+                                    _id: {
+                                        $lt: req.query.last_publication_id
+                                    }
+                                }, {
+                                    $or: [{
+                                        profileId: req._id
+                                    }, {
+                                        profileId: {
+                                            $in: subscribers
+                                        }
+                                    }]
+                                }]
+                            })
+                                .limit(10)
+                                .sort({
+                                    _id: -1
+                                });
+                        }
+
+
+                        publicationQuery.exec(function(err, publications) {
+                            if (err) {
+                                return res.json({
+                                    status: 1,
+                                    message: err
+                                });
+                            } else {
+                                var i = 0;
+
+                                function callback() {}
+                                async.each(publications, function(publication, callback) {
+                                    PublicationLikes.findById(publication._id, function(err, publicationLikes) {
+                                        if (publicationLikes) {
+                                            publication.isLiked = publicationLikes.likes.indexOf(req._id) > -1;
+                                            publication.isDisliked = publicationLikes.dislikes.indexOf(req._id) > -1;
+                                        }
+                                        for (j = 0; j < publication.comments.length; j++) {
+
+                                            publication.comments[j].isLiked = publication.comments[j].likes.indexOf(req._id) > -1;
+                                            publication.comments[j].isDisliked = publication.comments[j].dislikes.indexOf(req._id) > -1;
+
+                                        }
+                                        callback();
+                                    });
+
+                                }, function(err) {
+                                    return res.json(publications);
+                                });
+
+                            }
+                        });
+                    }
+
+
+                }
+            });
+        } catch (err) {
+            console.log(" getPublicationByProfileId " + err);
+            return res.json({
+                err
+            });
+        }
+    });
+
+
 router.route('/publish')
     .post(function(req, res) {
         try {
@@ -51,10 +190,10 @@ router.route('/publish')
                     });
                 } else {
                     var body = req.body;
-                    publication.profileId = body.profileId;
+                    publication.profileId = req._id;
                     publication.datePublication = new Date();
 
-                    Profile.findById(body.profileId, function(err, profile) {
+                    Profile.findById(req._id, function(err, profile) {
 
                         if (err) {
                             return res.json({
@@ -135,7 +274,7 @@ router.route('/likePublication')
                     });
                 } else {
                     PublicationLikes.findById(req.body.publId, function(err, publicationLikes) {
-                        publicationLikes.likes.unshift(req.body.profileId);
+                        publicationLikes.likes.unshift(req._id);
                         publicationLikes.save();
                     });
                     publication.nbLikes++;
@@ -144,7 +283,7 @@ router.route('/likePublication')
                         status: 1,
                         message: 'Publication liked'
                     });
-                    notificationScript.notifier(publication.profileId, req.body.publId, req.body.profileId, "like","");
+                    notificationScript.notifier(publication.profileId, req.body.publId, req._id, "like","");
                 }
             });
         } catch (err) {
@@ -154,6 +293,7 @@ router.route('/likePublication')
             });
         }
     });
+
 
 router.route('/removeLikePublication')
     .post(function(req, res) {
@@ -174,7 +314,7 @@ router.route('/removeLikePublication')
                 } else {
                     PublicationLikes.findById(req.body.publId, function(err, publicationLikes) {
 
-                        var index = publicationLikes.likes.indexOf(req.body.profileId);
+                        var index = publicationLikes.likes.indexOf(req._id);
                         publicationLikes.likes.splice(index, 1);
                         publicationLikes.save();
                     });
@@ -182,7 +322,7 @@ router.route('/removeLikePublication')
 
                     publication.nbLikes--;
                     publication.save();
-                    notificationScript.removeNotification(publication.profileId, req.body.publId, req.body.profileId, "like");
+                    notificationScript.removeNotification(publication.profileId, req.body.publId, req._id, "like");
                     return res.json({
                         message: 'like removed'
                     });
@@ -218,7 +358,7 @@ router.route('/dislikePublication')
                 } else {
 
                     PublicationLikes.findById(req.body.publId, function(err, publicationLikes) {
-                        publicationLikes.dislikes.unshift(req.body.profileId);
+                        publicationLikes.dislikes.unshift(req._id);
                         publicationLikes.save();
                     });
 
@@ -227,7 +367,7 @@ router.route('/dislikePublication')
                     res.json({
                         message: 'Publication disliked'
                     });
-                    notificationScript.notifier(publication.profileId, req.body.publId, req.body.profileId, "dislike","");
+                    notificationScript.notifier(publication.profileId, req.body.publId, req._id, "dislike","");
                 }
             });
         } catch (err) {
@@ -258,7 +398,7 @@ router.route('/removeDislikePublication')
 
                     PublicationLikes.findById(req.body.publId, function(err, publicationDislikes) {
 
-                        var index = publicationDislikes.dislikes.indexOf(req.body.profileId);
+                        var index = publicationDislikes.dislikes.indexOf(req._id);
                         publicationDislikes.dislikes.splice(index, 1);
                         publicationDislikes.save();
                     });
@@ -266,7 +406,7 @@ router.route('/removeDislikePublication')
 
                     publication.nbDislikes--;
                     publication.save();
-                    notificationScript.removeNotification(publication.profileId, req.body.publId, req.body.profileId, "dislike");
+                    notificationScript.removeNotification(publication.profileId, req.body.publId, req._id, "dislike");
                     return res.json({
                         message: 'dislike removed'
                     });
@@ -281,7 +421,7 @@ router.route('/removeDislikePublication')
     });
 
 
-router.route('/signalerPublication') 	//signalText  //profileId   //publId
+router.route('/signalerPublication')
 	.post(function(req, res) {
         try {
             var publication = new Publication();
@@ -312,8 +452,8 @@ router.route('/signalerPublication') 	//signalText  //profileId   //publId
 						signal.dateSignal = new Date();
 						signal.signalText = req.body.signalText;
 						signal.save();
-						if(mongoose.Types.ObjectId.isValid(req.body.profileId.toString()))
-							signal.profileId = req.body.profileId;
+						if(mongoose.Types.ObjectId.isValid(req._id))
+							signal.profileId = req._id;
 						
 						signal.save();
 						//signalText  //profileId   //publId
@@ -330,6 +470,7 @@ router.route('/signalerPublication') 	//signalText  //profileId   //publId
             });
         }
     });
+
 
 router.route('/removePublication')
     .post(function(req, res) {
@@ -348,6 +489,14 @@ router.route('/removePublication')
                         message: 'publication not found'
                     });
                 else if (publication) {
+
+                    if(!publication.profileId.equals(req._id )){
+                        return res.json({
+                            status: 0,
+                            message: 'it is not the owner of this publication'
+                        });
+                    }
+
                     Profile.findById(publication.profileId, function(err, profile) {
                         profile.nbPublications--;
                         profile.save();
@@ -374,172 +523,6 @@ router.route('/removePublication')
         }
     });
 
-
-router.route('/removePublicationAdmin')
-    .post(function(req, res) {
-        try {
-            Profile.findById(req.body.userID, function(err, profile) {
-                if (!profile) {
-                    return res.json({
-                        status: 0,
-                        message: 'profile not found'
-                    });
-                } else if (profile.isAdmin == 1) {
-                    var publication = new Publication();
-
-                    Publication.findById(req.body.publId, function(err, publication) {
-                        if (err) {
-                            return res.json({
-                                status: 0,
-                                err: err
-                            });
-                        } else if (!publication)
-                            return res.json({
-                                status: 0,
-                                message: 'publication not found'
-                            });
-                        else if (publication) {
-                            
-                            publication.remove();
-                            res.json({
-                                status: 1,
-                                message: 'publication removed'
-                            });
-                            Profile.findById(publication.profileId, function(err, profile) {
-                                profile.nbPublications--;
-                                profile.save();
-                            });
-							notificationScript.notifier(publication.profileId, publication.profileId, publication.profileId, "removePublication",req.body.raisonDelete);
-                            Notification.find({
-                                publId: req.body.publId
-                            }, function(err, notifications) {
-                                for (i = 0; i < notifications.length; i++) {
-                                    notifications[i].remove();
-                                }
-                            });
-                        }
-                    });
-                } else {
-
-                    res.json({
-                        status: 0,
-                        message: ' not authorized '
-                    });
-                }
-            });
-        } catch (err) {
-            console.log(" removePublicationAdmin " + err);
-            return res.json({
-                err
-            });
-        }
-    });
-
-
-router.route('/getPublicationByProfileId')
-    .get(function(req, res) {
-        try {
-            var publication = new Publication();
-            var profileQuery = Profile.findOne({
-                _id: req.query.profileID
-            });
-            profileQuery.exec(function(err, profile) {
-                if (err) {
-                    return res.json({
-                        status: 1,
-                        message: err
-                    });
-                } else {
-
-
-                    if (!profile) {
-                        return res.json({
-                            status: 1,
-                            message: "profile not found"
-                        });
-                    } else {
-                        var subscribers = profile.subscribers;
-
-                        if (!req.query.last_publication_id) {
-                            var publicationQuery = Publication.find({
-                                    $or: [{
-                                        profileId: req.query.profileID
-                                    }, {
-                                        profileId: {
-                                            $in: subscribers
-                                        }
-                                    }]
-                                })
-                                .limit(10)
-                                .sort({
-                                    _id: -1
-                                });
-                        } else {
-                            var publicationQuery = Publication.find({
-                                    $and: [{
-                                        _id: {
-                                            $lt: req.query.last_publication_id
-                                        }
-                                    }, {
-                                        $or: [{
-                                            profileId: req.query.profileID
-                                        }, {
-                                            profileId: {
-                                                $in: subscribers
-                                            }
-                                        }]
-                                    }]
-                                })
-                                .limit(10)
-                                .sort({
-                                    _id: -1
-                                });
-                        }
-
-
-                        publicationQuery.exec(function(err, publications) {
-                            if (err) {
-                                return res.json({
-                                    status: 1,
-                                    message: err
-                                });
-                            } else {
-                                var i = 0;
-
-                                function callback() {}
-                                async.each(publications, function(publication, callback) {
-                                    PublicationLikes.findById(publication._id, function(err, publicationLikes) {
-                                        if (publicationLikes) {
-                                            publication.isLiked = publicationLikes.likes.indexOf(req.query.profileID) > -1;
-                                            publication.isDisliked = publicationLikes.dislikes.indexOf(req.query.profileID) > -1;
-                                        }
-                                        for (j = 0; j < publication.comments.length; j++) {
-
-                                            publication.comments[j].isLiked = publication.comments[j].likes.indexOf(req.query.profileID) > -1;
-                                            publication.comments[j].isDisliked = publication.comments[j].dislikes.indexOf(req.query.profileID) > -1;
-
-                                        }
-                                        callback();
-                                    });
-
-                                }, function(err) {
-                                    return res.json(publications);
-                                });
-
-                            }
-                        });
-                    }
-
-
-                }
-            });
-        } catch (err) {
-            console.log(" getPublicationByProfileId " + err);
-            return res.json({
-                err
-            });
-        }
-    });
 
 router.route('/getPublicationsForOneProfileByID')
     .get(function(req, res) {
@@ -607,115 +590,6 @@ router.route('/getPublicationsForOneProfileByID')
         }
     });
 
-
-router.route('/getPublicationPopulaireByProfileId')
-    .get(function(req, res) {
-        try {
-            var publication = new Publication();
-            var profileQuery = Profile.findOne({
-                _id: req.query.profileID
-            });
-            profileQuery.exec(function(err, profile) {
-                if (err) {
-                    return res.json({
-                        status: 1,
-                        message: err
-                    });
-                } else {
-                    if (!profile) {
-                        return res.json({
-                            status: 1,
-                            message: "profile not found"
-                        });
-                    } else {
-                        var subscribers = profile.subscribers;
-
-                        if (!req.query.last_publication_id) {
-                            var publicationQuery = Publication.find({
-                                    $or: [{
-                                        confidentiality: 'PUBLIC'
-                                    }, {
-                                        $and: [{
-                                            profileId: {
-                                                $in: subscribers
-                                            }
-                                        }, {
-                                            confidentiality: 'PRIVATE'
-                                        }]
-                                    }]
-                                })
-                                .limit(10)
-                                .sort({ nbLikes : -1 });
-
-
-                        } else {
-                            var publicationQuery = Publication.find({
-                                    $and: [{
-                                        _id: {
-                                            $lt: req.query.last_publication_id
-                                        }
-                                    }, {
-                                        $or: [{
-                                            confidentiality: 'PUBLIC'
-                                        }, {
-                                            $and: [{
-                                                profileId: {
-                                                    $in: subscribers
-                                                }
-                                            }, {
-                                                confidentiality: 'PRIVATE'
-                                            }]
-                                        }]
-                                    }]
-                                })
-                                .limit(10)
-                                .sort({ nbLikes : -1 });
-                        } 
-
-
-                        publicationQuery.exec(function(err, publications) {
-                            if (err) {
-                                return res.json({
-                                    status: 1,
-                                    message: err
-                                });
-                            } else {
-                                var i = 0;
-
-                                function callback() {}
-                                async.each(publications, function(publication, callback) {
-                                    PublicationLikes.findById(publication._id, function(err, publicationLikes) {
-                                        if (publicationLikes) {
-                                            publication.isLiked = publicationLikes.likes.indexOf(req.query.profileID) > -1;
-                                            publication.isDisliked = publicationLikes.dislikes.indexOf(req.query.profileID) > -1;
-                                        }
-                                        for (j = 0; j < publication.comments.length; j++) {
-
-                                            publication.comments[j].isLiked = publication.comments[j].likes.indexOf(req.query.profileID) > -1;
-                                            publication.comments[j].isDisliked = publication.comments[j].dislikes.indexOf(req.query.profileID) > -1;
-
-                                        }
-                                        callback();
-                                    });
-
-                                }, function(err) {
-                                    return res.json(publications);
-                                });
-
-                            }
-                        });
-                    }
-
-
-                }
-            });
-        } catch (err) {
-            console.log(" getPublicationPopulaireByProfileId " + err);
-            return res.json({
-                err
-            });
-        }
-    });
 
 router.route('/sharePublication') //publId profileId
     .post(function(req, res) {
@@ -805,86 +679,118 @@ router.route('/sharePublication') //publId profileId
     });
 
 
-router.route('/masquerPublicationAdmin') //publId
-    .post(function(req, res) {
+router.route('/getPublicationPopulaireByProfileId')
+    .get(function(req, res) {
         try {
-            Profile.findById(req.body.userID, function(err, profile) {
-
-                if (!profile) {
+            var publication = new Publication();
+            var profileQuery = Profile.findOne({
+                _id: req._id
+            });
+            profileQuery.exec(function(err, profile) {
+                if (err) {
                     return res.json({
-                        status: 0,
-                        message: 'profile not found'
-                    });
-                } else if (profile.isAdmin == 1) {
-                    Publication.findById(req.body.publId, function(err, publication) {
-                        if (err) {
-                            return res.json({
-                                status: 0,
-                                err: err
-                            });
-                        } else if (!publication) {
-                            return res.json({
-                                status: 0,
-                                message: "publication not found"
-                            });
-                        } else {
-                            publication.confidentiality = "PRIVATE";
-                            publication.save();
-                            return res.json({
-                                status: 1,
-                                publication: publication
-                            });
-                        }
+                        status: 1,
+                        message: err
                     });
                 } else {
-                    res.json({
-                        status: 0,
-                        message: ' not authorized '
-                    });
-                }
+                    if (!profile) {
+                        return res.json({
+                            status: 1,
+                            message: "profile not found"
+                        });
+                    } else {
+                        var subscribers = profile.subscribers;
 
+                        if (!req.query.last_publication_id) {
+                            var publicationQuery = Publication.find({
+                                $or: [{
+                                    confidentiality: 'PUBLIC'
+                                }, {
+                                    $and: [{
+                                        profileId: {
+                                            $in: subscribers
+                                        }
+                                    }, {
+                                        confidentiality: 'PRIVATE'
+                                    }]
+                                }]
+                            })
+                                .limit(10)
+                                .sort({ nbLikes : -1 });
+
+
+                        } else {
+                            var publicationQuery = Publication.find({
+                                $and: [{
+                                    _id: {
+                                        $lt: req.query.last_publication_id
+                                    }
+                                }, {
+                                    $or: [{
+                                        confidentiality: 'PUBLIC'
+                                    }, {
+                                        $and: [{
+                                            profileId: {
+                                                $in: subscribers
+                                            }
+                                        }, {
+                                            confidentiality: 'PRIVATE'
+                                        }]
+                                    }]
+                                }]
+                            })
+                                .limit(10)
+                                .sort({ nbLikes : -1 });
+                        }
+
+
+                        publicationQuery.exec(function(err, publications) {
+                            if (err) {
+                                return res.json({
+                                    status: 1,
+                                    message: err
+                                });
+                            } else {
+                                var i = 0;
+
+                                function callback() {}
+                                async.each(publications, function(publication, callback) {
+                                    PublicationLikes.findById(publication._id, function(err, publicationLikes) {
+                                        if (publicationLikes) {
+                                            publication.isLiked = publicationLikes.likes.indexOf(req._id) > -1;
+                                            publication.isDisliked = publicationLikes.dislikes.indexOf(req._id) > -1;
+                                        }
+                                        for (j = 0; j < publication.comments.length; j++) {
+
+                                            publication.comments[j].isLiked = publication.comments[j].likes.indexOf(req._id) > -1;
+                                            publication.comments[j].isDisliked = publication.comments[j].dislikes.indexOf(req._id) > -1;
+
+                                        }
+                                        callback();
+                                    });
+
+                                }, function(err) {
+                                    return res.json(publications);
+                                });
+
+                            }
+                        });
+                    }
+
+
+                }
             });
         } catch (err) {
-            console.log(" masquerPublicationAdmin " + err);
+            console.log(" getPublicationPopulaireByProfileId " + err);
             return res.json({
                 err
             });
         }
     });
 
-router.route('/updatePublication') //publId
-    .post(function(req, res) {
-        Publication.findById(req.body.publId, function(err, publication) {
-            if (err) {
-                return res.json({
-                    status: 0,
-                    err: err
-                });
-            } else if (!publication) {
-                return res.json({
-                    status: 0,
-                    message: "publication not found"
-                });
-            } else {
-                publication.publTitle = req.body.publTitle;
-                publication.publText = req.body.publText;
-                publication.save();
-
-                return res.json({
-                    status: 1,
-                    publication: publication
-                });
-
-
-
-            }
-        });
-    });
-
 
 router.route('/getOpenGraphData')
-
-.get(function(req, res) {
+    .get(function(req, res) {
     try {
         ogs({
                 url: req.query.url,
@@ -1031,4 +937,115 @@ router.route('/getPublicationMeta')
 
 
     });
+
+
+
+router.route('/masquerPublicationAdmin') //publId
+    .post(function(req, res) {
+        try {
+            Profile.findById(req.body.userID, function(err, profile) {
+
+                if (!profile) {
+                    return res.json({
+                        status: 0,
+                        message: 'profile not found'
+                    });
+                } else if (profile.isAdmin == 1) {
+                    Publication.findById(req.body.publId, function(err, publication) {
+                        if (err) {
+                            return res.json({
+                                status: 0,
+                                err: err
+                            });
+                        } else if (!publication) {
+                            return res.json({
+                                status: 0,
+                                message: "publication not found"
+                            });
+                        } else {
+                            publication.confidentiality = "PRIVATE";
+                            publication.save();
+                            return res.json({
+                                status: 1,
+                                publication: publication
+                            });
+                        }
+                    });
+                } else {
+                    res.json({
+                        status: 0,
+                        message: ' not authorized '
+                    });
+                }
+
+            });
+        } catch (err) {
+            console.log(" masquerPublicationAdmin " + err);
+            return res.json({
+                err
+            });
+        }
+    });
+
+
+router.route('/removePublicationAdmin')
+    .post(function(req, res) {
+        try {
+            Profile.findById(req.body.userID, function(err, profile) {
+                if (!profile) {
+                    return res.json({
+                        status: 0,
+                        message: 'profile not found'
+                    });
+                } else if (profile.isAdmin == 1) {
+                    var publication = new Publication();
+
+                    Publication.findById(req.body.publId, function(err, publication) {
+                        if (err) {
+                            return res.json({
+                                status: 0,
+                                err: err
+                            });
+                        } else if (!publication)
+                            return res.json({
+                                status: 0,
+                                message: 'publication not found'
+                            });
+                        else if (publication) {
+
+                            publication.remove();
+                            res.json({
+                                status: 1,
+                                message: 'publication removed'
+                            });
+                            Profile.findById(publication.profileId, function(err, profile) {
+                                profile.nbPublications--;
+                                profile.save();
+                            });
+                            notificationScript.notifier(publication.profileId, publication.profileId, publication.profileId, "removePublication",req.body.raisonDelete);
+                            Notification.find({
+                                publId: req.body.publId
+                            }, function(err, notifications) {
+                                for (i = 0; i < notifications.length; i++) {
+                                    notifications[i].remove();
+                                }
+                            });
+                        }
+                    });
+                } else {
+
+                    res.json({
+                        status: 0,
+                        message: ' not authorized '
+                    });
+                }
+            });
+        } catch (err) {
+            console.log(" removePublicationAdmin " + err);
+            return res.json({
+                err
+            });
+        }
+    });
+
 module.exports = router;

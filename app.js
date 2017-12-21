@@ -35,14 +35,24 @@ var db = mongoose.connect('mongodb://'+properties.get('mongo.url')+'/'+propertie
 
 app.use(function(req, res, next) { 
 	res.header('Access-Control-Allow-Origin', "*");
-	res.header('Access-Control-Allow-Methods','GET,POST'); 
-	res.header('Access-Control-Allow-Headers', 'Content-Type,Accept,token'); 
+	res.header('Access-Control-Allow-Methods','GET, POST, OPTIONS, PUT, PATCH, DELETE');
+	res.header('Access-Control-Allow-Headers', "*");
+	// Request headers you wish to allow
+	res.setHeader('Access-Control-Allow-Headers', 'content-type,x-access-token');
+
+	// Set to true if you need the website to include cookies in the requests sent
+	// to the API (e.g. in case you use sessions)
+	res.setHeader('Access-Control-Allow-Credentials', true);
+
+
+
 	next();
 	//jwtScript.JWT(req, res, next);
 })
 
 
 /*
+
 app.use(function(req, res, next) {
     jwtScript.JWT(req, res, next);
 });*/
