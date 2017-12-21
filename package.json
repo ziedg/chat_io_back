@@ -33,6 +33,8 @@
     "fs" : "latest",
     "image-size" : "latest",
     "properties-reader": "0.0.16",
-    "cookies" : "latest"
+    "cookies" : "latest",
+    "nodemailer":"latest",
+    "nodemailer-smtp-transport":"latest",
   }
 }

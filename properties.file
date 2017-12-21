@@ -16,6 +16,15 @@ url = 127.0.0.1
 link = https://speegar.com/images/
 avatars.link = https://speegar.com/images/avatars/
 
-
 [security]
 jwt.secret = f09cce0a0753496b9baaae70b343a15f
+
+[email]
+transporter.host = speegar.com
+transporter.port = 25
+transporter.auth.user = contact@speegar.com
+transporter.auth.pass = contact
+reset.password.from = contact@speegar.com
+reset.password.subject = Speegar Reset Password
+reset.password.text = votre liens de reinitialisation de mot de passe est 
+reset.password.url =  www.speegar.com/login/reset-password/randomString

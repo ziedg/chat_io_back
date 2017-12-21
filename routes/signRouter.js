@@ -2,9 +2,13 @@ var express = require('express');
 var passport = require('passport');
 var flash    = require('connect-flash');
 var passwordHash = require('password-hash');
-var email = require('emailjs');
 var jwt  = require('jsonwebtoken');
 var Cookies = require( "cookies" );
+
+
+var email = require('emailjs')
+var nodemailer = require("nodemailer");
+var smtpTransport = require('nodemailer-smtp-transport');
 
 
 var router = express.Router();
@@ -24,16 +28,7 @@ var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var jwtScript = require('../public/javascripts/jwtScript');
 const util = require('util');
 
-
-	require('./passport')(passport); // pass passport for configuration
-
-	// required for passport
-	//app.use(express.session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
-	/*app.use(passport.initialize()); 
-	app.use(passport.session()); // persistent login sessions
-	app.use(flash()); // use connect-flash for flash messages stored in session
-*/
-
+require('./passport')(passport); // pass passport for configuration
 
 
 router.route('/signin')
@@ -309,96 +304,55 @@ router.route('/resetPwdMail')  //email
         email: req.body.email
         }, function(err, user) {
 			if(user){
-				var server = email.server.connect({
-				  user: 'contact@speegar.com',
-				  password: 'contact',
-				  host: 'tls://speegar.com:587',
-				  ssl: true
-				});
-				
+
 				var d = new Date();
 				var n = d.getTime();
-
 				var randomString = passwordHash.generate(user.email+user.id+n).slice(16)+user.id;
-				
-				server.send({
-				  text: 'votre liens de reinitialisation de mot de passe est  www.speegar.com/login/reset-password/'+randomString ,
-				  from: 'Speegar <speegartest@gmail.com>',
-				  to: user.name+' <'+user.email+'>',
-				  cc: '',
-				  subject: 'Speegar Reset Password'
-				}, function (err, message) {					
-					res.json({
-						status : 1,
-						randomString : randomString,
-						message :"mail sended"
-					});
-					
-				});
-				
-				ProfilesPasswords.findById(user._id, function(err, profilePassword) {
-					if(profilePassword){
-						profilePassword.resetPswdString = randomString;
-						profilePassword.save();
-					}
+
+				var transporter = nodemailer.createTransport(smtpTransport({
+				    host: 'speegar.com',
+				    port: 25,
+				    auth: {
+				        user: 'contact@speegar.com',
+				        pass: 'contact'
+				    },
+				    tls:{
+				        rejectUnauthorized: false
+				    }
+				}));
+
+
+				var mailOptions = {
+				    from: "contact@speegar.com", 
+				    to: user.email, 
+				    subject: "Speegar Reset Password", // Subject line
+				    text: 'votre liens de reinitialisation de mot de passe est  www.speegar.com/login/reset-password/'+randomString 
+				}
+
+				// send mail with defined transport object
+				transporter.sendMail(mailOptions, function(error, response){
+				    if(error){
+				    	res.json({
+							status : 1,
+							message :"Error when sent mail" 
+						});
+				    }else{
+				        res.json({
+							status : 0,
+							message :"mail sended"
+						});
+				    }
 				});
 				
 			}else{
 				res.json({
-					status : 0,
+					status : 1,
 					message :"Profile not found" 
 				});
 			}
 	});
 });
 		
-router.route('/resetPwd')  //randomString //newPassword
-
-.post(function(req, res) {
-	var idProfile = req.body.randomString.slice(-24);
-            
-			
-	ProfilesPasswords.findById(idProfile, function(err, profilePassword) {
-		if (err){
-			res.send(err);
-		}else if(!profilePassword){
-			res.json({
-				status: 1,
-				message: "profile not found"
-			});
-		}
-		else {
-			if(profilePassword.resetPswdString==req.body.randomString){
-				profilePassword.password=passwordHash.generate(req.body.newPassword);
-				profilePassword.save();
-				
-				var token = jwt.sign(profilePassword, app.get('superSecret'), {
-				});
-				Profile.findById(idProfile, function(err, profile) {
-					res.json({
-						status : 1,
-						token : token,
-						user : profile,
-						message : "password updated"
-						
-					});
-				});
-				
-				profilePassword.resetPswdString = undefined;
-				profilePassword.save();
-			}
-			else {
-				res.json({
-					status : 0,
-						message : "rendomString not correct"
-				});
-			}
-		}
-	})
-	
-});
-
-
 
 router.route('/getPublicationById/:publicationId')
     .get(function(req, res) {
