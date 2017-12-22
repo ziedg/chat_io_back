@@ -36,5 +36,6 @@
     "cookies" : "latest",
     "nodemailer":"latest",
     "nodemailer-smtp-transport":"latest",
+    "date-format":"latest"
   }
 }

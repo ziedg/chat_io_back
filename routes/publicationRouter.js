@@ -151,10 +151,10 @@ router.route('/getPublicationByProfileId')
 
                 }
             });
-        } catch (err) {
+        } catch (error) {
             console.log(" getPublicationByProfileId " + err);
             return res.json({
-                err
+                error : error
             });
         }
     });
@@ -1048,4 +1048,50 @@ router.route('/removePublicationAdmin')
         }
     });
 
+
+
+
+router.route('/getPublicationById/:publicationId')
+    .get(function (req, res) {
+        try {
+            Publication.findById(req.params.publicationId, function (err, publication) {
+                if (err) {
+                    return res.json({
+                        status: 0,
+                        err: err
+                    });
+                } else if (!publication) {
+                    return res.json({
+                        status: 0,
+                        message: "publication not found"
+                    });
+                } else {
+
+                    PublicationLikes.findById(publication._id, function (err, publicationLikes) {
+                        if (publicationLikes) {
+                            publication.isLiked = publicationLikes.likes.indexOf(req.query.profileID) > -1;
+                            publication.isDisliked = publicationLikes.dislikes.indexOf(req.query.profileID) > -1;
+                        }
+                        for (j = 0; j < publication.comments.length; j++) {
+
+                            publication.comments[j].isLiked = publication.comments[j].likes.indexOf(req.query.profileID) > -1;
+                            publication.comments[j].isDisliked = publication.comments[j].dislikes.indexOf(req.query.profileID) > -1;
+
+                        }
+                        return res.json({
+                            status: 1,
+                            publication: publication
+                        });
+                    });
+
+
+                }
+            });
+        } catch (err) {
+            console.log(" getPublicationById " + err);
+            return res.json({
+                err
+            });
+        }
+    });
 module.exports = router;
