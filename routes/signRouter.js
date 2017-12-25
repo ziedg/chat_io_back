@@ -1,20 +1,13 @@
 var express = require('express');
 var passport = require('passport');
-var flash = require('connect-flash');
 var passwordHash = require('password-hash');
-var jwt = require('jsonwebtoken');
-var Cookies = require("cookies");
 var format = require('date-format');
-
 var email = require('emailjs')
 var nodemailer = require("nodemailer");
 var smtpTransport = require('nodemailer-smtp-transport');
-
-
+var jwt = require('jsonwebtoken');
 var router = express.Router();
 
-var Comment = require('../models/Comment');
-var Publication = require('../models/Publication');
 var Profile = require('../models/Profile');
 var ProfilesPasswords = require('../models/profilesPasswords');
 var PublicationLikes = require('../models/PublicationLikes');
@@ -24,8 +17,7 @@ var properties = PropertiesReader('/usr/local/properties.file');
 
 
 var app = express();
-var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
-const util = require('util');
+
 
 require('./passport')(passport); // pass passport for configuration
 
@@ -33,83 +25,111 @@ require('./passport')(passport); // pass passport for configuration
 router.route('/signin')
 
     .post(function (req, res) {
-        // find the user
-        Profile.findOne({
-            email: req.body.email
-        }, function (err, user) {
-
-            if (err) res.json({
-                status: 3,
-                message: err
-            });
-
-            if (!user) {
-                res.json({
-                    status: 2,
-                    message: 'Authentication failed. User not found.'
-                });
-            } else if (user) {
-                ProfilesPasswords.findById(user.id, function (err, profilePassword) {
-                    // check if password matches
-                    if (profilePassword) {
-                        if (!(passwordHash.verify(req.body.password, profilePassword.password))) {
-                            res.json({
-                                status: 1,
-                                message: 'Authentication failed. Wrong password.'
-                            });
-                        } else {
-
-                            var jwtSecret = properties.get('security.jwt.secret').toString();
-                            var token = jwt.sign(user.toObject(), jwtSecret, {});
-
-                            //new Cookies(req,res).set('ACCESS_TOKEN_COOKIE',token, {
-                            //	httpOnly: true, //cookie not available through client js code
-                            //	secure: false // true to force https
-                            //});
-                            //res.setHeader('X_SECRET', jwtSecret);
-
-                            user.isNewInscri = "false";
-
-                            res.json({
-                                status: 0,
-                                token: token,
-                                user: user
-                            });
-                        }
-                    }
-                });
-            }
-
-        });
-    });
-
-router.route('/signup')
-
-    .post(function (req, res) {
-
-
-        var email = req.body.email + "";
-        var profile = new Profile(); // create a new instance of the Profile model
-        if (email == "" || email == "undefined")
-            res.json({
-                status: 1,
-                message: "Email not found"
-            });
-        else {
+        try {
             Profile.findOne({
                 email: req.body.email
             }, function (err, user) {
-                if (err)
+
+                if (err) res.json({
+                    status: 3,
+                    error: 'SP_ER_TECHNICAL_ERROR'
+                });
+
+                else if (!user) {
+                    res.json({
+                        status: 2,
+                        error: 'SP_ER_USER_NOT_FOUND'
+                    });
+                } else {
+                    ProfilesPasswords.findById(user.id, function (err, profilePassword) {
+                        // check if password matches
+                        if (profilePassword) {
+                            if (!(passwordHash.verify(req.body.password, profilePassword.password))) {
+                                res.json({
+                                    status: 1,
+                                    error: 'SP_ER_WRONG_PASSWORD'
+                                });
+                            } else {
+                                user.isNewInscri = "false";
+                                var jwtSecret = properties.get('security.jwt.secret').toString();
+                                var token = jwt.sign(user.toObject(), jwtSecret, {});
+
+                                res.json({
+                                    status: 0,
+                                    token: token,
+                                    user: user
+                                });
+                            }
+                        }
+                    });
+                }
+
+            });
+        } catch (error) {
+            console.log(" error when sign in ", error);
+            return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
+            });
+        }
+    });
+
+router.route('/signup')
+    .post(function (req, res) {
+        try {
+
+            if (!req.body.email) {
+                res.json({
+                    status: 1,
+                    error: 'SP_FV_ER_EMAIL_SBN_EMPTY'
+                });
+                return;
+            }
+
+            if (!req.body.firstName) {
+                res.json({
+                    status: 1,
+                    error: 'SP_FV_ER_FIRST_NAME_SBN_EMPTY'
+                });
+                return;
+            }
+
+            if (!req.body.lastName) {
+                res.json({
+                    status: 1,
+                    error: 'SP_FV_ER_LAST_NAME_SBN_EMPTY'
+                });
+                return;
+            }
+
+            if (!req.body.password || req.body.password.length < 5) {
+                res.json({
+                    status: 1,
+                    error: 'SP_FV_ER_PASSWORD_SBN_EMPTY'
+                });
+                return;
+            }
+
+            var email = req.body.email;
+
+            var profile = new Profile();
+
+            Profile.findOne({
+                email: req.body.email
+            }, function (err, user) {
+                if (err) {
+                    res.json({
+                        status: 3,
+                        error: 'SP_ER_TECHNICAL_ERROR'
+                    });
+                    return;
+                }
+                if (user) {
                     res.json({
                         status: 1,
-                        message: err
+                        error: 'SP_ER_EMAIL_ALREADY_EXISTS'
                     });
 
-                else if (user) {
-                    res.json({
-                        status: 1,
-                        message: 'Email existe deja'
-                    });
                 } else {
                     profile.firstName = req.body.firstName;
                     profile.lastName = req.body.lastName;
@@ -158,9 +178,14 @@ router.route('/signup')
                     profilePassword._id = profile._id;
                     profilePassword.password = passwordHash.generate(req.body.password);
                     profilePassword.save();
-
-
                 }
+            });
+
+        } catch (error) {
+            console.log(" error when sign up ", error);
+            return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
             });
         }
     });
@@ -294,80 +319,86 @@ router.route('/signWithGoogle')
     });
 
 
-router.route('/resetPwdMail')  //email
+router.route('/resetPwdMail')
     .post(function (req, res) {
 
         try {
+            if (!req.body.email) {
+                res.json({
+                    status: 1,
+                    error: 'SP_FV_ER_EMAIL_SBN_EMPTY'
+                });
+                return;
+            }
             var email = require('emailjs');
             Profile.findOne({
                 email: req.body.email
             }, function (err, user) {
-                if (user) {
 
+                if (err) {
+                    res.json({
+                        status: 3,
+                        error: 'SP_ER_TECHNICAL_ERROR'
+                    });
+                    return;
+                }
+                if (!user) {
+                    res.json({
+                        status: 1,
+                        error: "SP_ER_FP_USER_NOT_FOUND"
+                    });
+                }
+                else {
                     var date = new Date();
                     var time = date.getTime();
                     var randomString = passwordHash.generate(user.email + user.id + time).slice(16) + user.id;
-
                     ProfilesPasswords.findById(user._id, function (err, profilePassword) {
                         if (profilePassword) {
                             profilePassword.resetPswdString = randomString;
                             profilePassword.save();
                         }
                     });
-
                     var transporter = nodemailer.createTransport(smtpTransport({
                         host: properties.get('email.transporter.host').toString(),
                         port: properties.get('email.transporter.port'),
                         auth: {
                             user: properties.get('email.transporter.auth.user').toString(),
-                            pass:  properties.get('email.transporter.auth.pass').toString()
+                            pass: properties.get('email.transporter.auth.pass').toString()
                         },
                         tls: {
                             rejectUnauthorized: false
                         }
                     }));
-
-
                     var mailOptions = {
                         from: properties.get('email.reset.password.from').toString(),
                         to: user.email,
                         subject: properties.get('email.reset.password.subject').toString(),
-                        html:
-                            properties.get('email.reset.password.html').toString()
-                                .replace('RESET_PWD_DATE_TIME', format.asString('le dd/MM/yyyy à hh:mm', date))
-                                + properties.get('email.reset.password.url').toString().replace('RANDOM_STRING', randomString)
-
+                        html: properties.get('email.reset.password.html').toString()
+                            .replace('RESET_PWD_DATE_TIME', format.asString('le dd/MM/yyyy à hh:mm', date))
+                        + properties.get('email.reset.password.url').toString().replace('RANDOM_STRING', randomString)
                     }
-
                     transporter.sendMail(mailOptions, function (error, response) {
                         if (error) {
-                            console.log(" getPublicationById " + error);
                             res.json({
                                 status: 1,
-                                message: "Error when sent mail"
-
+                                error: 'SP_ER_EMAIL_NOT_VALID'
                             });
+                            return;
                         } else {
                             res.json({
                                 status: 0,
-                                message: "mail sended"
+                                message: "EMAIL_IS_SENT"
                             });
                         }
-                    });
-
-
-                } else {
-                    res.json({
-                        status: 1,
-                        message: "Profile not found"
                     });
                 }
             });
 
         } catch (error) {
-            console.log(" error when resetPwdMail ", error);
+            console.log(" error when reset password", error);
             return res.json({
-                error: error
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
             });
         }
     });
@@ -376,15 +407,28 @@ router.route('/resetPwdMail')  //email
 router.route('/resetPwd')
     .post(function (req, res) {
         try {
+
+            if (!req.body.newPassword || req.body.newPassword.length < 5) {
+                res.json({
+                    status: 1,
+                    error: 'SP_FV_ER_PASSWORD_SBN_EMPTY'
+                });
+                return;
+            }
+
             var idProfile = req.body.randomString.slice(-24);
             ProfilesPasswords.findById(idProfile, function (err, profilePassword) {
                 if (err) {
-                    res.send(err);
-
-                } else if (!profilePassword) {
+                    res.json({
+                        status: 3,
+                        error: 'SP_ER_TECHNICAL_ERROR'
+                    });
+                    return;
+                }
+                if (!profilePassword) {
                     res.json({
                         status: 1,
-                        message: "profile not found"
+                        error: "SP_ER_FP_USER_NOT_FOUND"
                     });
                 }
                 else {
@@ -396,26 +440,25 @@ router.route('/resetPwd')
 
                         res.json({
                             status: 0,
-                            message: "password updated"
+                            message: "PASSWORD_UPDATED"
                         });
                     }
                     else {
                         res.json({
                             status: 1,
-                            message: "randomString not correct"
+                            error: "SP_ER_RESET_LINK_EXPIRED"
                         });
                     }
                 }
             })
         } catch (error) {
-            console.log(" error when resetPwd ", error);
+            console.log(" error when reset password", error);
             return res.json({
-                error: error
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
             });
         }
     });
-
-
 
 
 module.exports = router;

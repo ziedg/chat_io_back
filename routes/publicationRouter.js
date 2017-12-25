@@ -25,12 +25,11 @@ var jwt = require('jsonwebtoken');
 const util = require('util');
 
 
-
 // route middleware to verify a token
-router.use(function(req, res, next) {
-    if(req.method === 'OPTIONS'){
+router.use(function (req, res, next) {
+    if (req.method === 'OPTIONS') {
         next();
-    }else {
+    } else {
         var token = req.headers['x-access-token'];
         if (token) {
             var jwtSecret = properties.get('security.jwt.secret').toString();
@@ -54,122 +53,40 @@ router.use(function(req, res, next) {
     }
 });
 
-router.route('/getPublicationByProfileId')
-    .get(function(req, res) {
+
+router.route('/getOpenGraphData')
+    .get(function (req, res) {
         try {
-            var publication = new Publication();
-            var profileQuery = Profile.findOne({
-                _id: req._id
-            });
-            profileQuery.exec(function(err, profile) {
-                if (err) {
-                    return res.json({
-                        status: 1,
-                        message: err
+            ogs({
+                    url: req.query.url,
+                    timeout: 8000
+                },
+                function (er, results) {
+                    res.json({
+                        results: results
                     });
-                } else {
-
-
-                    if (!profile) {
-                        return res.json({
-                            status: 1,
-                            message: "profile not found"
-                        });
-                    } else {
-                        var subscribers = profile.subscribers;
-
-                        if (!req.query.last_publication_id) {
-                            var publicationQuery = Publication.find({
-                                $or: [{
-                                    profileId: req._id
-                                }, {
-                                    profileId: {
-                                        $in: subscribers
-                                    }
-                                }]
-                            })
-                                .limit(10)
-                                .sort({
-                                    _id: -1
-                                });
-                        } else {
-                            var publicationQuery = Publication.find({
-                                $and: [{
-                                    _id: {
-                                        $lt: req.query.last_publication_id
-                                    }
-                                }, {
-                                    $or: [{
-                                        profileId: req._id
-                                    }, {
-                                        profileId: {
-                                            $in: subscribers
-                                        }
-                                    }]
-                                }]
-                            })
-                                .limit(10)
-                                .sort({
-                                    _id: -1
-                                });
-                        }
-
-
-                        publicationQuery.exec(function(err, publications) {
-                            if (err) {
-                                return res.json({
-                                    status: 1,
-                                    message: err
-                                });
-                            } else {
-                                var i = 0;
-
-                                function callback() {}
-                                async.each(publications, function(publication, callback) {
-                                    PublicationLikes.findById(publication._id, function(err, publicationLikes) {
-                                        if (publicationLikes) {
-                                            publication.isLiked = publicationLikes.likes.indexOf(req._id) > -1;
-                                            publication.isDisliked = publicationLikes.dislikes.indexOf(req._id) > -1;
-                                        }
-                                        for (j = 0; j < publication.comments.length; j++) {
-
-                                            publication.comments[j].isLiked = publication.comments[j].likes.indexOf(req._id) > -1;
-                                            publication.comments[j].isDisliked = publication.comments[j].dislikes.indexOf(req._id) > -1;
-
-                                        }
-                                        callback();
-                                    });
-
-                                }, function(err) {
-                                    return res.json(publications);
-                                });
-
-                            }
-                        });
-                    }
-
-
                 }
-            });
+            );
         } catch (error) {
-            console.log(" getPublicationByProfileId " + err);
+            console.log("error when getOpenGraphData", error);
             return res.json({
-                error : error
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
             });
         }
     });
 
 
 router.route('/publish')
-    .post(function(req, res) {
+    .post(function (req, res) {
         try {
-            var publication = new Publication(); //create a new instance of the Publication model
+            var publication = new Publication();
 
             var storage = multer.diskStorage({
-                destination: function(req, file, callback) {
-                    callback(null, '/var/www/html/images');
+                destination: function (req, file, callback) {
+                    callback(null, properties.get('pictures.storage.folder').toString());
                 },
-                filename: function(req, file, callback) {
+                filename: function (req, file, callback) {
                     callback(null, publication.id + path.extname(file.originalname));
                 }
             });
@@ -181,31 +98,32 @@ router.route('/publish')
                 maxCount: 1
             }]);
 
-            upload(req, res, function(err) {
+            upload(req, res, function (err) {
 
                 if (err) {
-                    return res.json({
-                        status: 1,
-                        message: err
+                    res.json({
+                        status: 3,
+                        error: 'SP_ER_TECHNICAL_ERROR'
                     });
                 } else {
                     var body = req.body;
                     publication.profileId = req._id;
                     publication.datePublication = new Date();
 
-                    Profile.findById(req._id, function(err, profile) {
+                    Profile.findById(req._id, function (err, profile) {
 
                         if (err) {
-                            return res.json({
-                                status: 1,
-                                message: err
+                            res.json({
+                                status: 3,
+                                error: 'SP_ER_TECHNICAL_ERROR'
                             });
                         } else {
                             if (!profile) {
-                                return res.json({
-                                    status: 1,
-                                    message: "profile not found"
+                                res.json({
+                                    status: 2,
+                                    error: 'SP_ER_PROFILE_NOT_FOUND'
                                 });
+                                return;
                             } else {
                                 profile.nbPublications++;
                                 profile.save();
@@ -230,14 +148,13 @@ router.route('/publish')
                                     publication.publPictureLink = req.files.publPicture[0].filename;
                                 }
 
-
                                 var publicationLikes = new PublicationLikes();
                                 publicationLikes.save();
                                 publicationLikes._id = publication._id;
                                 publication.save();
                                 return res.json({
                                     status: 0,
-                                    message: 'publication created',
+                                    message: 'PUBLISHED_SUCCESSFULLY',
                                     publication: publication
                                 });
                             }
@@ -247,21 +164,123 @@ router.route('/publish')
                     });
                 }
             });
-        } catch (err) {
-            console.log(" publish " + err);
+        } catch (error) {
+            console.log("error when getNbNotificationsNotSeen", error);
             return res.json({
-                err
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
             });
         }
     });
 
 
+router.route('/getPublications')
+    .get(function (req, res) {
+        try {
+            var profileQuery = Profile.findOne({
+                _id: req._id
+            });
+            profileQuery.exec(function (err, profile) {
+                if (err) {
+                    res.json({
+                        status: 3,
+                        error: 'SP_ER_TECHNICAL_ERROR'
+                    });
+                    return;
+                }
+
+                if (!profile) {
+                    res.json({
+                        status: 2,
+                        error: 'SP_ER_PROFILE_NOT_FOUND'
+                    });
+                    return
+                } else {
+                    var subscribers = profile.subscribers;
+
+                    if (!req.query.last_publication_id) {
+                        var publicationQuery = Publication.find({
+                            $or: [{
+                                profileId: req._id
+                            }, {
+                                profileId: {
+                                    $in: subscribers
+                                }
+                            }]
+                        })
+                            .limit(10)
+                            .sort({
+                                _id: -1
+                            });
+                    } else {
+                        var publicationQuery = Publication.find({
+                            $and: [{
+                                _id: {
+                                    $lt: req.query.last_publication_id
+                                }
+                            }, {
+                                $or: [{
+                                    profileId: req._id
+                                }, {
+                                    profileId: {
+                                        $in: subscribers
+                                    }
+                                }]
+                            }]
+                        })
+                            .limit(10)
+                            .sort({
+                                _id: -1
+                            });
+                    }
+
+
+                    publicationQuery.exec(function (err, publications) {
+                        if (err) {
+                            res.json({
+                                status: 3,
+                                error: 'SP_ER_TECHNICAL_ERROR'
+                            });
+                            return;
+                        }
+
+                        async.each(publications, function (publication, callback) {
+                            PublicationLikes.findById(publication._id, function (err, publicationLikes) {
+                                if (publicationLikes) {
+                                    publication.isLiked = publicationLikes.likes.indexOf(req._id) > -1;
+                                    publication.isDisliked = publicationLikes.dislikes.indexOf(req._id) > -1;
+                                }
+                                for (j = 0; j < publication.comments.length; j++) {
+
+                                    publication.comments[j].isLiked = publication.comments[j].likes.indexOf(req._id) > -1;
+                                    publication.comments[j].isDisliked = publication.comments[j].dislikes.indexOf(req._id) > -1;
+
+                                }
+                                callback();
+                            });
+
+                        }, function (err) {
+                            return res.json(publications);
+                        });
+
+                    });
+                }
+            });
+        } catch (error) {
+            console.log("error when get publications", error);
+            return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
+            });
+        }
+    });
+
 router.route('/likePublication')
-    .post(function(req, res) {
+    .post(function (req, res) {
         try {
             var publication = new Publication();
 
-            Publication.findById(req.body.publId, function(err, publication) {
+            Publication.findById(req.body.publId, function (err, publication) {
                 if (err) {
                     return res.json({
                         status: 0,
@@ -273,7 +292,7 @@ router.route('/likePublication')
                         message: 'Publication not found'
                     });
                 } else {
-                    PublicationLikes.findById(req.body.publId, function(err, publicationLikes) {
+                    PublicationLikes.findById(req.body.publId, function (err, publicationLikes) {
                         publicationLikes.likes.unshift(req._id);
                         publicationLikes.save();
                     });
@@ -283,7 +302,7 @@ router.route('/likePublication')
                         status: 1,
                         message: 'Publication liked'
                     });
-                    notificationScript.notifier(publication.profileId, req.body.publId, req._id, "like","");
+                    notificationScript.notifier(publication.profileId, req.body.publId, req._id, "like", "");
                 }
             });
         } catch (err) {
@@ -296,11 +315,11 @@ router.route('/likePublication')
 
 
 router.route('/removeLikePublication')
-    .post(function(req, res) {
+    .post(function (req, res) {
         try {
             var publication = new Publication();
 
-            Publication.findById(req.body.publId, function(err, publication) {
+            Publication.findById(req.body.publId, function (err, publication) {
                 if (err) {
                     return res.json({
                         status: 0,
@@ -312,7 +331,7 @@ router.route('/removeLikePublication')
                         message: 'Publication not found'
                     });
                 } else {
-                    PublicationLikes.findById(req.body.publId, function(err, publicationLikes) {
+                    PublicationLikes.findById(req.body.publId, function (err, publicationLikes) {
 
                         var index = publicationLikes.likes.indexOf(req._id);
                         publicationLikes.likes.splice(index, 1);
@@ -338,13 +357,12 @@ router.route('/removeLikePublication')
     });
 
 
-
 router.route('/dislikePublication')
-    .post(function(req, res) {
+    .post(function (req, res) {
         try {
             var publication = new Publication();
 
-            Publication.findById(req.body.publId, function(err, publication) {
+            Publication.findById(req.body.publId, function (err, publication) {
                 if (err) {
                     return res.json({
                         status: 0,
@@ -357,7 +375,7 @@ router.route('/dislikePublication')
                     });
                 } else {
 
-                    PublicationLikes.findById(req.body.publId, function(err, publicationLikes) {
+                    PublicationLikes.findById(req.body.publId, function (err, publicationLikes) {
                         publicationLikes.dislikes.unshift(req._id);
                         publicationLikes.save();
                     });
@@ -367,7 +385,7 @@ router.route('/dislikePublication')
                     res.json({
                         message: 'Publication disliked'
                     });
-                    notificationScript.notifier(publication.profileId, req.body.publId, req._id, "dislike","");
+                    notificationScript.notifier(publication.profileId, req.body.publId, req._id, "dislike", "");
                 }
             });
         } catch (err) {
@@ -379,11 +397,11 @@ router.route('/dislikePublication')
     });
 
 router.route('/removeDislikePublication')
-    .post(function(req, res) {
+    .post(function (req, res) {
         try {
             var publication = new Publication();
 
-            Publication.findById(req.body.publId, function(err, publication) {
+            Publication.findById(req.body.publId, function (err, publication) {
                 if (err) {
                     return res.json({
                         status: 0,
@@ -396,7 +414,7 @@ router.route('/removeDislikePublication')
                     });
                 } else {
 
-                    PublicationLikes.findById(req.body.publId, function(err, publicationDislikes) {
+                    PublicationLikes.findById(req.body.publId, function (err, publicationDislikes) {
 
                         var index = publicationDislikes.dislikes.indexOf(req._id);
                         publicationDislikes.dislikes.splice(index, 1);
@@ -422,46 +440,46 @@ router.route('/removeDislikePublication')
 
 
 router.route('/signalerPublication')
-	.post(function(req, res) {
+    .post(function (req, res) {
         try {
             var publication = new Publication();
 
-            Publication.findById(req.body.publId, function(err, publication) {
-                try{
-					if (err) {
-						return res.json({
-							status: 0,
-							err: err
-						});
-					} else if (!publication) {
-						return res.json({
-							status: 0,
-							message: 'Publication not found'
-						});
-					} else {
+            Publication.findById(req.body.publId, function (err, publication) {
+                try {
+                    if (err) {
+                        return res.json({
+                            status: 0,
+                            err: err
+                        });
+                    } else if (!publication) {
+                        return res.json({
+                            status: 0,
+                            message: 'Publication not found'
+                        });
+                    } else {
 
-						res.json({
-							message: 'Publication signaled'
-						});
+                        res.json({
+                            message: 'Publication signaled'
+                        });
 
-						publication.nbSignals++;
-						publication.save();
-						var mongoose = require('mongoose');
-						var signal = new Signal();
-						signal.publicationId= req.body.publId;
-						signal.dateSignal = new Date();
-						signal.signalText = req.body.signalText;
-						signal.save();
-						if(mongoose.Types.ObjectId.isValid(req._id))
-							signal.profileId = req._id;
-						
-						signal.save();
-						//signalText  //profileId   //publId
-					}
-				}
-				catch (err) {
-					signal.save();	
-				}
+                        publication.nbSignals++;
+                        publication.save();
+                        var mongoose = require('mongoose');
+                        var signal = new Signal();
+                        signal.publicationId = req.body.publId;
+                        signal.dateSignal = new Date();
+                        signal.signalText = req.body.signalText;
+                        signal.save();
+                        if (mongoose.Types.ObjectId.isValid(req._id))
+                            signal.profileId = req._id;
+
+                        signal.save();
+                        //signalText  //profileId   //publId
+                    }
+                }
+                catch (err) {
+                    signal.save();
+                }
             });
         } catch (err) {
             console.log(" signalPublication " + err);
@@ -473,11 +491,11 @@ router.route('/signalerPublication')
 
 
 router.route('/removePublication')
-    .post(function(req, res) {
+    .post(function (req, res) {
         try {
             var publication = new Publication();
 
-            Publication.findById(req.body.publId, function(err, publication) {
+            Publication.findById(req.body.publId, function (err, publication) {
                 if (err) {
                     return res.json({
                         status: 0,
@@ -490,14 +508,14 @@ router.route('/removePublication')
                     });
                 else if (publication) {
 
-                    if(!publication.profileId.equals(req._id )){
+                    if (!publication.profileId.equals(req._id)) {
                         return res.json({
                             status: 0,
                             message: 'it is not the owner of this publication'
                         });
                     }
 
-                    Profile.findById(publication.profileId, function(err, profile) {
+                    Profile.findById(publication.profileId, function (err, profile) {
                         profile.nbPublications--;
                         profile.save();
                     });
@@ -509,7 +527,7 @@ router.route('/removePublication')
                 }
                 Notification.find({
                     publId: req.body.publId
-                }, function(err, notifications) {
+                }, function (err, notifications) {
                     for (i = 0; i < notifications.length; i++) {
                         notifications[i].remove();
                     }
@@ -525,7 +543,7 @@ router.route('/removePublication')
 
 
 router.route('/getPublicationsForOneProfileByID')
-    .get(function(req, res) {
+    .get(function (req, res) {
         try {
             var criteria = {};
             if (!req.query.last_publication_id) {
@@ -547,7 +565,7 @@ router.route('/getPublicationsForOneProfileByID')
             var query = Publication.find(criteria).sort({
                 _id: -1
             }).limit(10);
-            query.execFind(function(err, publications) {
+            query.execFind(function (err, publications) {
                 if (err)
                     return res.json({
                         status: 0,
@@ -557,9 +575,11 @@ router.route('/getPublicationsForOneProfileByID')
                 else {
 
 
-                    function callback() {}
-                    async.each(publications, function(publication, callback) {
-                        PublicationLikes.findById(publication._id, function(err, publicationLikes) {
+                    function callback() {
+                    }
+
+                    async.each(publications, function (publication, callback) {
+                        PublicationLikes.findById(publication._id, function (err, publicationLikes) {
                             if (publicationLikes) {
                                 publication.isLiked = publicationLikes.likes.indexOf(req.query.connectedProfileID) > -1;
                                 publication.isDisliked = publicationLikes.dislikes.indexOf(req.query.connectedProfileID) > -1;
@@ -573,7 +593,7 @@ router.route('/getPublicationsForOneProfileByID')
                             callback();
                         });
 
-                    }, function(err) {
+                    }, function (err) {
                         return res.json({
                             status: 1,
                             publication: publications
@@ -591,15 +611,14 @@ router.route('/getPublicationsForOneProfileByID')
     });
 
 
-router.route('/sharePublication') //publId profileId
-    .post(function(req, res) {
+router.route('/sharePublication')
+    .post(function (req, res) {
         try {
-            Publication.findById(req.body.publId, function(err, pub) {
+            Publication.findById(req.body.publId, function (err, pub) {
                 try {
-                    console.log(4 / 0);
                     if (pub) {
                         var publication = new Publication();
-                        Profile.findById(req.body.profileId, function(err, profile) {
+                        Profile.findById(req.body.profileId, function (err, profile) {
 
                             if (err) {
                                 return res.json({
@@ -680,13 +699,13 @@ router.route('/sharePublication') //publId profileId
 
 
 router.route('/getPublicationPopulaireByProfileId')
-    .get(function(req, res) {
+    .get(function (req, res) {
         try {
             var publication = new Publication();
             var profileQuery = Profile.findOne({
                 _id: req._id
             });
-            profileQuery.exec(function(err, profile) {
+            profileQuery.exec(function (err, profile) {
                 if (err) {
                     return res.json({
                         status: 1,
@@ -716,7 +735,7 @@ router.route('/getPublicationPopulaireByProfileId')
                                 }]
                             })
                                 .limit(10)
-                                .sort({ nbLikes : -1 });
+                                .sort({nbLikes: -1});
 
 
                         } else {
@@ -740,11 +759,11 @@ router.route('/getPublicationPopulaireByProfileId')
                                 }]
                             })
                                 .limit(10)
-                                .sort({ nbLikes : -1 });
+                                .sort({nbLikes: -1});
                         }
 
 
-                        publicationQuery.exec(function(err, publications) {
+                        publicationQuery.exec(function (err, publications) {
                             if (err) {
                                 return res.json({
                                     status: 1,
@@ -753,9 +772,11 @@ router.route('/getPublicationPopulaireByProfileId')
                             } else {
                                 var i = 0;
 
-                                function callback() {}
-                                async.each(publications, function(publication, callback) {
-                                    PublicationLikes.findById(publication._id, function(err, publicationLikes) {
+                                function callback() {
+                                }
+
+                                async.each(publications, function (publication, callback) {
+                                    PublicationLikes.findById(publication._id, function (err, publicationLikes) {
                                         if (publicationLikes) {
                                             publication.isLiked = publicationLikes.likes.indexOf(req._id) > -1;
                                             publication.isDisliked = publicationLikes.dislikes.indexOf(req._id) > -1;
@@ -769,7 +790,7 @@ router.route('/getPublicationPopulaireByProfileId')
                                         callback();
                                     });
 
-                                }, function(err) {
+                                }, function (err) {
                                     return res.json(publications);
                                 });
 
@@ -789,31 +810,9 @@ router.route('/getPublicationPopulaireByProfileId')
     });
 
 
-router.route('/getOpenGraphData')
-    .get(function(req, res) {
-    try {
-        ogs({
-                url: req.query.url,
-                timeout: 8000
-            },
-            function(er, results) {
-                res.json({
-                    results
-                });
-            }
-        );
-    } catch (err) {
-        console.log(" getOpenGraphData " + err);
-        return res.json({
-            err
-        });
-    }
-
-});
-
 router.route('/getPublicationMeta')
-    .get(function(req, res) {
-        Publication.findById(req.query.publId, function(err, publication) {
+    .get(function (req, res) {
+        Publication.findById(req.query.publId, function (err, publication) {
 
             if (err) {
                 return res.json({
@@ -860,13 +859,13 @@ router.route('/getPublicationMeta')
                                 url: publication.publyoutubeLink,
                                 timeout: 8000
                             },
-                            function(er, results) {
-								if (results.data) {
-                                
-									if (description == "") {
-										description = results.data.ogTitle;
-									}
-								}
+                            function (er, results) {
+                                if (results.data) {
+
+                                    if (description == "") {
+                                        description = results.data.ogTitle;
+                                    }
+                                }
                                 return res.json({
                                     title: title,
                                     description: description,
@@ -890,24 +889,24 @@ router.route('/getPublicationMeta')
                                 url: publication.publExternalLink,
                                 timeout: 8000
                             },
-                            function(er, results) {
-								if(results.data){
-									if (description == "") {
-										description = results.data.ogDescription;
-									}
-									if (title == "Speegar" && results.data.ogTitle) {
-										title = results.data.ogTitle;
-									}
-									
-									return res.json({
-										title: title,
-										description: description,
-										profile: publication.profileFirstName + " " + publication.profileLastName,
-										image: results.data.ogImage.url,
-										height: results.data.ogImage.height,
-										width: results.data.ogImage.width
-									});
-								}
+                            function (er, results) {
+                                if (results.data) {
+                                    if (description == "") {
+                                        description = results.data.ogDescription;
+                                    }
+                                    if (title == "Speegar" && results.data.ogTitle) {
+                                        title = results.data.ogTitle;
+                                    }
+
+                                    return res.json({
+                                        title: title,
+                                        description: description,
+                                        profile: publication.profileFirstName + " " + publication.profileLastName,
+                                        image: results.data.ogImage.url,
+                                        height: results.data.ogImage.height,
+                                        width: results.data.ogImage.width
+                                    });
+                                }
 
                             }
                         );
@@ -920,7 +919,7 @@ router.route('/getPublicationMeta')
                             title: title,
                             description: publication.publText,
                             profile: publication.profileFirstName + " " + publication.profileLastName,
-                            image: properties.get('pictures.link')+"speegar.png",
+                            image: properties.get('pictures.link') + "speegar.png",
                             height: 161,
                             width: 201
                         });
@@ -939,11 +938,10 @@ router.route('/getPublicationMeta')
     });
 
 
-
 router.route('/masquerPublicationAdmin') //publId
-    .post(function(req, res) {
+    .post(function (req, res) {
         try {
-            Profile.findById(req.body.userID, function(err, profile) {
+            Profile.findById(req.body.userID, function (err, profile) {
 
                 if (!profile) {
                     return res.json({
@@ -951,7 +949,7 @@ router.route('/masquerPublicationAdmin') //publId
                         message: 'profile not found'
                     });
                 } else if (profile.isAdmin == 1) {
-                    Publication.findById(req.body.publId, function(err, publication) {
+                    Publication.findById(req.body.publId, function (err, publication) {
                         if (err) {
                             return res.json({
                                 status: 0,
@@ -989,9 +987,9 @@ router.route('/masquerPublicationAdmin') //publId
 
 
 router.route('/removePublicationAdmin')
-    .post(function(req, res) {
+    .post(function (req, res) {
         try {
-            Profile.findById(req.body.userID, function(err, profile) {
+            Profile.findById(req.body.userID, function (err, profile) {
                 if (!profile) {
                     return res.json({
                         status: 0,
@@ -1000,7 +998,7 @@ router.route('/removePublicationAdmin')
                 } else if (profile.isAdmin == 1) {
                     var publication = new Publication();
 
-                    Publication.findById(req.body.publId, function(err, publication) {
+                    Publication.findById(req.body.publId, function (err, publication) {
                         if (err) {
                             return res.json({
                                 status: 0,
@@ -1018,14 +1016,14 @@ router.route('/removePublicationAdmin')
                                 status: 1,
                                 message: 'publication removed'
                             });
-                            Profile.findById(publication.profileId, function(err, profile) {
+                            Profile.findById(publication.profileId, function (err, profile) {
                                 profile.nbPublications--;
                                 profile.save();
                             });
-                            notificationScript.notifier(publication.profileId, publication.profileId, publication.profileId, "removePublication",req.body.raisonDelete);
+                            notificationScript.notifier(publication.profileId, publication.profileId, publication.profileId, "removePublication", req.body.raisonDelete);
                             Notification.find({
                                 publId: req.body.publId
-                            }, function(err, notifications) {
+                            }, function (err, notifications) {
                                 for (i = 0; i < notifications.length; i++) {
                                     notifications[i].remove();
                                 }
@@ -1047,8 +1045,6 @@ router.route('/removePublicationAdmin')
             });
         }
     });
-
-
 
 
 router.route('/getPublicationById/:publicationId')
