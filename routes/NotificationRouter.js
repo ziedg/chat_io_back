@@ -22,7 +22,7 @@ router.use(function (req, res, next) {
                 if (err) {
                     return res.status(403).send({
                         success: false,
-                        message: 'Failed to authenticate token.'
+                        error: 'Failed to authenticate token.'
                     });
                 } else {
                     req._id = decoded['_id'];
@@ -32,7 +32,7 @@ router.use(function (req, res, next) {
         } else {
             return res.status(403).send({
                 success: false,
-                message: 'No token provided.'
+                error: 'No token provided.'
             });
         }
     }
@@ -94,7 +94,7 @@ router.route('/checkNewNotifications')
                         status: 2,
                         error: 'SP_ER_PROFILE_NOT_FOUND'
                     });
-                    return
+                    return;
                 }
                 else {
                     res.json({

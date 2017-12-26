@@ -30,7 +30,7 @@ router.use(function (req, res, next) {
                 if (err) {
                     return res.status(403).send({
                         success: false,
-                        message: 'Failed to authenticate token.'
+                        error: 'Failed to authenticate token.'
                     });
                 } else {
                     req._id = decoded['_id'];
@@ -40,7 +40,7 @@ router.use(function (req, res, next) {
         } else {
             return res.status(403).send({
                 success: false,
-                message: 'No token provided.'
+                error: 'No token provided.'
             });
         }
     }
@@ -398,40 +398,59 @@ router.route('/updateAboutProfile') //profileId    about
     });
 
 
-router.route('/updatePassword') //profileId    oldPassword  newPassword
+router.route('/updatePass')
     .post(function (req, res) {
+        try {
+            if (!req.body.newPassword || req.body.newPassword.length < 5) {
+                return res.json({
+                    status: 1,
+                    error: 'SP_FV_ER_NEW_PASSWORD_NOT_VALID'
+                });
+            }
+            Profile.findById(req._id, function (err, profile) {
+                if (err) {
+                    return res.json({
+                        status: 3,
+                        error: 'SP_ER_TECHNICAL_ERROR'
+                    });
+                }
 
-        Profile.findById(req.body.profileId, function (err, profile) {
-            if (err) {
-                res.json({
-                    status: 0,
-                    err: err
-                });
-            } else if (!profile) {
-                res.json({
-                    status: 0,
-                    message: "profile not found"
-                });
-            } else {
+                if (!profile) {
+                    return res.json({
+                        status: 2,
+                        error: 'SP_ER_PROFILE_NOT_FOUND'
+                    });
+                }
+
                 ProfilesPasswords.findById(profile.id, function (err, profilePassword) {
+
                     if (!(passwordHash.verify(req.body.oldPassword, profilePassword.password))) {
-                        res.json({
-                            status: 0,
-                            message: "err password"
+                        return res.json({
+                            status: 1,
+                            error: "SP_ER_WRONG_PASSWORD"
                         });
                     }
                     else {
                         profilePassword.password = passwordHash.generate(req.body.newPassword);
                         profilePassword.save();
                         res.json({
-                            status: 1,
-                            message: "password updated"
+                            status: 0,
+                            message: "PASSWORD_UPDATED"
                         });
                     }
                 });
-            }
-        });
+
+            });
+
+        } catch (error) {
+            console.log("error when update password", error);
+            return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
+            });
+        }
     });
+
 
 router.route('/findProfile')
     .get(function (req, res) {
