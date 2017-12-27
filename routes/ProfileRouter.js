@@ -307,23 +307,24 @@ router.route('/updateProfilePicture')
 
 router.route('/updateProfile')
     .post(function (req, res) {
+        try {
+            Profile.findById(req._id, function (err, profile) {
+                if (err) {
+                    return res.json({
+                        status: 3,
+                        error: 'SP_ER_TECHNICAL_ERROR'
+                    });
+                }
+                if (!profile) {
+                    return res.json({
+                        status: 2,
+                        error: 'SP_ER_PROFILE_NOT_FOUND'
+                    });
+                }
 
-        Profile.findById(req.body.profileId, function (err, profile) {
-            if (err)
-                res.json({
-                    status: 1,
-                    message: err
-                });
-            else if (!profile) {
-                res.json({
-                    status: 1,
-                    message: 'Profile not found'
-                });
-            }
-            else {
                 profile.firstName = req.body.firstName;
                 profile.lastName = req.body.lastName;
-                profile.gender = req.body.gender;
+                //profile.gender = req.body.gender;
                 profile.birthday = req.body.birthday;
                 profile.about = req.body.about;
                 profile.facebookLink = req.body.facebookLink;
@@ -334,18 +335,18 @@ router.route('/updateProfile')
                 profile.save();
 
                 res.json({
-                    status: 1,
+                    status: 0,
                     profile: profile
                 });
 
-                Publication.find({profileId: req.body.profileId}, function (err, publications) {
+                Publication.find({profileId: req._id}, function (err, publications) {
                     for (i = 0; i < publications.length; i++) {
                         publications[i].profileFirstName = req.body.firstName;
                         publications[i].profileLastName = req.body.lastName;
                         publications[i].save();
                     }
                 });
-                Comment.find({profileId: req.body.profileId}, function (err, comments) {
+                Comment.find({profileId: req._id}, function (err, comments) {
                     for (i = 0; i < comments.length; i++) {
                         comments[i].profileFirstName = req.body.firstName;
                         comments[i].profileLastName = req.body.lastName;
@@ -356,7 +357,7 @@ router.route('/updateProfile')
                 Publication.find({}, function (err, publications) {
                     for (i = 0; i < publications.length; i++) {
                         for (j = 0; j < publications[i].comments.length; j++) {
-                            if (publications[i].comments[j].profileId == req.body.profileId) {
+                            if (publications[i].comments[j].profileId == req._id) {
                                 publications[i].comments[j].profileFirstName = req.body.firstName;
                                 publications[i].comments[j].profileLastName = req.body.lastName;
                             }
@@ -364,10 +365,17 @@ router.route('/updateProfile')
                         publications[i].save();
                     }
                 });
-            }
-        });
+
+            });
 
 
+        } catch (error) {
+            console.log("error when update profile", error);
+            return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
+            });
+        }
     });
 
 
