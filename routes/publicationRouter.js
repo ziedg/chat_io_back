@@ -662,6 +662,107 @@ router.route('/sharePublication')
     });
 
 
+
+
+
+router.route('/getProfilePublications')
+    .get(function (req, res) {
+        try {
+
+            var profileId;
+            if (req.query.profileId) {
+                profileId = req.query.profileId;
+            } else {
+                profileId = req._id
+            }
+
+            var profileQuery = Profile.findOne({
+                _id: profileId
+            });
+
+            profileQuery.exec(function (err, profile) {
+                if (err) {
+                    res.json({
+                        status: 3,
+                        error: 'SP_ER_TECHNICAL_ERROR'
+                    });
+                    return;
+                }
+
+                if (!profile) {
+                    res.json({
+                        status: 2,
+                        error: 'SP_ER_PROFILE_NOT_FOUND'
+                    });
+                    return;
+                }
+
+                if (!req.query.last_publication_id) {
+                    var publicationQuery = Publication.find({
+                        profileId: profileId
+
+                    })
+                        .limit(10)
+                        .sort({
+                            _id: -1
+                        });
+                } else {
+                    var publicationQuery = Publication.find({
+                        $and: [{
+                            _id: {
+                                $lt: req.query.last_publication_id
+                            }
+                        }, {
+                            profileId: profileId
+                        }]
+                    })
+                        .limit(10)
+                        .sort({
+                            _id: -1
+                        });
+                }
+
+
+                publicationQuery.exec(function (err, publications) {
+                    if (err) {
+                        res.json({
+                            status: 3,
+                            error: 'SP_ER_TECHNICAL_ERROR'
+                        });
+                        return;
+                    }
+
+                    async.each(publications, function (publication, callback) {
+                        PublicationLikes.findById(publication._id, function (err, publicationLikes) {
+                            if (publicationLikes) {
+                                publication.isLiked = publicationLikes.likes.indexOf(req._id) > -1;
+                                publication.isDisliked = publicationLikes.dislikes.indexOf(req._id) > -1;
+                            }
+                            for (j = 0; j < publication.comments.length; j++) {
+
+                                publication.comments[j].isLiked = publication.comments[j].likes.indexOf(req._id) > -1;
+                                publication.comments[j].isDisliked = publication.comments[j].dislikes.indexOf(req._id) > -1;
+
+                            }
+                            callback();
+                        });
+
+                    }, function (err) {
+                        return res.json(publications);
+                    });
+
+                });
+
+            });
+        } catch (error) {
+            console.log("error when get publications", error);
+            return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
+            });
+        }
+    });
+
 router.route('/getPublicationsForOneProfileByID')
     .get(function (req, res) {
         try {

@@ -32,6 +32,7 @@ var profileSchema   = new Schema({
 	 isSubscribe  : String,
 	 isAdmin  : Number,
 	 name : String,
+	 isFollowed : Boolean,
 	 
 	 dateInscription : String
 }

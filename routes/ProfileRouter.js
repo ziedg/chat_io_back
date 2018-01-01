@@ -47,263 +47,259 @@ router.use(function (req, res, next) {
 });
 
 
-router.route('/getProfileById')
+router.route('/getProfile')
     .get(function (req, res) {
-        Profile.findById(req.query.ProfileId, function (err, profile) {
-            if (err) {
-                res.send(err);
-            }
-            else if (!profile) {
-                res.json({
-                    status: 1,
-                    message: "profile not found"
-                });
-            }
-            else {
-                Profile.findById(req.query.connectedProfileId, function (err, pr) {
 
+        try {
+            Profile.findById(req.query.ProfileId, function (err, profile) {
+                if (err) {
+                    return res.json({
+                        status: 3,
+                        error: 'SP_ER_TECHNICAL_ERROR'
+                    });
+                }
+                if (!profile) {
+                    return res.json({
+                        status: 2,
+                        error: 'SP_ER_PROFILE_NOT_FOUND'
+                    });
+                }
+
+                Profile.findById(req._id, function (err, connectedProfile) {
                     if (err) {
-                        res.send(err);
-                    }
-                    else if (!pr) {
-                        res.json({
-                            status: 1,
-                            message: "connected profile not found"
+                        return res.json({
+                            status: 3,
+                            error: 'SP_ER_TECHNICAL_ERROR'
                         });
                     }
-                    if (pr) {
-                        profile.isSubscribe = (pr.subscribers.indexOf(req.query.ProfileId) > -1);
-                        //	profile.subscribers = [];
-                        var user = profile.toObject();
-                        delete user["password"];
-                        res.json(user);
+                    if (!connectedProfile) {
+                        return res.json({
+                            status: 2,
+                            error: 'SP_ER_PROFILE_NOT_FOUND'
+                        });
                     }
+
+                    profile.isFollowed =
+                        (connectedProfile.subscribers.indexOf(req.query.ProfileId) > -1);
+
+                    var user = profile.toObject();
+                    delete user["password"];
+
+                    return res.json({
+                        status: 0,
+                        user: user
+                    });
 
                 });
 
-            }
-        });
-    });
-
-
-router.route('/getBlagueursPopulaires')
-    .get(function (req, res) {
-
-        Profile.findById(req.query.ProfileId, function (err, profile) {
-            if (err)
-                res.send(err);
-            if (!profile) {
-                res.json({
-                    status: 0,
-                    message: "profile not found"
-                });
-            }
-            else {
-                var query = {$and: [{_id: {$nin: profile.subscribers}}, {_id: {$ne: profile._id}}]}
-                var find = Profile.find(query).sort({_id: 1});
-                find.execFind(function (err, profiles) {
-                    if (err)
-                        res.json({
-                            status: 0,
-                            err: err
-                        });
-                    else {
-                        res.json({
-                            status: 1,
-                            profiles: profiles
-                        });
-                    }
-                });
-            }
-        });
-    });
-
-
-router.route('/getProfilesDecouvert')
-    .get(function (req, res) {
-
-        Profile.findById(req.query.ProfileId, function (err, profile) {
-            if (err)
-                res.send(err);
-            if (!profile) {
-                res.json({
-                    status: 0,
-                    message: "profile not found"
-                });
-            }
-            else {
-                var query = {$and: [{_id: {$nin: profile.subscribers}}, {_id: {$ne: profile._id}}]}
-                var find = Profile.find(query).sort({_id: -1});
-                find.execFind(function (err, profiles) {
-                    if (err)
-                        res.json({
-                            status: 0,
-                            err: err
-                        });
-                    else {
-                        res.json({
-                            status: 1,
-                            profiles: profiles
-                        });
-                    }
-                });
-            }
-        });
+            });
+        } catch (error) {
+            console.log("error when get profile", error);
+            return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
+            });
+        }
     });
 
 
 router.route('/subscribe')
-    .post(function (req, res) {   //userID va abbonner profileId
-        var query = Profile.findOne({
-            _id: req.body.UserId
-        });
-        query.exec(function (err, profile) {
-            if (err) {
-                res.json({
-                    status: 0,
-                    err: err
+    .post(function (req, res) {
+        try {
+            Profile.findById(req.body.profileId, function (err, targetProfile) {
+                if (err) {
+                    return res.json({
+                        status: 3,
+                        error: 'SP_ER_TECHNICAL_ERROR'
+                    });
+                }
+                if (!targetProfile) {
+                    return res.json({
+                        status: 2,
+                        error: 'SP_ER_TARGET_PROFILE_NOT_FOUND'
+                    });
+                }
+                Profile.findById(req._id, function (err, profile) {
+                    if (err) {
+                        return res.json({
+                            status: 3,
+                            error: 'SP_ER_TECHNICAL_ERROR'
+                        });
+                    }
+                    if (!profile) {
+                        return res.json({
+                            status: 2,
+                            error: 'SP_ER_PROFILE_NOT_FOUND'
+                        });
+                    }
+
+                    var index = profile.subscribers.indexOf(req.body.profileId);
+                    if (index == -1) {
+                        profile.subscribers.push(req.body.profileId);
+                        profile.nbSubscribers++;
+                        profile.save();
+
+                        Profile.findById(req.body.profileId, function (err, pr) {
+                            if (pr) {
+                                pr.nbSuivi++;
+                                pr.save();
+                            }
+                        });
+                        notificationScript.notifier(req.body.profileId, "", req.body.UserId, "subscribe", "");
+
+                        return res.json({
+                            status: 0,
+                            message: 'SUBSCRIBED'
+                        });
+
+                    }
                 });
-            }
-            else if (!profile) {
-                res.json({
-                    status: 0,
-                    message: "profile not found"
-                });
-            } else {
-                var index = profile.subscribers.indexOf(req.body.profileId);
-                if (index == -1) {
-                    profile.subscribers.push(req.body.profileId);
-                    profile.nbSubscribers++;
+            });
+
+
+        } catch (error) {
+            console.log("error when get subscribe", error);
+            return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
+            });
+        }
+    });
+
+
+router.route('/unsubscribe')
+    .post(function (req, res) {
+        try {
+            Profile.findById(req.body.profileId, function (err, targetProfile) {
+                if (err) {
+                    return res.json({
+                        status: 3,
+                        error: 'SP_ER_TECHNICAL_ERROR'
+                    });
+                }
+                if (!targetProfile) {
+                    return res.json({
+                        status: 2,
+                        error: 'SP_ER_TARGET_PROFILE_NOT_FOUND'
+                    });
+                }
+
+                Profile.findById(req._id, function (err, profile) {
+                    if (err) {
+                        return res.json({
+                            status: 3,
+                            error: 'SP_ER_TECHNICAL_ERROR'
+                        });
+                    }
+                    if (!profile) {
+                        return res.json({
+                            status: 2,
+                            error: 'SP_ER_PROFILE_NOT_FOUND'
+                        });
+                    }
+
+                    var index = profile.subscribers.indexOf(req.body.profileId);
+                    if (index > -1) {
+                        profile.subscribers.splice(index, 1);
+                        profile.nbSubscribers--;
+                    }
+
                     profile.save();
 
-                    Profile.findById(req.body.profileId, function (err, pr) {
-                        if (pr) {
-                            pr.nbSuivi++;
-                            pr.save();
-                        }
+                    return res.json({
+                        status: 0,
+                        message: 'UNSUBSCRIBED'
                     });
-                    notificationScript.notifier(req.body.profileId, "", req.body.UserId, "subscribe", "");
-                }
-                res.json(profile);
+                });
+            });
 
-
-            }
-        });
-
+        } catch (error) {
+            console.log("error when get unsubscribe", error);
+            return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
+            });
+        }
     });
 
-
-router.route('/removeSubscribe')
-    .post(function (req, res) {   //userID va suprimer son abbonnement à profileId
-        var query = Profile.findOne({
-            _id: req.body.UserId
-        });
-        query.exec(function (err, profile) {
-            if (err) {
-                res.json({
-                    status: 0,
-                    err: err
-                });
-            }
-            else if (!profile) {
-                res.json({
-                    status: 0,
-                    message: "profile not found"
-                });
-            } else {
-                var index = profile.subscribers.indexOf(req.body.profileId);
-                if (index > -1) {
-                    profile.subscribers.splice(index, 1);
-                    profile.nbSubscribers--;
-                }
-
-                profile.save();
-
-                res.json(profile);
-
-            }
-        });
-
-    });
-
-
-router.route('/updateProfilePictureText')
-    .post(function (req, res) {
-        Profile.findById(req.body.profileId, function (err, profile) {
-            if (profile) {
-                profile.profilePicture = req.body.picture;
-                profile.save();
-                res.json({
-                    status: 1,
-                    profile: profile
-                });
-            } else {
-                res.json({
-                    status: 0,
-                    message: "profile not found"
-                });
-            }
-        });
-
-    });
 
 router.route('/updateProfilePicture')
     .post(function (req, res) {
-        var profile = new Profile();
-        var storage = multer.diskStorage({
-            destination: function (req, file, callback) {
-                callback(null, '/var/www/html/images');
-            },
-            filename: function (req, file, callback) {
-                callback(null, profile._id + '_' + new Date().toISOString().replace(/:/g, "-").replace(/\./g, '')
-                    + path.extname(file.originalname));
-            }
-        });
+        try {
+            var profile = new Profile();
+            var storage = multer.diskStorage({
+                destination: function (req, file, callback) {
+                    callback(
+                        null,
+                        properties.get('pictures.storage.folder')
+                            .toString()
+                    );
+                },
+                filename: function (req, file, callback) {
+                    callback(
+                        null,
+                        profile._id + '_' + new Date()
+                            .toISOString()
+                            .replace(/:/g, "-")
+                            .replace(/\./g, '')
+                        + path.extname(file.originalname));
+                }
+            });
+            var upload = multer({
+                storage: storage
+            }).fields([{
+                name: 'profilePicture',
+                maxCount: 1
+            }]);
+            upload(req, res, function (err) {
+                if (err) {
+                    return res.json({
+                        status: 3,
+                        error: 'SP_ER_TECHNICAL_ERROR'
+                    });
+                }
+                else {
 
-        var upload = multer({
-            storage: storage
-        }).fields([{
-            name: 'profilePicture',
-            maxCount: 1
-        }]);
-        upload(req, res, function (err) {
-            if (err) {
-                res.send(err.status);
-            }
-            else {
-                var body = req.body;
-                Profile.findById(body.profileId, function (err, profile) {
-                    if (err)
-                        res.json({
-                            status: 1,
-                            message: err
-                        });
-                    else if (!profile) {
-                        res.json({
-                            status: 1,
-                            message: 'Profile not found'
-                        });
-                    }
-                    else {
+                    Profile.findById(req._id, function (err, profile) {
+                        if (err) {
+                            return res.json({
+                                status: 3,
+                                error: 'SP_ER_TECHNICAL_ERROR'
+                            });
+                        }
+                        if (!profile) {
+                            return res.json({
+                                status: 2,
+                                error: 'SP_ER_PROFILE_NOT_FOUND'
+                            });
+                        }
+
                         if (req.files.profilePicture[0]) {
-                            profile.profilePicture = properties.get('pictures.link') + req.files.profilePicture[0].filename;
-                            profile.profilePictureMin = "https://speegar.com/images/" + req.files.profilePicture[0].filename;
+                            profile.profilePicture =
+                                properties.get('pictures.link') + req.files.profilePicture[0].filename;
+                            profile.profilePictureMin =
+                                properties.get('pictures.link') + req.files.profilePicture[0].filename;
                         }
                         profile.save();
                         res.json({
                             status: 0,
                             profile: profile,
-                            message: "profile picture updated"
+                            message: "PROFILE_PICTURE_UPDATED"
                         });
-                    }
-                    ;
-                });
-            }
-            ;
 
-        });
+                    });
+                }
+            });
 
+        } catch (error) {
+            console.log("error when update profile picture", error);
+            return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
+            });
+        }
     });
+
 
 router.route('/updateProfile')
     .post(function (req, res) {
@@ -379,34 +375,43 @@ router.route('/updateProfile')
     });
 
 
-router.route('/updateAboutProfile') //profileId    about
+router.route('/updateProfileDescription')
     .post(function (req, res) {
 
-        Profile.findById(req.body.profileId, function (err, profile) {
-            if (err) {
-                res.json({
-                    status: 0,
-                    err: err
-                });
-            } else if (!profile) {
-                res.json({
-                    status: 0,
-                    message: "profile not found"
-                });
-            } else {
+        try {
+            Profile.findById(req._id, function (err, profile) {
+                if (err) {
+                    return res.json({
+                        status: 3,
+                        error: 'SP_ER_TECHNICAL_ERROR'
+                    });
+                }
+                if (!profile) {
+                    return res.json({
+                        status: 2,
+                        error: 'SP_ER_PROFILE_NOT_FOUND'
+                    });
+                }
+
                 profile.about = req.body.about;
                 profile.save();
                 res.json({
                     status: 1,
-                    message: "profile updated"
+                    message: "PROFILE_DESCRIPTION_UPDATED"
                 });
-            }
 
-        });
+            });
+        } catch (error) {
+            console.log("error when update description profile", error);
+            return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
+            });
+        }
     });
 
 
-router.route('/updatePass')
+router.route('/updatePassword')
     .post(function (req, res) {
         try {
             if (!req.body.newPassword || req.body.newPassword.length < 5) {
@@ -460,6 +465,73 @@ router.route('/updatePass')
     });
 
 
+router.route('/getBlagueursPopulaires')
+    .get(function (req, res) {
+
+        Profile.findById(req.query.ProfileId, function (err, profile) {
+            if (err)
+                res.send(err);
+            if (!profile) {
+                res.json({
+                    status: 0,
+                    message: "profile not found"
+                });
+            }
+            else {
+                var query = {$and: [{_id: {$nin: profile.subscribers}}, {_id: {$ne: profile._id}}]}
+                var find = Profile.find(query).sort({_id: 1});
+                find.execFind(function (err, profiles) {
+                    if (err)
+                        res.json({
+                            status: 0,
+                            err: err
+                        });
+                    else {
+                        res.json({
+                            status: 1,
+                            profiles: profiles
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+
+router.route('/getProfilesDecouvert')
+    .get(function (req, res) {
+
+        Profile.findById(req.query.ProfileId, function (err, profile) {
+            if (err)
+                res.send(err);
+            if (!profile) {
+                res.json({
+                    status: 0,
+                    message: "profile not found"
+                });
+            }
+            else {
+                var query = {$and: [{_id: {$nin: profile.subscribers}}, {_id: {$ne: profile._id}}]}
+                var find = Profile.find(query).sort({_id: -1});
+                find.execFind(function (err, profiles) {
+                    if (err)
+                        res.json({
+                            status: 0,
+                            err: err
+                        });
+                    else {
+                        res.json({
+                            status: 1,
+                            profiles: profiles
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+
+///////////////////////////
 router.route('/findProfile')
     .get(function (req, res) {
         try {
@@ -590,32 +662,6 @@ router.route('/updateProfilePictureSlimAPI') //profileId //base64Data
             }
 
         });
-    });
-
-router.route('/testKhalil') //profileId //base64Data
-    .post(function (req, res) {
-        console.log("*************************************************************************");
-        console.log("********************************POST*************************************");
-        console.log("*************************************************************************");
-        console.log(req);
-
-        console.log("*************************************************************************");
-        console.log("*************************************************************************");
-        console.log("*************************************************************************");
-
-    });
-
-router.route('/testKhalil') //profileId //base64Data
-    .get(function (req, res) {
-        console.log("*************************************************************************");
-        console.log("*******************************GET***************************************");
-        console.log("*************************************************************************");
-        console.log(req);
-
-        console.log("*************************************************************************");
-        console.log("*************************************************************************");
-        console.log("*************************************************************************");
-
     });
 
 
