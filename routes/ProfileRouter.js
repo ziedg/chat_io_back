@@ -465,73 +465,96 @@ router.route('/updatePassword')
     });
 
 
-router.route('/getBlagueursPopulaires')
+router.route('/getPopularProfiles')
     .get(function (req, res) {
+        try {
+            Profile.findById(req._id, function (err, profile) {
+                if (err) {
+                    return res.json({
+                        status: 3,
+                        error: 'SP_ER_TECHNICAL_ERROR'
+                    });
+                }
+                if (!profile) {
+                    return res.json({
+                        status: 2,
+                        error: 'SP_ER_PROFILE_NOT_FOUND'
+                    });
+                }
 
-        Profile.findById(req.query.ProfileId, function (err, profile) {
-            if (err)
-                res.send(err);
-            if (!profile) {
-                res.json({
-                    status: 0,
-                    message: "profile not found"
-                });
-            }
-            else {
                 var query = {$and: [{_id: {$nin: profile.subscribers}}, {_id: {$ne: profile._id}}]}
                 var find = Profile.find(query).sort({_id: 1});
                 find.execFind(function (err, profiles) {
-                    if (err)
-                        res.json({
-                            status: 0,
-                            err: err
+                    if (err) {
+                        return res.json({
+                            status: 3,
+                            error: 'SP_ER_TECHNICAL_ERROR'
                         });
+                    }
                     else {
                         res.json({
-                            status: 1,
+                            status: 0,
                             profiles: profiles
                         });
                     }
                 });
-            }
-        });
+
+            });
+        } catch (error) {
+            console.log(" error when get popular profiles ", error);
+            return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
+            });
+        }
     });
 
 
-router.route('/getProfilesDecouvert')
+router.route('/getProfilesSuggestions')
     .get(function (req, res) {
+        try {
+            Profile.findById(req._id, function (err, profile) {
+                if (err) {
+                    return res.json({
+                        status: 3,
+                        error: 'SP_ER_TECHNICAL_ERROR'
+                    });
+                }
+                if (!profile) {
+                    return res.json({
+                        status: 2,
+                        error: 'SP_ER_PROFILE_NOT_FOUND'
+                    });
+                }
 
-        Profile.findById(req.query.ProfileId, function (err, profile) {
-            if (err)
-                res.send(err);
-            if (!profile) {
-                res.json({
-                    status: 0,
-                    message: "profile not found"
-                });
-            }
-            else {
                 var query = {$and: [{_id: {$nin: profile.subscribers}}, {_id: {$ne: profile._id}}]}
-                var find = Profile.find(query).sort({_id: -1});
+                var find = Profile.find(query).sort({_id: 1});
                 find.execFind(function (err, profiles) {
-                    if (err)
-                        res.json({
-                            status: 0,
-                            err: err
+                    if (err) {
+                        return res.json({
+                            status: 3,
+                            error: 'SP_ER_TECHNICAL_ERROR'
                         });
+                    }
                     else {
                         res.json({
-                            status: 1,
+                            status: 0,
                             profiles: profiles
                         });
                     }
                 });
-            }
-        });
+
+            });
+        } catch (error) {
+            console.log(" error when get profiles suggestions ", error);
+            return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
+            });
+        }
     });
 
 
-///////////////////////////
 router.route('/findProfile')
     .get(function (req, res) {
         try {
