@@ -15,7 +15,7 @@ var notificationScript = require('../public/javascripts/notificationScript');
 
 var jwt = require('jsonwebtoken');
 var PropertiesReader = require('properties-reader');
-var properties = PropertiesReader('/usr/local/properties.file');
+var properties = PropertiesReader('properties.file');
 
 var path = require('path');
 

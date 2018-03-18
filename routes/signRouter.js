@@ -13,7 +13,7 @@ var ProfilesPasswords = require('../models/profilesPasswords');
 var PublicationLikes = require('../models/PublicationLikes');
 
 var PropertiesReader = require('properties-reader');
-var properties = PropertiesReader('/usr/local/properties.file');
+var properties = PropertiesReader('properties.file');
 
 
 var app = express();
@@ -26,10 +26,11 @@ router.route('/signin')
 
     .post(function (req, res) {
         try {
+            console.log("we are signing in");
             Profile.findOne({
                 email: req.body.email
             }, function (err, user) {
-
+              console.log("Mongo");
                 if (err) res.json({
                     status: 3,
                     error: 'SP_ER_TECHNICAL_ERROR'
@@ -77,7 +78,7 @@ router.route('/signin')
 router.route('/signup')
     .post(function (req, res) {
         try {
-
+         console.log("we are signing up");
             if (!req.body.email) {
                 res.json({
                     status: 1,

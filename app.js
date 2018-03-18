@@ -10,7 +10,7 @@ var https = require('https');
 var fs = require('fs');
 
 var PropertiesReader = require('properties-reader');
-var properties = PropertiesReader('/usr/local/properties.file');
+var properties = PropertiesReader('properties.file');
 
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json({limit: '50mb'}));
@@ -30,8 +30,13 @@ var Notification = require('./models/Notification');
 
 // connection to mongoose database
 var mongoose = require('mongoose');
-var db = mongoose.connect('mongodb://'+properties.get('mongo.url')+'/'+properties.get('mongo.db.name'));
+mongoose.connect('mongodb://localhost/Speegar');
 
+var db =mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+    console.log("connected!")
+});
 
 app.use(function(req, res, next) { 
 	res.header('Access-Control-Allow-Origin', "*");

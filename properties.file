@@ -1,5 +1,5 @@
 [server]
-port.http = 3001
+port.http = 3002
 port.https = 3005
 
 [ssl]
@@ -10,7 +10,7 @@ chain1 = /etc/letsencrypt/archive/speegar.com/chain1.pem
 
 [mongo]
 db.name = SpeegarDB
-url = 127.0.0.1
+url =127.0.0.1
 
 [pictures]
 link = https://speegar.com/images/
