@@ -2,6 +2,7 @@ var express = require('express');
 var async = require("async");
 var multer = require('multer');
 var passwordHash = require('password-hash');
+var _= require('lodash');
 
 var app = express();
 
@@ -12,6 +13,8 @@ var Comment = require('../models/Comment');
 var Publication = require('../models/Publication');
 var ProfilesPasswords = require('../models/profilesPasswords');
 var notificationScript = require('../public/javascripts/notificationScript');
+var popularProfile = require('../models/PopularProfile');
+var ObjectId = require('mongodb').ObjectId;
 
 var jwt = require('jsonwebtoken');
 var PropertiesReader = require('properties-reader');
@@ -215,6 +218,62 @@ router.route('/unsubscribe')
 
         } catch (error) {
             console.log("error when get unsubscribe", error);
+            return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
+            });
+        }
+    });
+router.route('/ignore')
+    .post(function (req, res) {
+        try {
+            Profile.findById(req.body.profileId, function (err, targetProfile) {
+                if (err) {
+                    return res.json({
+                        status: 3,
+                        error: 'SP_ER_TECHNICAL_ERROR'
+                    });
+                }
+                if (!targetProfile) {
+                    return res.json({
+                        status: 2,
+                        error: 'SP_ER_TARGET_PROFILE_NOT_FOUND'
+                    });
+                }
+                Profile.findById(req._id, function (err, profile) {
+                    if (err) {
+                        return res.json({
+                            status: 3,
+                            error: 'SP_ER_TECHNICAL_ERROR'
+                        });
+                    }
+                    if (!profile) {
+                        return res.json({
+                            status: 2,
+                            error: 'SP_ER_PROFILE_NOT_FOUND'
+                        });
+                    }
+
+                    var index = profile.ignoredProfiles.indexOf(req.body.profileId);
+                    if (index == -1) {
+                        profile.ignoredProfiles.push(req.body.profileId);
+                        profile.save();
+
+
+                        notificationScript.notifier(req.body.profileId, "", req.body.UserId, "ignore", "");
+
+                        return res.json({
+                            status: 0,
+                            message: 'IGNORED'
+                        });
+
+                    }
+                });
+            });
+
+
+        } catch (error) {
+            console.log("error when get subscribe", error);
             return res.json({
                 status: 3,
                 error: 'SP_ER_TECHNICAL_ERROR'
@@ -465,14 +524,18 @@ router.route('/updatePassword')
     });
 
 
+
 router.route('/getPopularProfiles')
     .get(function (req, res) {
         try {
-            Profile.findById(req._id, function (err, profile) {
+            var id = req.header("lastId") ;
+            var index =0 ;
+            Profile.findById(String(req._id), function (err, profile) {
                 if (err) {
                     return res.json({
                         status: 3,
-                        error: 'SP_ER_TECHNICAL_ERROR'
+                        error: `SP_ER_TECHNICAL_ERROR ${err}`
+
                     });
                 }
                 if (!profile) {
@@ -482,67 +545,47 @@ router.route('/getPopularProfiles')
                     });
                 }
 
-                var query = {$and: [{_id: {$nin: profile.subscribers}}, {_id: {$ne: profile._id}}]}
-                var find = Profile.find(query).sort({_id: 1});
-                find.execFind(function (err, profiles) {
-                    if (err) {
-                        return res.json({
-                            status: 3,
-                            error: 'SP_ER_TECHNICAL_ERROR'
-                        });
-                    }
-                    else {
-                        res.json({
-                            status: 0,
-                            profiles: profiles
-                        });
-                    }
-                });
-
-            });
-        } catch (error) {
-            console.log(" error when get popular profiles ", error);
-            return res.json({
-                status: 3,
-                error: 'SP_ER_TECHNICAL_ERROR'
-            });
-        }
-    });
+                var query = {$and: [{_id: {$nin: profile.subscribers}}, {_id: {$ne: profile._id}},
+                    {_id: {$nin: profile.ignoredProfiles}}]} ;
 
 
-router.route('/getProfilesSuggestions')
-    .get(function (req, res) {
-        try {
-            Profile.findById(req._id, function (err, profile) {
-                if (err) {
-                    return res.json({
-                        status: 3,
-                        error: 'SP_ER_TECHNICAL_ERROR'
-                    });
-                }
-                if (!profile) {
-                    return res.json({
-                        status: 2,
-                        error: 'SP_ER_PROFILE_NOT_FOUND'
-                    });
-                }
 
-                var query = {$and: [{_id: {$nin: profile.subscribers}}, {_id: {$ne: profile._id}}]}
-                var find = Profile.find(query).sort({_id: 1});
-                find.execFind(function (err, profiles) {
-                    if (err) {
-                        return res.json({
-                            status: 3,
-                            error: 'SP_ER_TECHNICAL_ERROR'
-                        });
-                    }
-                    else {
-                        res.json({
-                            status: 0,
-                            profiles: profiles
-                        });
-                    }
-                });
+                    popularProfile.find()
+                        .select('_id')
+                        .exec(function(err, docs){
+                            if(err){
+                               console.log(err);
+                            } else {
+                                docs = docs.map(function(doc) {
+                                    return String(doc._id);
+                                });
+                                index=_.indexOf(docs,String(id))=== -1? 0 : _.indexOf(docs,String(id))+1 ;
+
+                                var find = popularProfile.find(query)
+                                    .where('likers').nin([ObjectId(profile._id)])
+                                    .skip(index)
+                                    .limit(10);
+                                find.exec(function (err, profiles) {
+                                    if (err) {
+                                        return res.json({
+                                            status: 3,
+                                            error: 'SP_ER_TECHNICAL_ERROR2'
+                                        });
+                                    }
+                                    else {
+                                        res.json({
+                                            status: 0,
+                                            profiles: profiles
+                                        });
+                                    }
+                                });
+
+                            }
+                        })
+
+
+
+
 
             });
         } catch (error) {
@@ -553,6 +596,8 @@ router.route('/getProfilesSuggestions')
             });
         }
     });
+
+
 
 
 router.route('/findProfile')

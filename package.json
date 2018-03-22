@@ -22,6 +22,7 @@
     "image-size": "latest",
     "jade": "~1.11.0",
     "jsonwebtoken": "^7.0.1",
+    "lodash": "^4.17.5",
     "mongoose": "^5.0.10",
     "morgan": "^1.6.1",
     "multer": "1.1.0",

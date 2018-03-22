@@ -3,6 +3,7 @@ var router = express.Router();
 var async = require("async");
 var ogs = require('open-graph-scraper');
 var sizeOf = require('image-size');
+ObjectID = require('mongodb').ObjectID;
 
 var bodyParser = require("body-parser");
 var multer = require('multer');
@@ -23,7 +24,7 @@ var path = require('path');
 
 var jwt = require('jsonwebtoken');
 const util = require('util');
-
+var _ =require('lodash');
 
 // route middleware to verify a token
 router.use(function (req, res, next) {
@@ -298,6 +299,7 @@ router.route('/likePublication')
                         publicationLikes.likes.unshift(req._id);
                         publicationLikes.save();
                     });
+
                     publication.nbLikes++;
                     publication.save();
                     res.json({
@@ -305,6 +307,26 @@ router.route('/likePublication')
                         message: 'PUBLICATION_LIKED'
                     });
                     notificationScript.notifier(publication.profileId, req.body.publId, req._id, "like", "");
+
+                    Profile.findById(publication.profileId, function(err, profile){
+                    if (!err){
+                        profile.nbLikes++;
+                        profile.save();
+
+                        var result= false;
+                        _.map(profile.likers,function (liker_id) {
+                            console.log(liker_id);
+                            console.log(req.body.profileId);
+                            if (String(req.body.profileId) === String(liker_id))
+                                 result=true;
+                        });
+                        if (!result){
+                            profile.likers.unshift(req.body.profileId);
+                            profile.save();
+                        }
+                    }
+                    });
+
                 }
             });
         } catch (error) {
@@ -321,7 +343,6 @@ router.route('/removeLikePublication')
     .post(function (req, res) {
         try {
             var publication = new Publication();
-
             Publication.findById(req.body.publId, function (err, publication) {
                 if (err) {
                     res.json({
@@ -335,23 +356,29 @@ router.route('/removeLikePublication')
                         status: 2,
                         error: 'SP_ER_PUBLICATION_NOT_FOUND'
                     });
+                } else {
+                    PublicationLikes.findById(req.body.publId, function (err, publicationLikes) {
+
+                        var index = publicationLikes.likes.indexOf(req._id);
+                        publicationLikes.likes.splice(index, 1);
+                        publicationLikes.save();
+                    });
+                    Profile.findById(publication.profileId, function (err, profile) {
+                        if (!err) {
+                            profile.nbLikes--;
+                            profile.save();
+                        }
+                    });
+
+                    publication.nbLikes--;
+                    publication.save();
+                    notificationScript.removeNotification(publication.profileId, req.body.publId, req._id, "like");
+                    return res.json({
+                        status: 0,
+                        message: 'LIKE_REMOVED'
+                    });
+
                 }
-                PublicationLikes.findById(req.body.publId, function (err, publicationLikes) {
-
-                    var index = publicationLikes.likes.indexOf(req._id);
-                    publicationLikes.likes.splice(index, 1);
-                    publicationLikes.save();
-                });
-
-
-                publication.nbLikes--;
-                publication.save();
-                notificationScript.removeNotification(publication.profileId, req.body.publId, req._id, "like");
-                return res.json({
-                    status: 0,
-                    message: 'LIKE_REMOVED'
-                });
-
             });
         } catch (error) {
             console.log("error when remove like publication ", error);
@@ -360,6 +387,7 @@ router.route('/removeLikePublication')
                 error: 'SP_ER_TECHNICAL_ERROR'
             });
         }
+
     });
 
 
@@ -444,6 +472,7 @@ router.route('/removeDislikePublication')
                     status: 0,
                     message: 'DISLIKE_REMOVED'
                 });
+
 
             });
         } catch (error) {

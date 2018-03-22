@@ -1,5 +1,6 @@
-var mongoose     = require('mongoose');
-var Schema       = mongoose.Schema;
+var mongoose  = require('mongoose');
+var Schema    = mongoose.Schema;
+
 
 var profileSchema   = new Schema({
      firstName : String,
@@ -16,7 +17,9 @@ var profileSchema   = new Schema({
 	 pictures : [String],
 	 publications : [String],
 	 subscribers : [Schema.ObjectId],
-	 nbSubscribers : Number,
+	 likers :[Schema.ObjectId],
+        ignoredProfiles :[Schema.ObjectId],
+        nbSubscribers : Number,
 	 nbSuivi : Number,
 	 nbPublications : Number,
 	 nbLikes : Number,
@@ -40,4 +43,5 @@ var profileSchema   = new Schema({
 , { versionKey: false });
 
 module.exports = mongoose.model('profiles', profileSchema);
+
 

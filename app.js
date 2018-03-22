@@ -30,7 +30,7 @@ var Notification = require('./models/Notification');
 
 // connection to mongoose database
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/Speegar');
+mongoose.connect(`mongodb://${properties.get('mongo.url')}/${properties.get('mongo.db.name')}`);
 
 var db =mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
