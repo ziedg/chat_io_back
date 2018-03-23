@@ -1,3 +1,4 @@
+
 [server]
 port.http = 3002
 port.https = 3005
@@ -9,14 +10,13 @@ fullchain1 = /etc/letsencrypt/archive/speegar.com/fullchain1.pem
 chain1 = /etc/letsencrypt/archive/speegar.com/chain1.pem
 
 [mongo]
-db.name = Speegar
+db.name = SpeegarDB
 url =127.0.0.1
 
 [pictures]
-link = https://speegar.com/images/
-avatars.link = https://speegar.com/images/avatars/
+link = http://localhost:3002/images/
+avatars.link = http://localhost:3002/avatars/
 storage.folder = /var/www/html/images
-
 [security]
 jwt.secret = f09cce0a0753496b9baaae70b343a15f
 

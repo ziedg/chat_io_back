@@ -13,7 +13,7 @@ var ProfilesPasswords = require('../models/profilesPasswords');
 var PublicationLikes = require('../models/PublicationLikes');
 
 var PropertiesReader = require('properties-reader');
-var properties = PropertiesReader('properties.file');
+var properties = PropertiesReader('./properties.file');
 
 
 var app = express();
@@ -76,8 +76,10 @@ router.route('/signin')
     });
 
 router.route('/signup')
+   
     .post(function (req, res) {
         try {
+          
          console.log("we are signing up");
             if (!req.body.email) {
                 res.json({
@@ -148,14 +150,21 @@ router.route('/signup')
                     if (n % 3 == 0) {
                         profile.profilePicture = properties.get('pictures.avatars.link') + "alien.png";
                         profile.profilePictureMin = properties.get('pictures.avatars.link') + "alien_min.png";
+                       
                     }
+
                     else if (n % 3 == 1) {
+                        
                         profile.profilePicture = properties.get('pictures.avatars.link') + "clown1.png";
                         profile.profilePictureMin = properties.get('pictures.avatars.link') + "clown1_min.png";
+                       
                     }
                     else {
+                        
                         profile.profilePicture = properties.get('pictures.avatars.link') + "clown2.png";
+                     
                         profile.profilePictureMin = properties.get('pictures.avatars.link') + "clown2_min.png";
+                        
                     }
 
                     profile.save(function (err) {
