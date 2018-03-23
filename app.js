@@ -86,7 +86,7 @@ app.use('/', router);
 
 // START SERVER
 //============================================
-//cron
+//cron job
 var cronJob =require('./helpers/PopularProfiles');
 var https_port = properties.get('server.port.https');
 var http_port = properties.get('server.port.http');
