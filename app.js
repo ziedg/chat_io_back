@@ -9,12 +9,13 @@ var flash    = require('connect-flash');
 var https = require('https');
 var fs = require('fs');
 
+
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('properties.file');
 
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json({limit: '50mb'}));
-
+app.use(express.static(path.join(__dirname,'public')));
 
 var Abonnee = require('./models/Profile');
 var Publication = require('./models/Publication');
@@ -37,8 +38,7 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
     console.log("connected!")
 });
-//cron
-var cronJob =require('./helpers/PopularProfiles');
+
 
 app.use(function(req, res, next) { 
 	res.header('Access-Control-Allow-Origin', "*");
@@ -86,7 +86,8 @@ app.use('/', router);
 
 // START SERVER
 //============================================
-
+//cron 
+var cronJob =require('./helpers/PopularProfiles');
 var https_port = properties.get('server.port.https');
 var http_port = properties.get('server.port.http');
 

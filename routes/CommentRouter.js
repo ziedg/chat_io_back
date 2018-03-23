@@ -16,7 +16,7 @@ var properties = PropertiesReader('./properties.file');
 var app = express();
 
 
-// route middleware to verify a token
+// route middleware to verify a token!
 router.use(function (req, res, next) {
     if (req.method === 'OPTIONS') {
         next();
