@@ -255,6 +255,7 @@ router.route('/ignore')
                     }
 
                     var index = profile.ignoredProfiles.indexOf(req.body.profileId);
+
                     if (index == -1) {
                         profile.ignoredProfiles.push(req.body.profileId);
                         profile.save();
