@@ -526,11 +526,10 @@ router.route('/updatePassword')
 
 
 
-router.route('/getPopularProfiles/:id')
+router.route('/getPopularProfiles/:id?')
     .get(function (req, res) {
         try {
             var id = req.params.id;
-            console.log(id);
             var index =0 ;
             Profile.findById(String(req._id), function (err, profile) {
                 if (err) {
