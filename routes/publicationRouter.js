@@ -4,6 +4,7 @@ var async = require("async");
 var ogs = require('open-graph-scraper');
 var sizeOf = require('image-size');
 ObjectID = require('mongodb').ObjectID;
+var sharp = require('sharp');
 
 var bodyParser = require("body-parser");
 var multer = require('multer');
@@ -79,18 +80,25 @@ router.route('/getOpenGraphData')
 
 
 router.route('/publish')
+
     .post(function (req, res) {
         try {
+             
+            
+            var imagePath=path.join(__dirname,'../public/images/').toString();
             var publication = new Publication();
-
+            
             var storage = multer.diskStorage({
                 destination: function (req, file, callback) {
-                    callback(null, properties.get('pictures.storage.folder').toString());
+                    callback(null,path.join(__dirname,'../public/images').toString());
                 },
                 filename: function (req, file, callback) {
+                    imagePath+=publication.id.toString() + path.extname(file.originalname)
+                    console.log(imagePath)
                     callback(null, publication.id + path.extname(file.originalname));
                 }
             });
+
 
             var upload = multer({
                 storage: storage
@@ -102,9 +110,11 @@ router.route('/publish')
             upload(req, res, function (err) {
 
                 if (err) {
+                    console.log(err)
+
                     res.json({
                         status: 3,
-                        error: 'SP_ER_TECHNICAL_ERROR'
+                        error: 'SP_ER_TECHNICAL_ERROR1'
                     });
                 } else {
                     var body = req.body;
@@ -116,7 +126,7 @@ router.route('/publish')
                         if (err) {
                             res.json({
                                 status: 3,
-                                error: 'SP_ER_TECHNICAL_ERROR'
+                                error: 'SP_ER_TECHNICAL_ERROR2'
                             });
                             return;
                         }
@@ -146,6 +156,8 @@ router.route('/publish')
                         publication.publExternalLink = body.publExternalLink;
                         publication.nbFcbkShare = 0;
                         publication.nbTwitterShare = 0;
+                        
+
                         if (req.files.publPicture) {
                             publication.publPictureLink = req.files.publPicture[0].filename;
                         }
@@ -163,12 +175,15 @@ router.route('/publish')
 
                     });
                 }
+                
+                
+              
             });
         } catch (error) {
             console.log("error when getNbNotificationsNotSeen", error);
             return res.json({
                 status: 3,
-                error: 'SP_ER_TECHNICAL_ERROR'
+                error: 'SP_ER_TECHNICAL_ERROR3'
             });
         }
     });
@@ -696,8 +711,9 @@ router.route('/sharePublication')
 
 router.route('/getProfilePublications')
     .get(function (req, res) {
+        
         try {
-
+              
             var profileId;
             if (req.query.profileId) {
                 profileId = req.query.profileId;
