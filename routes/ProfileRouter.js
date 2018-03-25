@@ -286,6 +286,7 @@ router.route('/ignore')
 router.route('/updateProfilePicture')
     .post(function (req, res) {
         try {
+            
             var profile = new Profile();
             var storage = multer.diskStorage({
                 destination: function (req, file, callback) {
@@ -319,6 +320,7 @@ router.route('/updateProfilePicture')
                     });
                 }
                 else {
+            
 
                     Profile.findById(req._id, function (err, profile) {
                         if (err) {
