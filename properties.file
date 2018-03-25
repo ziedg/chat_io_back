@@ -1,10 +1,9 @@
-
 [server]
 port.http = 3002
 port.https = 3005
 
 [ssl]
-enable = false
+enable = true
 privkey1 = /etc/letsencrypt/archive/speegar.com/privkey1.pem
 fullchain1 = /etc/letsencrypt/archive/speegar.com/fullchain1.pem
 chain1 = /etc/letsencrypt/archive/speegar.com/chain1.pem
