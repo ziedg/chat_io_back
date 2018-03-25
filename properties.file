@@ -13,8 +13,8 @@ db.name =SpeegarDB9
 url =127.0.0.1
 
 [pictures]
-link = http://speegar.com/images/
-avatars.link = http://speegar.com:3002/avatars/
+link = https://speegar.com/images/
+avatars.link = https://speegar.com:3005/avatars/
 storage.folder = /var/www/html/images
 [security]
 jwt.secret = f09cce0a0753496b9baaae70b343a15f
