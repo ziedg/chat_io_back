@@ -242,7 +242,7 @@ router.route('/signWithFacebook')
                 var token = jwt.sign(profile.toObject(), jwtSecret, {});
 
 
-                res.json({
+               return res.json({
                     status: 0,
                     token: token,
                     user: profile
@@ -253,7 +253,7 @@ router.route('/signWithFacebook')
                 var jwtSecret = properties.get('security.jwt.secret').toString();
                 var token = jwt.sign(user.toObject(), jwtSecret, {});
 
-                res.json({
+               return res.json({
                     status: 0,
                     token: token,
                     user: user
