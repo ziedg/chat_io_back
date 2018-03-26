@@ -106,7 +106,7 @@ router.route('/publish')
                 maxCount: 1
             }]);
             console.log('____test___')
-            console.log(req.files)
+            console.log(req.body)
 
             upload(req, res, function (err) {
 
