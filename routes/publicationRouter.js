@@ -98,13 +98,14 @@ router.route('/publish')
                 }
             });
 
-
+           
             var upload = multer({
                 storage: storage
             }).fields([{
                 name: 'publPicture',
                 maxCount: 1
             }]);
+            console.log(req.files)
 
             upload(req, res, function (err) {
 

@@ -19,7 +19,6 @@
     "emailjs": "latest",
     "express": "^4.13.4",
     "form-data": "1.0.0-rc3",
-    "fs": "latest",
     "image-size": "latest",
     "jade": "~1.11.0",
     "jsonwebtoken": "^7.0.1",

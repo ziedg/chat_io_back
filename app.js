@@ -91,16 +91,9 @@ var cronJob =require('./helpers/PopularProfiles');
 var https_port = properties.get('server.port.https');
 var http_port = properties.get('server.port.http');
 
-if(properties.get('ssl.enable')){
-	https.createServer({
-		key: fs.readFileSync(properties.get('ssl.privkey1').toString()),
-		cert: fs.readFileSync(properties.get('ssl.fullchain1').toString()),
-		ca: fs.readFileSync(properties.get('ssl.chain1').toString())
-	}, app).listen(https_port);
-} else {
-	app.listen(http_port);
+	app.listen(3000);
 	console.log('the server is launched on the port ' + http_port+', mode ssl is disabled, '+new Date());
-}
+
 
 
 
