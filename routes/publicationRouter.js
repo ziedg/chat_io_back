@@ -105,7 +105,8 @@ router.route('/publish')
                 name: 'publPicture',
                 maxCount: 1
             }]);
-            console.log(req.files)
+            console.log('____test___')
+            console.log(req.files[0].path)
 
             upload(req, res, function (err) {
 
