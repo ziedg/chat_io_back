@@ -205,6 +205,7 @@ router.route('/signWithFacebook')
 
     .post(function (req, res) {
         // find the user with facebookId
+        console.log(req.body)
         Profile.findOne({
             facebookId: req.body.facebookId
         }, function (err, user) {
@@ -385,7 +386,8 @@ router.route('/resetPwdMail')
                         subject: properties.get('email.reset.password.subject').toString(),
                         html: properties.get('email.reset.password.html').toString()
                             .replace('RESET_PWD_DATE_TIME', format.asString('le dd/MM/yyyy à hh:mm', date))
-                        + properties.get('email.reset.password.url').toString().replace('RANDOM_STRING', randomString)
+                        + 
+                        s.get('email.reset.password.url').toString().replace('RANDOM_STRING', randomString)
                     }
                     transporter.sendMail(mailOptions, function (error, response) {
                         if (error) {
