@@ -151,9 +151,9 @@ router.route('/publish')
                          
                      }
                      else{
-                        mv(Ofile,destination,(e)=>{
+                        mv(Ofile,`/var/www/html/images/${filename}`,(e)=>{
                             if(e){
-                                console.log("error")
+                                console.log(e)
                             }
                         })
                     }
