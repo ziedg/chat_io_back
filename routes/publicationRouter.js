@@ -127,19 +127,19 @@ router.route('/publish')
                      `
                     console.log(destination)
                     console.log(Ofile)
-                    // sharp(destination)
-                    // .resize(1000)
-                    // .toFile(destination,(err)=>{
-                    //     if(err){
-                    //        return  console.log(err)
-                    //     }
-                    //     fs.unlink(Ofile,(e)=>{
-                    //         if(e){
-                    //             console.log(e)
-                    //         }
-                    //     })
+                    sharp(Ofile)
+                    .resize(1000)
+                    .toFile(destination,(err)=>{
+                       if(err){
+                           return  console.log(err)
+                        }
+                        fs.unlink(Ofile,(e)=>{
+                            if(e){
+                                console.log(e)
+                            }
+                        })
                         
-                    // })
+                    })
 
 
                 
