@@ -127,7 +127,7 @@ router.route('/publish')
                      var  filename=req.files.publPicture[0].filename
                      if(extention.toLowerCase()==='.gif')
                      {
-                         var pos = filename.indexOf('.gif')
+                         var pos = filename.indexOf(extention)
                      }
                     console.log(pos);
                     // sharp(Ofile)
