@@ -124,7 +124,9 @@ router.route('/publish')
                     console.log(compressedfile)
                     sharp(compressedfile)
                     .resize(500,500)
-                    
+                    .webp()
+                    .toFile(compressedfile=req.files.publPicture[0].destination+'compressed/im.webp')
+
                 
                     publication.profileId = req._id;
                     publication.datePublication = new Date();
