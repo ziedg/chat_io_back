@@ -124,22 +124,22 @@ router.route('/publish')
                     var Ofile=req.files.publPicture[0].path
                     var destination = `
                     ${properties.get('pictures.storage.folder').toString()}+'/'+${req.files.publPicture[0].filename}
-                    `
-                    console.log(destination)
-                    console.log(Ofile)
-                    sharp(destination)
-                    .resize(1000)
-                    .toFile(destination,(err)=>{
-                        if(err){
-                           return  console.log(err)
-                        }
-                        fs.unlink(Ofile,(e)=>{
-                            if(e){
-                                console.log(e)
-                            }
-                        })
+                     `
+                    // console.log(destination)
+                    // console.log(Ofile)
+                    // sharp(destination)
+                    // .resize(1000)
+                    // .toFile(destination,(err)=>{
+                    //     if(err){
+                    //        return  console.log(err)
+                    //     }
+                    //     fs.unlink(Ofile,(e)=>{
+                    //         if(e){
+                    //             console.log(e)
+                    //         }
+                    //     })
                         
-                    })
+                    // })
 
 
                 
