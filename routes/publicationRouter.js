@@ -149,15 +149,7 @@ router.route('/publish')
 
                          
                      }
-                     else
-                     {
-                         fs.copyFile(Ofile,destination,(e)=>{
-                            if(e){
-                                console.log(e)
-                            }
-                         })
-                     }
-                  
+                 
 
                     
 
