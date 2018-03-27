@@ -125,8 +125,8 @@ router.route('/publish')
                     var destination = `
                     ${properties.get('pictures.storage.folder').toString()}+'/'+${req.files.publPicture[0].filename}
                      `
-                    // console.log(destination)
-                    // console.log(Ofile)
+                    console.log(destination)
+                    console.log(Ofile)
                     // sharp(destination)
                     // .resize(1000)
                     // .toFile(destination,(err)=>{
