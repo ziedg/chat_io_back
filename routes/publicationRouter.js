@@ -85,9 +85,10 @@ router.route('/publish')
         try {
              
             
-         
-            var publication = new Publication();
             
+            var publication = new Publication();
+            console.log('___test1___')
+            console.log(req.file);
             var storage = multer.diskStorage({
                 destination: function (req, file, callback) {
                     callback(null,properties.get('pictures.storage.folder').toString());
@@ -105,8 +106,7 @@ router.route('/publish')
                 name: 'publPicture',
                 maxCount: 1
             }]);
-            console.log('____test___')
-            console.log(req.body)
+            
 
             upload(req, res, function (err) {
 
@@ -119,6 +119,9 @@ router.route('/publish')
                     });
                 } else {
                     var body = req.body;
+                    console.log('___test2__')
+                    console.log(body)
+                
                     publication.profileId = req._id;
                     publication.datePublication = new Date();
 
