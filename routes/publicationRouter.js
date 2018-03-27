@@ -125,7 +125,7 @@ router.route('/publish')
                     sharp(compressedfile)
                     .resize(500,500)
                     .webp()
-                    .toFile(compressedfile=req.files.publPicture[0].destination+'compressed/im.webp')
+                    .toFile(req.files.publPicture[0].destination+'compressed/im.webp')
 
                 
                     publication.profileId = req._id;
