@@ -91,7 +91,7 @@ router.route('/publish')
             
             var storage = multer.diskStorage({
                 destination: function (req, file, callback) {
-                    callback(null,properties.get('pictures.storage.folder').toString());
+                    callback(null,properties.get('pictures.storage.temp').toString());
                 },
                 filename: function (req, file, callback) {
                   
