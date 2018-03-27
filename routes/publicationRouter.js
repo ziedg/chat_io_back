@@ -91,7 +91,7 @@ router.route('/publish')
             
             var storage = multer.diskStorage({
                 destination: function (req, file, callback) {
-                    callback(null,properties.get('pictures.storage.temp').toString());
+                    callback(null,properties.get('pictures.storage.folder').toString());
                 },
                 filename: function (req, file, callback) {
                   
@@ -129,7 +129,7 @@ router.route('/publish')
                     console.log(Ofile)
                     sharp(Ofile)
                     .resize(1000)
-                    .toFile('/var/www/html/1.jpg',(err)=>{
+                    .toFile(`/var/www/html/images/${req.files.publPicture[0].filename}`,(err)=>{
                        if(!err){
                         return fs.unlink(Ofile,(e)=>{
                             if(!e){
