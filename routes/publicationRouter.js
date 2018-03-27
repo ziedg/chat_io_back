@@ -127,7 +127,7 @@ router.route('/publish')
                      var  filename=req.files.publPicture[0].filename
                      if(extention.toLowerCase()==='.gif')
                      {
-                         filename=filename.substring(0,filename.indexOf(extention))+'.jpg'
+                         filename=filename.substring(0,filename.indexOf(extention))+'.webp'
                      }
                     console.log(filename);
                     sharp(Ofile)
