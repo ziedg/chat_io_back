@@ -132,6 +132,7 @@ router.route('/publish')
                     console.log(filename);
                     sharp(Ofile)
                     .resize(1000)
+                    .webp()
                     .toFile(`/var/www/html/images/${filename}`,(err)=>{
                        if(!err){
                         return fs.unlink(Ofile,(e)=>{
