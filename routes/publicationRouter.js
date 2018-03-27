@@ -132,7 +132,7 @@ router.route('/publish')
                     console.log(filename);
                     sharp(Ofile)
                     .resize(1000)
-                    .toFile(`/var/www/html/images/${req.files.publPicture[0].filename}`,(err)=>{
+                    .toFile(`/var/www/html/images/${filename}`,(err)=>{
                        if(!err){
                         return fs.unlink(Ofile,(e)=>{
                             if(!e){
