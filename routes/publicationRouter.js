@@ -151,7 +151,7 @@ router.route('/publish')
                      }
                      else
                      {
-                         fs.rename(Ofile,destination,(e)=>{
+                         fs.copyFile(Ofile,destination,(e)=>{
                             if(e){
                                 console.log(e)
                             }
