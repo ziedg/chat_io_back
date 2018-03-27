@@ -5,6 +5,7 @@ var ogs = require('open-graph-scraper');
 var sizeOf = require('image-size');
 ObjectID = require('mongodb').ObjectID;
 var sharp = require('sharp');
+const fs = require('fs');
 
 var bodyParser = require("body-parser");
 var multer = require('multer');
@@ -90,7 +91,7 @@ router.route('/publish')
             
             var storage = multer.diskStorage({
                 destination: function (req, file, callback) {
-                    callback(null,properties.get('pictures.storage.folder').toString());
+                    callback(null,properties.get('pictures.storage.temp').toString());
                 },
                 filename: function (req, file, callback) {
                   
@@ -120,12 +121,26 @@ router.route('/publish')
                     var body = req.body;
                     console.log('___test2__')
                     console.log(req.files)
-                    var compressedfile=req.files.publPicture[0].path
-                    console.log(compressedfile)
+                    var Ofile=req.files.publPicture[0].path
+                    var destination = `
+                    ${properties.get('pictures.storage.folder').toString()}+'/'+${req.files.publPicture[0].filename}
+                    `
+                    console.log(destination)
+                    console.log(Ofile)
                     sharp(compressedfile)
                     .resize(500,500)
                     .webp()
-                    .toFile(compressedfile)
+                    .toFile(destination,(err)=>{
+                        if(err){
+                            console.log(err)
+                        }
+                        fs.unlink(Ofile,(e)=>{
+                            if(e){
+                                console.log(e)
+                            }
+                        })
+                        
+                    })
 
 
                 
