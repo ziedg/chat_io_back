@@ -129,7 +129,7 @@ router.route('/publish')
                      {
                          filename=filename.substring(0,filename.indexOf(extention))+'.webp'
                          sharp(Ofile)
-                         .toFormat(sharp.format.webp)
+                         .webp()
                          .toFile(`/var/www/html/images/${filename}`,(err)=>{
                             if(!err){
                              return fs.unlink(Ofile,(e)=>{
