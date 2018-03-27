@@ -127,9 +127,9 @@ router.route('/publish')
                      var  filename=req.files.publPicture[0].filename
                      if(extention.toLowerCase()==='.gif')
                      {
-                         var pos = filename.indexOf(extention)
+                         filename=filename.substring(0,filename.indexOf(extention))+'.jpg'
                      }
-                    console.log(pos);
+                    console.log(filename);
                     // sharp(Ofile)
                     // .resize(1000)
                     // .toFile(`/var/www/html/images/${req.files.publPicture[0].filename}`,(err)=>{
