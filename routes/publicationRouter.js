@@ -131,14 +131,18 @@ router.route('/publish')
                     .resize(1000)
                     .toFile(destination,(err)=>{
                        if(!err){
-                        fs.unlink(Ofile,(e)=>{
+                        return fs.unlink(Ofile,(e)=>{
                             if(!e){
                                 console.log('done')
                             }
+                            else
+                            {
+                                console.log('error ocured when attempt to remove file')
+                            } 
                         })
 
                     }
-                    return ;
+                        console.log(err)
                         
                     })
 
