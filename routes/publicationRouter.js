@@ -122,6 +122,9 @@ router.route('/publish')
                     console.log(req.files)
                     var compressedfile=req.files.publPicture[0].path
                     console.log(compressedfile)
+                    sharp(compressedfile)
+                    .resize(500,500)
+                    
                 
                     publication.profileId = req._id;
                     publication.datePublication = new Date();
