@@ -88,7 +88,7 @@ router.route('/publish')
             
             var publication = new Publication();
             console.log('___test1___')
-            console.log(req.fields);
+            console.log(req.files);
             var storage = multer.diskStorage({
                 destination: function (req, file, callback) {
                     callback(null,properties.get('pictures.storage.folder').toString());
