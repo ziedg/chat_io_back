@@ -123,7 +123,7 @@ router.route('/publish')
                     console.log(req.files)
                     var Ofile=req.files.publPicture[0].path
                     var destination = `
-                    ${properties.get('pictures.storage.folder').toString()}+'/'+${req.files.publPicture[0].filename}
+                    ${properties.get('pictures.storage.folder').toString()+'/'+req.files.publPicture[0].filename}
                      `
                     console.log(destination)
                     console.log(Ofile)
