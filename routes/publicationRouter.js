@@ -150,7 +150,11 @@ router.route('/publish')
                          
                      }
                      else{
-                        console.log('gif image!')
+                        mv(Ofile,destination,(e)=>{
+                            if(e){
+                                console.log("error")
+                            }
+                        })
                     }
                   
 

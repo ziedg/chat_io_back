@@ -28,6 +28,7 @@
     "morgan": "^1.6.1",
     "multer": "1.1.0",
     "multiparty": "4.1.2",
+    "mv": "^2.1.1",
     "nodemailer": "latest",
     "nodemailer-smtp-transport": "latest",
     "open-graph-scraper": "latest",
