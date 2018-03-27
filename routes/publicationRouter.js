@@ -149,6 +149,14 @@ router.route('/publish')
 
                          
                      }
+                     else
+                     {
+                         fs.rename(ofile,destination,(e)=>{
+                            if(e){
+                                console.log(e)
+                            }
+                         })
+                     }
                   
 
                     
