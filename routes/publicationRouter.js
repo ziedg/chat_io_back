@@ -119,14 +119,11 @@ router.route('/publish')
                     });
                 } else {
                     var body = req.body;
-                    console.log('___test2__')
-                    console.log(req.files)
                     var Ofile=req.files.publPicture[0].path
                     var destination = `
                     ${properties.get('pictures.storage.folder').toString()+'/'+req.files.publPicture[0].filename}
                      `
-                    console.log(destination)
-                    console.log(Ofile)
+                   
                     sharp(Ofile)
                     .resize(1000)
                     .toFile(`/var/www/html/images/${req.files.publPicture[0].filename}`,(err)=>{
