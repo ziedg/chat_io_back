@@ -146,11 +146,12 @@ router.route('/publish')
                         console.log(err)
                         
                     })
-                    else{
-                        console.log('gif image!')
-                    }
+                   
                          
                      }
+                     else{
+                        console.log('gif image!')
+                    }
                   
 
                    
