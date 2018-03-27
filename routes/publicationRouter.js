@@ -120,7 +120,7 @@ router.route('/publish')
                     var body = req.body;
                     console.log('___test2__')
                     console.log(req.files)
-                    var compressedfile=req.files[0].path
+                    var compressedfile=req.files.publPicture[0].path
                     console.log(compressedfile)
                 
                     publication.profileId = req._id;
