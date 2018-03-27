@@ -123,26 +123,31 @@ router.route('/publish')
                     var destination = `
                     ${properties.get('pictures.storage.folder').toString()+'/'+req.files.publPicture[0].filename}
                      `
-                     console.log(path.extname(req.files.publPicture[0].filename))
-                    
-                    sharp(Ofile)
-                    .resize(1000)
-                    .toFile(`/var/www/html/images/${req.files.publPicture[0].filename}`,(err)=>{
-                       if(!err){
-                        return fs.unlink(Ofile,(e)=>{
-                            if(!e){
-                                console.log('done')
-                            }
-                            else
-                            {
-                                console.log('error ocured when attempt to remove file')
-                            } 
-                        })
+                     var extention = path.extname(req.files.publPicture[0].filename)
+                     var  filename=req.files.publPicture[0].filename
+                     if(extention.toLowerCase()==='.gif')
+                     {
+                         var pos = filename.indexOf('.gif')
+                     }
+                    console.log(pos);
+                    // sharp(Ofile)
+                    // .resize(1000)
+                    // .toFile(`/var/www/html/images/${req.files.publPicture[0].filename}`,(err)=>{
+                    //    if(!err){
+                    //     return fs.unlink(Ofile,(e)=>{
+                    //         if(!e){
+                    //             console.log('done')
+                    //         }
+                    //         else
+                    //         {
+                    //             console.log('error ocured when attempt to remove file')
+                    //         } 
+                    //     })
 
-                    }
-                        console.log(err)
+                    // }
+                    //     console.log(err)
                         
-                    })
+                    // })
 
 
                 
