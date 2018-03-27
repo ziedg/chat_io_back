@@ -128,11 +128,30 @@ router.route('/publish')
                      if(extention.toLowerCase()==='.gif')
                      {
                          filename=filename.substring(0,filename.indexOf(extention))+'.webp'
+                         sharp(Ofile)
+                         .toFormat(sharp.format.webp)
+                         .toFile(`/var/www/html/images/${filename}`,(err)=>{
+                            if(!err){
+                             return fs.unlink(Ofile,(e)=>{
+                                 if(!e){
+                                     console.log('done')
+                                 }
+                                 else
+                                 {
+                                     console.log('error ocured when attempt to remove file')
+                                 } 
+                             })
+     
+                         }
+                             console.log(err)
+                             
+                         })
                      }
-                    console.log(filename);
+                  
+
+                    
                     sharp(Ofile)
                     .resize(1000)
-                    .toFormat(sharp.format.webp)
                     .toFile(`/var/www/html/images/${filename}`,(err)=>{
                        if(!err){
                         return fs.unlink(Ofile,(e)=>{
