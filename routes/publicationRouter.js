@@ -127,7 +127,7 @@ router.route('/publish')
                     `
                     console.log(destination)
                     console.log(Ofile)
-                    sharp(Ofile)
+                    sharp(destination)
                     .resize(1000)
                     .toFile(destination,(err)=>{
                         if(err){
