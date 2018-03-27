@@ -6,6 +6,7 @@ var sizeOf = require('image-size');
 ObjectID = require('mongodb').ObjectID;
 var sharp = require('sharp');
 const fs = require('fs');
+const mv = require('mv')
 
 var bodyParser = require("body-parser");
 var multer = require('multer');
