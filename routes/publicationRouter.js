@@ -127,7 +127,7 @@ router.route('/publish')
                     `
                     console.log(destination)
                     console.log(Ofile)
-                    sharp(compressedfile)
+                    sharp(Ofile)
                     .resize(500,500)
                     .webp()
                     .toFile(destination,(err)=>{
