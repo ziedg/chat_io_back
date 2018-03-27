@@ -128,11 +128,10 @@ router.route('/publish')
                     console.log(destination)
                     console.log(Ofile)
                     sharp(Ofile)
-                    .resize(500,500)
-                    .webp()
+                    .resize(1000)
                     .toFile(destination,(err)=>{
                         if(err){
-                            console.log(err)
+                           return  console.log(err)
                         }
                         fs.unlink(Ofile,(e)=>{
                             if(e){
