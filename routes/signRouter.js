@@ -26,11 +26,11 @@ router.route('/signin')
 
     .post(function (req, res) {
         try {
-            console.log("we are signing in");
+         
             Profile.findOne({
                 email: req.body.email
             }, function (err, user) {
-              console.log("Mongo");
+              
                 if (err) res.json({
                     status: 3,
                     error: 'SP_ER_TECHNICAL_ERROR'
@@ -80,7 +80,7 @@ router.route('/signup')
     .post(function (req, res) {
         try {
           
-         console.log("we are signing up");
+        
             if (!req.body.email) {
                 res.json({
                     status: 1,
@@ -205,7 +205,7 @@ router.route('/signWithFacebook')
 
     .post(function (req, res) {
         // find the user with facebookId
-        console.log(req.body)
+      
         Profile.findOne({
             facebookId: req.body.facebookId
         }, function (err, user) {

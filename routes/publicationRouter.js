@@ -375,8 +375,7 @@ router.route('/likePublication')
 
                         var result= false;
                         _.map(profile.likers,function (liker_id) {
-                            console.log(liker_id);
-                            console.log(req.body.profileId);
+                     
                             if (String(req.body.profileId) === String(liker_id))
                                  result=true;
                         });
