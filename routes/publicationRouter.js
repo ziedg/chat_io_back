@@ -127,27 +127,27 @@ router.route('/publish')
                      var  filename=req.files.publPicture[0].filename
                      if(extention.toLowerCase()==='.gif')
                      {
-                         filename=filename.substring(0,filename.indexOf(extention))+'.jpg'
+                         filename=filename.substring(0,filename.indexOf(extention))+'.webp'
                      }
                     console.log(filename);
-                    // sharp(Ofile)
-                    // .resize(1000)
-                    // .toFile(`/var/www/html/images/${req.files.publPicture[0].filename}`,(err)=>{
-                    //    if(!err){
-                    //     return fs.unlink(Ofile,(e)=>{
-                    //         if(!e){
-                    //             console.log('done')
-                    //         }
-                    //         else
-                    //         {
-                    //             console.log('error ocured when attempt to remove file')
-                    //         } 
-                    //     })
+                    sharp(Ofile)
+                    .resize(1000)
+                    .toFile(`/var/www/html/images/${req.files.publPicture[0].filename}`,(err)=>{
+                       if(!err){
+                        return fs.unlink(Ofile,(e)=>{
+                            if(!e){
+                                console.log('done')
+                            }
+                            else
+                            {
+                                console.log('error ocured when attempt to remove file')
+                            } 
+                        })
 
-                    // }
-                    //     console.log(err)
+                    }
+                        console.log(err)
                         
-                    // })
+                    })
 
 
                 
