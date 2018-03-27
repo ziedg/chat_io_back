@@ -131,13 +131,14 @@ router.route('/publish')
                     .resize(1000)
                     .toFile(destination,(err)=>{
                        if(!err){
-                           return  console.log("done 1")
-                        }
+                        
+                        
                         fs.unlink(Ofile,(e)=>{
                             if(!e){
                                 console.log('done')
                             }
                         })
+                    }
                         
                     })
 
