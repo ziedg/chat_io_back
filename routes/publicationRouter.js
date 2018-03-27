@@ -125,13 +125,9 @@ router.route('/publish')
                      `
                      var extention = path.extname(req.files.publPicture[0].filename)
                      var  filename=req.files.publPicture[0].filename
-                     if(extention.toLowerCase()==='.gif')
+                     if(extention.toLowerCase()!=='.gif')
                      {
-                         
-                     }
-                  
-
-                    
+                          
                     sharp(Ofile)
                     .resize(1000)
                     .toFile(`/var/www/html/images/${filename}`,(err)=>{
@@ -150,6 +146,11 @@ router.route('/publish')
                         console.log(err)
                         
                     })
+                         
+                     }
+                  
+
+                   
 
 
                 
