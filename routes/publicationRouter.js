@@ -85,10 +85,7 @@ router.route('/publish')
 
     .post(function (req, res) {
         try {
-            console.log(req.data);
-            console.log(req.body);
-            
-            
+
             var publication = new Publication();
             
             var storage = multer.diskStorage({
@@ -120,6 +117,9 @@ router.route('/publish')
                         error: 'SP_ER_TECHNICAL_ERROR1'
                     });
                 } else {
+                    console.log(req.body);
+                    console.log(req.files.publPicture);
+
                     if (req.files.publPicture) {
                         var body = req.body;
                         var Ofile = req.files.publPicture[0].path;
