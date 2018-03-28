@@ -117,46 +117,9 @@ router.route('/publish')
                         error: 'SP_ER_TECHNICAL_ERROR1'
                     });
                 } else {
-                    console.log(req.body);
-                    console.log(req.files.publPicture);
 
-                    if (req.files.publPicture) {
-                        var body = req.body;
-                        var Ofile = req.files.publPicture[0].path;
-                        var destination = `${properties.get('pictures.storage.folder').toString() + '/' + req.files.publPicture[0].filename}`;
-                        var extention = path.extname(req.files.publPicture[0].filename);
-                        var filename = req.files.publPicture[0].filename;
-                        if (extention.toLowerCase() !== '.gif') {
+                    var body = req.body;
 
-                            sharp(Ofile)
-                                .resize(1000)
-                                .toFile(`/var/www/html/images/${filename}`, (err) => {
-                                    if (!err) {
-                                        return fs.unlink(Ofile, (e) => {
-                                            if (!e) {
-                                                console.log('done')
-                                            }
-                                            else {
-                                                console.log('error ocured when attempt to remove file')
-                                            }
-                                        })
-
-                                    }
-                                    console.log(err)
-
-                                })
-
-
-                        }
-                        else {
-                            mv(Ofile, `/var/www/html/images/${filename}`, (e) => {
-                                if (e) {
-                                    console.log(e)
-                                }
-                            })
-                        }
-                    }
-                  
 
                    
 
@@ -187,7 +150,7 @@ router.route('/publish')
                         publication.profileLastName = profile.lastName;
                         publication.profilePicture = profile.profilePicture;
                         publication.profilePictureMin = profile.profilePictureMin;
-                        if (body) {
+
                             publication.confidentiality = body.confidentiality;
                             publication.nbLikes = 0;
                             publication.nbDislikes = 0;
@@ -201,10 +164,45 @@ router.route('/publish')
                             publication.publExternalLink = body.publExternalLink;
                             publication.nbFcbkShare = 0;
                             publication.nbTwitterShare = 0;
-                        }
+
 
                         if (req.files.publPicture) {
                             publication.publPictureLink = req.files.publPicture[0].filename;
+                            var Ofile = req.files.publPicture[0].path;
+                            var destination = `${properties.get('pictures.storage.folder').toString() + '/' + req.files.publPicture[0].filename}`;
+                            var extention = path.extname(req.files.publPicture[0].filename);
+                            var filename = req.files.publPicture[0].filename;
+
+                            if (extention.toLowerCase() !== '.gif') {
+                                sharp(Ofile)
+                                    .resize(1000)
+                                    .toFile(`/var/www/html/images/${filename}`, (err) => {
+                                        if (!err) {
+                                            return fs.unlink(Ofile, (e) => {
+                                                if (!e) {
+                                                    console.log('done')
+                                                }
+                                                else {
+                                                    console.log('error ocured when attempt to remove file')
+                                                }
+                                            })
+
+                                        }
+                                        console.log(err)
+
+                                    })
+
+
+                            }
+                            else {
+                                mv(Ofile, `/var/www/html/images/${filename}`, (e) => {
+                                    if (e) {
+                                        console.log(e)
+                                    }
+                                })
+                            }
+
+
                         }
 
                         var publicationLikes = new PublicationLikes();
