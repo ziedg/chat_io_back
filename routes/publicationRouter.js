@@ -120,12 +120,10 @@ router.route('/publish')
                     });
                 } else {
                     var body = req.body;
-                    var Ofile=req.files.publPicture[0].path
-                    var destination = `
-                    ${properties.get('pictures.storage.folder').toString()+'/'+req.files.publPicture[0].filename}
-                     `
-                     var extention = path.extname(req.files.publPicture[0].filename)
-                     var  filename=req.files.publPicture[0].filename
+                    var Ofile=req.files.publPicture[0].path;
+                    var destination = `${properties.get('pictures.storage.folder').toString()+'/'+req.files.publPicture[0].filename}`;
+                     var extention = path.extname(req.files.publPicture[0].filename);
+                     var  filename=req.files.publPicture[0].filename;
                      if(extention.toLowerCase()!=='.gif')
                      {
                           
