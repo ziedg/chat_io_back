@@ -85,7 +85,8 @@ router.route('/publish')
 
     .post(function (req, res) {
         try {
-             
+            console.log(req.data);
+            console.log(req.body);
             
             
             var publication = new Publication();
