@@ -119,41 +119,41 @@ router.route('/publish')
                         error: 'SP_ER_TECHNICAL_ERROR1'
                     });
                 } else {
-                    var body = req.body;
-                    var Ofile=req.files.publPicture[0].path;
-                    var destination = `${properties.get('pictures.storage.folder').toString()+'/'+req.files.publPicture[0].filename}`;
-                     var extention = path.extname(req.files.publPicture[0].filename);
-                     var  filename=req.files.publPicture[0].filename;
-                     if(extention.toLowerCase()!=='.gif')
-                     {
-                          
-                    sharp(Ofile)
-                    .resize(1000)
-                    .toFile(`/var/www/html/images/${filename}`,(err)=>{
-                       if(!err){
-                        return fs.unlink(Ofile,(e)=>{
-                            if(!e){
-                                console.log('done')
-                            }
-                            else
-                            {
-                                console.log('error ocured when attempt to remove file')
-                            } 
-                        })
+                    if (publPicture) {
+                        var body = req.body;
+                        var Ofile = req.files.publPicture[0].path;
+                        var destination = `${properties.get('pictures.storage.folder').toString() + '/' + req.files.publPicture[0].filename}`;
+                        var extention = path.extname(req.files.publPicture[0].filename);
+                        var filename = req.files.publPicture[0].filename;
+                        if (extention.toLowerCase() !== '.gif') {
 
-                    }
-                        console.log(err)
-                        
-                    })
-                   
-                         
-                     }
-                     else{
-                        mv(Ofile,`/var/www/html/images/${filename}`,(e)=>{
-                            if(e){
-                                console.log(e)
-                            }
-                        })
+                            sharp(Ofile)
+                                .resize(1000)
+                                .toFile(`/var/www/html/images/${filename}`, (err) => {
+                                    if (!err) {
+                                        return fs.unlink(Ofile, (e) => {
+                                            if (!e) {
+                                                console.log('done')
+                                            }
+                                            else {
+                                                console.log('error ocured when attempt to remove file')
+                                            }
+                                        })
+
+                                    }
+                                    console.log(err)
+
+                                })
+
+
+                        }
+                        else {
+                            mv(Ofile, `/var/www/html/images/${filename}`, (e) => {
+                                if (e) {
+                                    console.log(e)
+                                }
+                            })
+                        }
                     }
                   
 
