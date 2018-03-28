@@ -119,7 +119,7 @@ router.route('/publish')
                         error: 'SP_ER_TECHNICAL_ERROR1'
                     });
                 } else {
-                    if (publPicture) {
+                    if (req.files.publPicture) {
                         var body = req.body;
                         var Ofile = req.files.publPicture[0].path;
                         var destination = `${properties.get('pictures.storage.folder').toString() + '/' + req.files.publPicture[0].filename}`;
