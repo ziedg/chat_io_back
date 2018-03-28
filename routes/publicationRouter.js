@@ -186,20 +186,21 @@ router.route('/publish')
                         publication.profileLastName = profile.lastName;
                         publication.profilePicture = profile.profilePicture;
                         publication.profilePictureMin = profile.profilePictureMin;
-                        publication.confidentiality = body.confidentiality;
-                        publication.nbLikes = 0;
-                        publication.nbDislikes = 0;
-                        publication.nbSignals = 0;
-                        publication.nbComments = 0;
-                        publication.nbShare = 0;
-                        publication.isShared = false;
-                        publication.publTitle = body.publTitle;
-                        publication.publText = body.publText;
-                        publication.publyoutubeLink = body.publyoutubeLink;
-                        publication.publExternalLink = body.publExternalLink;
-                        publication.nbFcbkShare = 0;
-                        publication.nbTwitterShare = 0;
-                        
+                        if (body) {
+                            publication.confidentiality = body.confidentiality;
+                            publication.nbLikes = 0;
+                            publication.nbDislikes = 0;
+                            publication.nbSignals = 0;
+                            publication.nbComments = 0;
+                            publication.nbShare = 0;
+                            publication.isShared = false;
+                            publication.publTitle = body.publTitle;
+                            publication.publText = body.publText;
+                            publication.publyoutubeLink = body.publyoutubeLink;
+                            publication.publExternalLink = body.publExternalLink;
+                            publication.nbFcbkShare = 0;
+                            publication.nbTwitterShare = 0;
+                        }
 
                         if (req.files.publPicture) {
                             publication.publPictureLink = req.files.publPicture[0].filename;
