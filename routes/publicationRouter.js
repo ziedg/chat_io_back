@@ -110,7 +110,7 @@ router.route('/publish')
             upload(req, res, function (err) {
 
                 if (err) {
-                    console.log(err)
+                    console.log(err);
 
                     res.json({
                         status: 3,
@@ -121,13 +121,9 @@ router.route('/publish')
                     var body = req.body;
 
 
-                   
 
-
-                
                     publication.profileId = req._id;
                     publication.datePublication = new Date();
-
                     Profile.findById(req._id, function (err, profile) {
 
                         if (err) {
