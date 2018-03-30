@@ -629,6 +629,8 @@ router.route('/removePublication')
                     }
 
                     profile.nbPublications--;
+                    profile.nbLikes-=publication.nbLikes;
+
                     profile.save();
                 });
                 publication.remove();
