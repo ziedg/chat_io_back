@@ -51,7 +51,7 @@ router.route('/getNotifications')
             }
 
             var query = Notification.find(criteria).sort({_id: -1}).limit(5);
-            query.execFind(function (err, notifications) {
+            query.exec(function (err, notifications) {
                 if (err) {
                     res.json({
                         status: 3,
