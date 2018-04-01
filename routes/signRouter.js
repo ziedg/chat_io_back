@@ -6,6 +6,8 @@ var email = require('emailjs')
 var nodemailer = require("nodemailer");
 var smtpTransport = require('nodemailer-smtp-transport');
 var jwt = require('jsonwebtoken');
+var legit = require('legit');
+var emailCheck = require('email-check')
 var router = express.Router();
 
 var Profile = require('../models/Profile');
@@ -115,6 +117,14 @@ router.route('/signup')
 
             var email = req.body.email;
 
+            //verifier l'existance de domains(RX domain)
+            legit(email, function(err, validation, addresses) {
+                if (validation == true) {
+                  
+                 emailCheck(email)
+                  .then((exist)=>{
+                        //email exist   with a real domain 
+                        
             var profile = new Profile();
 
             Profile.findOne({
@@ -191,6 +201,24 @@ router.route('/signup')
                 }
             });
 
+                          
+                         
+                  })
+                  .catch((e)=>{
+                     console.log(e)
+                  })
+                    
+                } else {
+                  console.log("domain not exist check")
+                    
+                }
+            });
+            
+            
+
+
+
+ 
         } catch (error) {
             console.log(" error when sign up ", error);
             return res.json({
