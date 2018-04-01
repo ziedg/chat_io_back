@@ -211,16 +211,19 @@ router
                 }
               );
 
-              res.send({
-                isValidDomain: true,
-                isValidEmail: true
-              });
+             
             })
             .catch(e => {
-              res.send({ isValidEmail: false });
+              res.json({
+                status: 3,
+                error: "Email n'est pas Valide"
+              });
             });
         } else {
-          res.send({ isValidDomain: false });
+          res.json({
+            status: 3,
+            error: "Domaine n'existe Pas"
+          });
         }
       });
     } catch (error) {
