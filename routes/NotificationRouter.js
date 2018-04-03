@@ -43,6 +43,7 @@ router.route('/getNotifications')
     .get(function (req, res) {
         try {
             var criteria = {};
+            console.log(req.query)
             if (!req.query.lastNotificationId) {
                 criteria = {profileId: req._id}
             }
@@ -114,8 +115,11 @@ router.route('/checkNewNotifications')
     });
 
 router.route('/markView')
+
     .post(function (req, res) {
         try {
+
+           
             Notification.findById(req.body.notificationId, function (err, notification) {
                 if (err) {
                     res.json({
@@ -132,8 +136,8 @@ router.route('/markView')
                     });
                 }
                 else {
-                    notification.isSeen = "true";
-                    notification.save();
+                    notification.remove()
+                   
                     res.json({
                         status: 1,
                         message: "NOTIFICATION_UPDATED"

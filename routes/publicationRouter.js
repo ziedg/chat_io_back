@@ -333,6 +333,8 @@ router.route('/getPublications')
 router.route('/likePublication')
     .post(function (req, res) {
         try {
+          
+           
             var publication = new Publication();
 
             Publication.findById(req.body.publId, function (err, publication) {
@@ -360,7 +362,8 @@ router.route('/likePublication')
                         status: 0,
                         message: 'PUBLICATION_LIKED'
                     });
-                    notificationScript.notifier(publication.profileId, req.body.publId, req._id, "like", "");
+                   
+                    notificationScript.notifier(publication.profileId, req.body.publId, req._id, "reagir", "");
 
                     Profile.findById(publication.profileId, function(err, profile){
                     if (!err){
@@ -425,7 +428,7 @@ router.route('/removeLikePublication')
 
                     publication.nbLikes--;
                     publication.save();
-                    notificationScript.removeNotification(publication.profileId, req.body.publId, req._id, "like");
+                    notificationScript.removeNotification(publication.profileId, req.body.publId, req._id, "reagir");
                     return res.json({
                         status: 0,
                         message: 'LIKE_REMOVED'
@@ -476,7 +479,7 @@ router.route('/dislikePublication')
                     status: 0,
                     message: 'PUBLICATION_DISLIKED'
                 });
-                notificationScript.notifier(publication.profileId, req.body.publId, req._id, "dislike", "");
+                notificationScript.notifier(publication.profileId, req.body.publId, req._id, "reagir", "");
 
             });
         } catch (error) {
@@ -520,7 +523,7 @@ router.route('/removeDislikePublication')
 
                 publication.nbDislikes--;
                 publication.save();
-                notificationScript.removeNotification(publication.profileId, req.body.publId, req._id, "dislike");
+                notificationScript.removeNotification(publication.profileId, req.body.publId, req._id, "reagir");
                 return res.json({
                     status: 0,
                     message: 'DISLIKE_REMOVED'

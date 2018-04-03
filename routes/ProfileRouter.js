@@ -109,6 +109,7 @@ router.route('/getProfile')
 router.route('/subscribe')
     .post(function (req, res) {
         try {
+            
             Profile.findById(req.body.profileId, function (err, targetProfile) {
                 if (err) {
                     return res.json({
@@ -148,7 +149,8 @@ router.route('/subscribe')
                                 pr.save();
                             }
                         });
-                        notificationScript.notifier(req.body.profileId, "", req.body.UserId, "subscribe", "");
+                        console.log(req.body)
+                        notificationScript.notifier(req.body.profileId, "", req._id, "subscribe", "");
 
                         return res.json({
                             status: 0,
