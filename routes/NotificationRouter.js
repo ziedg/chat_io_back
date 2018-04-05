@@ -135,7 +135,8 @@ router.route('/markView')
                     });
                 }
                 else {
-                    notification.remove()
+                    notification.isSeen=true;
+                    notification.save();
                    
                     res.json({
                         status: 1,
