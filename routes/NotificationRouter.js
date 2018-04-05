@@ -43,7 +43,6 @@ router.route('/getNotifications')
     .get(function (req, res) {
         try {
             var criteria = {};
-            console.log(req.query)
             if (!req.query.lastNotificationId) {
                 criteria = {profileId: req._id}
             }

@@ -59,8 +59,7 @@ var Notification = require('./../../models/Notification');
 								}
 						
 
-								console.log(isExist?"hi":"not hi")
-							    
+
 							
 								if(!isExist)
 								{
@@ -157,34 +156,37 @@ var Notification = require('./../../models/Notification');
 	,	
 	removeNotification : function(profileId,publId,userID,type) 
          	{
-			var critere ={profileId : profileId ,publId : publId,type :type} 
+			var critere ={
+				profileId : profileId ,
+				publId : publId,
+				type :type
+			}
 			Notification.findOne(critere, function(err, notification) {
 				if (err){
-					/*return res.json({
+					return res.json({
 							status : 0,
 							err: err
-					});		*/
+					});
 				}else if (!notification){
-				/*	return res.json({
+				return res.json({
 							status : 0,
 							message : "notification not found"
-					});			*/			
-				}else{
+					});
+				}else {
+					if (notification.profiles.length>1) {
+                        for (i = 0; i < notification.profiles.length; i++) {
 
-					
-					for(i=0;i<notification.profiles.length;i++){
-						
-						if(notification.profiles[i].id==userID){
-							notification.profiles.splice(i,1);
-							notification.save()
-							break; 
-						}
-					}
+                            if (notification.profiles[i].id == userID) {
+                                notification.profiles.splice(i, 1);
+                                notification.save()
+                                return;
+
+                            }
+                        }
+                    }
 					if(notification.profiles.length==0){
 						notification.remove();
 					}
-					else
-						notification.save();
 				}				
 			});			
 				
