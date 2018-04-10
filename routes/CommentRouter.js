@@ -4,6 +4,8 @@ var router = express.Router();
 var multer = require('multer');
 const sharp = require('sharp');
 const path = require('path')
+const fs = require('fs');
+const mv = require('mv')
 
 var Comment = require('../models/Comment');
 var Publication = require('../models/Publication');
