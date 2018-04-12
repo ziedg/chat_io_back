@@ -11,10 +11,10 @@ var Notification = require('./../../models/Notification');
 				var critere ={profileId : profileId ,publId : publId,type :type} 
 				Notification.findOne(critere, function(err, notification) {
 					if (err){
-						return res.json({
+						/*return res.json({
 								status : 0,
 								err: err
-							});		
+							});		*/
 					}
 					else if (!notification){
 						var notification = new Notification();
@@ -39,7 +39,8 @@ var Notification = require('./../../models/Notification');
 					}else{
 						Profile.findById(userID, function(err, profile) {
 							if (err){
-								/*res.send(err);*/
+								/*res.
+								(err);*/
 							}
 							else if(profile){
 							
@@ -86,10 +87,10 @@ var Notification = require('./../../models/Notification');
 	var critere ={profileId : profileId ,publId : publId,type :type} 
 	Notification.findOne(critere, function(err, notification) {
 		if (err){
-			return res.json({
+			/*return res.json({
 					status : 0,
 					err: err
-				});		
+				});	*/
 		}
 		else if (!notification){
 			var notification = new Notification();
@@ -163,15 +164,15 @@ var Notification = require('./../../models/Notification');
 			}
 			Notification.findOne(critere, function(err, notification) {
 				if (err){
-					return res.json({
+					/*return res.json({
 							status : 0,
 							err: err
-					});
+					});*/
 				}else if (!notification){
-				return res.json({
+				return /*res.json({
 							status : 0,
 							message : "notification not found"
-					});
+					})*/ ;
 				}else {
 					if (notification.profiles.length>1) {
                         for (i = 0; i < notification.profiles.length; i++) {
