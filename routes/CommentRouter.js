@@ -2,6 +2,10 @@ var express = require('express');
 var router = express.Router();
 
 var multer = require('multer');
+const sharp = require('sharp');
+const path = require('path')
+const fs = require('fs');
+const mv = require('mv')
 
 var Comment = require('../models/Comment');
 var Publication = require('../models/Publication');
@@ -52,7 +56,7 @@ router.route('/addComment')
 
             var storage = multer.diskStorage({
                 destination: function (req, file, callback) {
-                    callback(null,  properties.get('pictures.storage.folder').toString());
+                    callback(null,  properties.get('pictures.storage.temp').toString());
                 },
                 filename: function (req, file, callback) {
                     callback(null, comment.id + '_' + file.originalname);
@@ -95,11 +99,54 @@ router.route('/addComment')
                         comment.nbSignals = 0;
                         comment.commentText = body.commentText;
                         comment.commentLink = body.commentLink;
-                        if (req.files) {
-                            if (req.files.commentPicture) {
-                                comment.commentPicture = req.files.commentPicture[0].filename;
+                        
+                        //compression of commented images...
+
+                        
+                        if (req.files.commentPicture) {
+                            comment.commentPicture = req.files.commentPicture[0].filename;
+                            var Ofile = req.files.commentPicture[0].path;
+                            var destination = `${properties.get('pictures.storage.folder').toString() + '/' + req.files.commentPicture[0].filename}`;
+                            var extention = path.extname(req.files.commentPicture[0].filename);
+                            var filename = req.files.commentPicture[0].filename;
+
+                            if (extention.toLowerCase() !== '.gif') {
+                                sharp(Ofile)
+                                    .resize(1000)
+                                    .toFile(`/var/www/html/images/${filename}`, (err) => {
+                                        if (!err) {
+                                            return fs.unlink(Ofile, (e) => {
+                                                if (!e) {
+                                                    console.log('done')
+                                                }
+                                                else {
+                                                    console.log('error ocured when attempt to remove file')
+                                                }
+                                            })
+
+                                        }
+                                        console.log(err)
+
+                                    })
+
+
                             }
+                            else {
+                                mv(Ofile, `/var/www/html/images/${filename}`, (e) => {
+                                    if (e) {
+                                        console.log(e)
+                                    }
+                                })
+                            }
+
+
                         }
+
+
+
+
+
+
                         comment.save(function (err) {
                             if (err) {
                                 return res.json({
