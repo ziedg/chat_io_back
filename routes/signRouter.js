@@ -9,6 +9,8 @@ var jwt = require("jsonwebtoken");
 var legit = require("legit");
 var emailCheck = require("email-check");
 var router = express.Router();
+const download = require('image-downloader')
+
 
 var Profile = require("../models/Profile");
 var ProfilesPasswords = require("../models/profilesPasswords");
@@ -238,8 +240,10 @@ router
 router
   .route("/signWithFacebook")
 
+
   .post(function(req, res) {
     // find the user with facebookId
+
 
     Profile.findOne(
       {
@@ -253,6 +257,33 @@ router
           });
 
         if (!user) {
+          const extension=path.extname(req.body.profilePicture.substring(0,indexOf('?')));
+
+            const options = {
+                url: req.body.profilePicture,
+                dest: `${properties.get('pictures.storage.temp')}/${req.body.facebookId}${extension} `
+            }
+            const options2 = {
+                url: req.body.profilePictureMin,
+                dest: `${properties.get('pictures.storage.temp')}/${req.body.facebookId}${extension} `
+            }
+
+            download.image(options)
+                .then(({ filename, image }) => {
+                    console.log('File saved to', filename)
+                }).catch((err) => {
+                throw err
+            })
+            download.image(options2)
+                .then(({ filename, image }) => {
+                    console.log('File saved to', filename)
+                }).catch((err) => {
+                throw err
+            })
+
+
+
+
           var profile = new Profile();
           profile.facebookId = req.body.facebookId;
           profile.firstName = req.body.firstName;
