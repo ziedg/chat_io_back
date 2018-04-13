@@ -281,8 +281,6 @@ router
             })
 
 
-
-
           var profile = new Profile();
           profile.facebookId = req.body.facebookId;
           profile.firstName = req.body.firstName;
