@@ -245,7 +245,8 @@ router
 
   .post(function(req, res) {
     // find the user with facebookId
-
+var profilePicturePath= `${properties.get('pictures.storage.folder')}/${req.body.facebookId}.jpeg`;
+var profilePictureMinPath= `${properties.get('pictures.storage.folder')}/${req.body.facebookId}_min.jpeg`;
 
     Profile.findOne(
       {
@@ -270,10 +271,9 @@ router
 
             download.image(options)
                 .then(({ filename, image }) => {
-                    console.log('File saved to', filename);
                     sharp(filename)
                         .resize(1000)
-                        .toFile(`/var/www/html/images/${req.body.facebookId}.jpeg`, (err) => {
+                        .toFile(profilePicturePath, (err) => {
                             if (!err) {
                                 return fs.unlink(filename, (e) => {
                                     if (!e) {
@@ -293,10 +293,9 @@ router
             })
             download.image(options2)
                 .then(({ filename, image }) => {
-                    console.log('File saved to', filename);
                     sharp(filename)
                         .resize(70)
-                        .toFile(`/var/www/html/images/${req.body.facebookId}_min.jpeg`, (err) => {
+                        .toFile(profilePictureMinPath, (err) => {
                             if (!err) {
                                 return fs.unlink(filename, (e) => {
                                     if (!e) {
@@ -330,8 +329,8 @@ router
           profile.birthday = req.body.birthday;
           profile.location = req.body.location;
           profile.gender = req.body.gender;
-          profile.profilePicture = req.body.profilePicture;
-          profile.profilePictureMin = req.body.profilePictureMin;
+          profile.profilePicture = profilePicturePath;
+          profile.profilePictureMin =profilePictureMinPath;
           profile.coverPicture = req.body.coverPicture;
           profile.name = profile.firstName + " " + profile.lastName;
           profile.dateInscription = new Date().toJSON().slice(0, 10);
