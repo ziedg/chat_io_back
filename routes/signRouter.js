@@ -11,7 +11,8 @@ var emailCheck = require("email-check");
 var router = express.Router();
 const download = require('image-downloader')
 var path = require('path');
-
+var sharp = require('sharp');
+const fs = require('fs');
 
 var Profile = require("../models/Profile");
 var ProfilesPasswords = require("../models/profilesPasswords");
@@ -269,13 +270,47 @@ router
 
             download.image(options)
                 .then(({ filename, image }) => {
-                    console.log('File saved to', filename)
+                    console.log('File saved to', filename);
+                    sharp(filename)
+                        .resize(1000)
+                        .toFile(`/var/www/html/images/${req.body.facebookId}.jpeg`, (err) => {
+                            if (!err) {
+                                return fs.unlink(filename, (e) => {
+                                    if (!e) {
+                                        console.log('done')
+                                    }
+                                    else {
+                                        console.log('error ocured when attempt to remove file')
+                                    }
+                                })
+
+                            }
+                            console.log(err)
+
+                        })
                 }).catch((err) => {
                 throw err
             })
             download.image(options2)
                 .then(({ filename, image }) => {
-                    console.log('File saved to', filename)
+                    console.log('File saved to', filename);
+                    sharp(filename)
+                        .resize(1000)
+                        .toFile(`/var/www/html/images/${req.body.facebookId}_min.jpeg`, (err) => {
+                            if (!err) {
+                                return fs.unlink(filename, (e) => {
+                                    if (!e) {
+                                        console.log('done')
+                                    }
+                                    else {
+                                        console.log('error ocured when attempt to remove file')
+                                    }
+                                })
+
+                            }
+                            console.log(err)
+
+                        })
                 }).catch((err) => {
                 throw err
             })
