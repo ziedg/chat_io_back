@@ -10,6 +10,7 @@ var legit = require("legit");
 var emailCheck = require("email-check");
 var router = express.Router();
 const download = require('image-downloader')
+var path = require('path');
 
 
 var Profile = require("../models/Profile");
