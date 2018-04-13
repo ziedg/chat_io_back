@@ -264,7 +264,7 @@ router
             }
             const options2 = {
                 url: req.body.profilePictureMin,
-                dest: `${properties.get('pictures.storage.temp')}/${req.body.facebookId}min.jpeg`
+                dest: `${properties.get('pictures.storage.temp')}/${req.body.facebookId}_min.jpeg`
             }
 
             download.image(options)
