@@ -259,7 +259,7 @@ router
 
         if (!user) {
           const extension=path.extname(req.body.profilePicture.substring(0,req.body.profilePicture.indexOf('?')));
-
+          console.log(extension);
             const options = {
                 url: req.body.profilePicture,
                 dest: `${properties.get('pictures.storage.temp')}/${req.body.facebookId}${extension} `
