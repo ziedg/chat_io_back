@@ -258,7 +258,7 @@ router
           });
 
         if (!user) {
-          const extension=path.extname(req.body.profilePicture.substring(0,indexOf('?')));
+          const extension=path.extname(req.body.profilePicture.substring(0,req.body.profilePicture.indexOf('?')));
 
             const options = {
                 url: req.body.profilePicture,
