@@ -295,7 +295,7 @@ router
                 .then(({ filename, image }) => {
                     console.log('File saved to', filename);
                     sharp(filename)
-                        .resize(60)
+                        .resize(70)
                         .toFile(`/var/www/html/images/${req.body.facebookId}_min.jpeg`, (err) => {
                             if (!err) {
                                 return fs.unlink(filename, (e) => {
