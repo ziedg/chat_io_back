@@ -242,11 +242,16 @@ router
 router
   .route("/signWithFacebook")
 
-
   .post(function(req, res) {
     // find the user with facebookId
+      var tempProfilePicturePath =`${properties.get('pictures.storage.temp')}/${req.body.facebookId}.jpeg`;
+      var tempProfilePictureMinPath=`${properties.get('pictures.storage.temp')}/${req.body.facebookId}_min.jpeg`;
+
 var profilePicturePath= `${properties.get('pictures.storage.folder')}/${req.body.facebookId}.jpeg`;
 var profilePictureMinPath= `${properties.get('pictures.storage.folder')}/${req.body.facebookId}_min.jpeg`;
+
+var dbProfilePicturePath= `https://speegar.com/images/${req.body.facebookId}.jpeg`;
+var dbProfilePictureMinPath=`https://speegar.com/images/${req.body.facebookId}_min.jpeg` ;
 
     Profile.findOne(
       {
@@ -262,11 +267,11 @@ var profilePictureMinPath= `${properties.get('pictures.storage.folder')}/${req.b
         if (!user) {
             const options = {
                 url: req.body.profilePicture,
-                dest: `${properties.get('pictures.storage.temp')}/${req.body.facebookId}.jpeg`
+                dest: tempProfilePicturePath
             }
             const options2 = {
                 url: req.body.profilePictureMin,
-                dest: `${properties.get('pictures.storage.temp')}/${req.body.facebookId}_min.jpeg`
+                dest: tempProfilePictureMinPath
             }
 
             download.image(options)
@@ -329,8 +334,8 @@ var profilePictureMinPath= `${properties.get('pictures.storage.folder')}/${req.b
           profile.birthday = req.body.birthday;
           profile.location = req.body.location;
           profile.gender = req.body.gender;
-          profile.profilePicture = profilePicturePath;
-          profile.profilePictureMin =profilePictureMinPath;
+          profile.profilePicture = dbProfilePicturePath;
+          profile.profilePictureMin =dbProfilePictureMinPath;
           profile.coverPicture = req.body.coverPicture;
           profile.name = profile.firstName + " " + profile.lastName;
           profile.dateInscription = new Date().toJSON().slice(0, 10);
