@@ -260,11 +260,11 @@ router
         if (!user) {
             const options = {
                 url: req.body.profilePicture,
-                dest: `${properties.get('pictures.storage.temp')}/${req.body.facebookId}.jpeg `
+                dest: `${properties.get('pictures.storage.temp')}/${req.body.facebookId}.jpeg`
             }
             const options2 = {
                 url: req.body.profilePictureMin,
-                dest: `${properties.get('pictures.storage.temp')}/${req.body.facebookId}.jpeg`
+                dest: `${properties.get('pictures.storage.temp')}/${req.body.facebookId}min.jpeg`
             }
 
             download.image(options)
