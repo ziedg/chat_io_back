@@ -721,12 +721,12 @@ router.route('/sharePublication')
                     publication.nbDislikes = 0;
                     publication.nbSignals = 0;
                     publication.nbComments = 0;
-                    publication.nbShare=pub.nbShare;
                     var publicationLikes = new PublicationLikes();
                     publication.save();
                     publicationLikes._id = publication._id;
                     publicationLikes.save();
                     pub.nbShare++;
+                    publication.nbShare=pub.nbShare;
                     pub.save();
                     return res.json({
                         status: 0,
