@@ -85,7 +85,6 @@ router.route('/publish')
 
     .post(function (req, res) {
         try {
-
             var publication = new Publication();
             
             var storage = multer.diskStorage({
@@ -722,6 +721,7 @@ router.route('/sharePublication')
                     publication.nbDislikes = 0;
                     publication.nbSignals = 0;
                     publication.nbComments = 0;
+                    publication.nbShare=pub.nbShare;
                     var publicationLikes = new PublicationLikes();
                     publication.save();
                     publicationLikes._id = publication._id;
