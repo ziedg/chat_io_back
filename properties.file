@@ -9,7 +9,7 @@ fullchain1 = /etc/letsencrypt/archive/speegar.com/fullchain1.pem
 chain1 = /etc/letsencrypt/archive/speegar.com/chain1.pem
 
 [mongo]
-db.name =SpeegarDB15
+db.name =SpeegarDB13
 url =127.0.0.1
 
 [pictures]
