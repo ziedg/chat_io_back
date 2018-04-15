@@ -729,8 +729,6 @@ router.route('/sharePublication')
                         publicationLikes.save();
                         pub.nbShare++;
                         pub.save();
-                        pub2.nbShare++;
-                        pub2.save();
 
                         if(req.body.alreadySharedPubId){
 
