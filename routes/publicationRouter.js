@@ -695,49 +695,68 @@ router.route('/sharePublication')
                         });
                         return
                     }
-                    profile.nbPublications++;
-                    profile.save();
-                    publication.profileId = req.body.profileId;
-                    publication.originalPublicationId = pub._id;
-                    publication.originalProfileId = pub.profileId;
-                    publication.datePublication = new Date();
-                    publication.originalDatePublication = pub.datePublication;
-                    publication.profileFirstName = profile.firstName;
-                    publication.originalProfileFirstName = pub.profileFirstName;
-                    publication.profileLastName = profile.lastName;
-                    publication.originalProfileLastName = pub.profileLastName;
-                    publication.profilePicture = profile.profilePicture;
-                    publication.profilePictureMin = profile.profilePictureMin;
-                    publication.originalProfilePicture = pub.profilePicture;
-                    publication.originalProfilePictureMin = pub.profilePictureMin;
-                    publication.confidentiality = pub.confidentiality;
-                    publication.publText = pub.publText;
-                    publication.publTitle = pub.publTitle;
-                    publication.publExternalLink = pub.publExternalLink;
-                    publication.publPictureLink = pub.publPictureLink;
-                    publication.publyoutubeLink = pub.publyoutubeLink;
-                    publication.isShared = true;
-                    publication.nbLikes = 0;
-                    publication.nbDislikes = 0;
-                    publication.nbSignals = 0;
-                    publication.nbComments = 0;
-                    var publicationLikes = new PublicationLikes();
-                    publicationLikes._id = publication._id;
-                    publicationLikes.save();
-                    pub.nbShare++;
-                    publication.nbShare=pub.nbShare;
-                    publication.save();
-                    pub.save();
-                    return res.json({
-                        status: 0,
-                        message: 'PUBLICATION_SHARED',
-                        publication: publication
+
+                    Publication.findById(req.body.alreadySharedPubId, function (err, pub2) {
+                        if (err) {
+                            res.json({
+                                status: 3,
+                                error: 'SP_ER_TECHNICAL_ERROR'
+                            });
+                            return;
+                        }
+                        if (!pub2) {
+                            return res.json({
+                                status: 2,
+                                error: 'SP_ER_PUBLICATION_NOT_FOUND'
+                            });
+                        }
+
+                        profile.nbPublications++;
+                        profile.save();
+                        publication.profileId = req.body.profileId;
+                        publication.originalPublicationId = pub._id;
+                        publication.originalProfileId = pub.profileId;
+                        publication.datePublication = new Date();
+                        publication.originalDatePublication = pub.datePublication;
+                        publication.profileFirstName = profile.firstName;
+                        publication.originalProfileFirstName = pub.profileFirstName;
+                        publication.profileLastName = profile.lastName;
+                        publication.originalProfileLastName = pub.profileLastName;
+                        publication.profilePicture = profile.profilePicture;
+                        publication.profilePictureMin = profile.profilePictureMin;
+                        publication.originalProfilePicture = pub.profilePicture;
+                        publication.originalProfilePictureMin = pub.profilePictureMin;
+                        publication.confidentiality = pub.confidentiality;
+                        publication.publText = pub.publText;
+                        publication.publTitle = pub.publTitle;
+                        publication.publExternalLink = pub.publExternalLink;
+                        publication.publPictureLink = pub.publPictureLink;
+                        publication.publyoutubeLink = pub.publyoutubeLink;
+                        publication.isShared = true;
+                        publication.nbLikes = 0;
+                        publication.nbDislikes = 0;
+                        publication.nbSignals = 0;
+                        publication.nbComments = 0;
+                        publication.nbShare = 0;
+                        publication.save();
+                        var publicationLikes = new PublicationLikes();
+                        publicationLikes._id = publication._id;
+                        publicationLikes.save();
+                        pub.nbShare++;
+                        pub.save();
+                        pub2.nbShare++;
+                        pub2.save();
+
+                        return res.json({
+                            status: 0,
+                            message: 'PUBLICATION_SHARED',
+                            publication: publication
+                        });
+
+
                     });
 
-
                 });
-
-
             });
         } catch (error) {
             console.log("error when share publication", error);
