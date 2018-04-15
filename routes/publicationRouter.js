@@ -722,11 +722,11 @@ router.route('/sharePublication')
                     publication.nbSignals = 0;
                     publication.nbComments = 0;
                     var publicationLikes = new PublicationLikes();
-                    publication.save();
                     publicationLikes._id = publication._id;
                     publicationLikes.save();
                     pub.nbShare++;
                     publication.nbShare=pub.nbShare;
+                    publication.save();
                     pub.save();
                     return res.json({
                         status: 0,
