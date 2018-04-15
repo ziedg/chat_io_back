@@ -696,21 +696,6 @@ router.route('/sharePublication')
                         return
                     }
 
-                    Publication.findById(req.body.alreadySharedPubId, function (err, pub2) {
-                        if (err) {
-                            res.json({
-                                status: 3,
-                                error: 'SP_ER_TECHNICAL_ERROR'
-                            });
-                            return;
-                        }
-                        if (!pub2) {
-                            return res.json({
-                                status: 2,
-                                error: 'SP_ER_PUBLICATION_NOT_FOUND'
-                            });
-                        }
-
                         profile.nbPublications++;
                         profile.save();
                         publication.profileId = req.body.profileId;
@@ -747,16 +732,44 @@ router.route('/sharePublication')
                         pub2.nbShare++;
                         pub2.save();
 
+                        if(req.body.alreadySharedPubId){
+
+                         Publication.findById(req.body.alreadySharedPubId, function (err, pub2) {
+                             if (err) {
+                                 res.json({
+                                     status: 3,
+                                     error: 'SP_ER_TECHNICAL_ERROR'
+                                 });
+                                 return;
+                             }
+                             if (!pub2) {
+                                 return res.json({
+                                     status: 2,
+                                     error: 'SP_ER_PUBLICATION_NOT_FOUND'
+                                 });
+                             }
+                             pub2.nbShare++;
+                             pub2.save();
+
+                             return res.json({
+                                 status: 0,
+                                 message: 'PUBLICATION_SHARED',
+                                 publication: publication
+                             });
+
+
+                         });
+
+                }
                         return res.json({
                             status: 0,
                             message: 'PUBLICATION_SHARED',
                             publication: publication
                         });
 
-
                     });
 
-                });
+
             });
         } catch (error) {
             console.log("error when share publication", error);
