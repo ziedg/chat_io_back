@@ -730,7 +730,8 @@ router.route('/sharePublication')
                         pub.nbShare++;
                         pub.save();
 
-                        if(req.body.alreadySharedPubId){
+                        if(req.body.alreadySharedPubId )
+                        {
 
                          Publication.findById(req.body.alreadySharedPubId, function (err, pub2) {
                              if (err) {
