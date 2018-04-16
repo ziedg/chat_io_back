@@ -43,6 +43,7 @@
     "password-hash": "latest",
     "properties-reader": "0.0.16",
     "request": "2.64.0",
+    "scp2": "^0.5.0",
     "serve-favicon": "~2.3.0",
     "sharp": "^0.20.1"
   }
