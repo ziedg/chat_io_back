@@ -172,43 +172,41 @@ router.route('/publish')
                             if (extention.toLowerCase() !== '.gif') {
                                 sharp(Ofile)
                                     .resize(1000)
-                                    .toBuffer()
-                                    .then((data)=> {
-                                        client.scp(Ofile, {
-                                            host: '173.249.14.92',
-                                            username: 'root',
-                                            password: 'J123t6pm89C3rnzW',
-                                            path: '/home/test.jpg'
-                                        }, function (err) {
-                                            console.log(err)
-                                        })
-                                        /*return fs.unlink(Ofile, (e) => {
+                                    .toFile(`/var/www/html/images/${filename}`)
+                                    .then((data)=>{
+                                        fs.unlink(Ofile, (e) => {
                                             if (!e) {
-                                                console.log('done')
+                                                console.log('done');
+                                                client.scp(`/var/www/html/images/${filename}`, {
+                                                    host: '173.249.14.92',
+                                                    username: 'root',
+                                                    password: 'J123t6pm89C3rnzW',
+                                                    path: '/home/test.jpg'
+                                                }, function (err) {
+                                                    if(!err){
+                                                        fs.unlink(`/var/www/html/images/${filename}`, (e) => {
+                                                            if (!e) {
+                                                                console.log('done2')
+                                                            }
+                                                            else {
+                                                                console.log('error ocured when attempt to remove file 2')
+                                                            }
+                                                        })
+                                                    }
+                                                    console.log(err)
+                                                })
+
                                             }
                                             else {
-                                                console.log('error ocured when attempt to remove file')
+                                                console.log('error ocured when attempt to remove file 1')
                                             }
-                                        })*/
+                                        })
                                     })
-                                       .catch((err) =>{
-                                    console.log(err)
-                                        });
-                                    // .toFile(`/var/www/html/images/${filename}`, (err) => {
-                                    //     if (!err) {
-                                    //         return fs.unlink(Ofile, (e) => {
-                                    //             if (!e) {
-                                    //                 console.log('done')
-                                    //             }
-                                    //             else {
-                                    //                 console.log('error ocured when attempt to remove file')
-                                    //             }
-                                    //         })
-                                    //
-                                    //     }
-                                    //     console.log(err)
-                                    //
-                                    // })
+                                    .catch((err)=>{
+                                        console.log(err)
+
+                                    })
+
                             }
                             else {
                                 mv(Ofile, `/var/www/html/images/${filename}`, (e) => {
