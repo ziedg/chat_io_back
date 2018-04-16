@@ -662,6 +662,7 @@ router.route('/removePublication')
 router.route('/sharePublication')
     .post(function (req, res) {
         try {
+            console.log(req.body);
             Publication.findById(req.body.publId, function (err, pub) {
                 if (err) {
                     res.json({
