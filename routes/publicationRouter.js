@@ -7,6 +7,7 @@ ObjectID = require('mongodb').ObjectID;
 var sharp = require('sharp');
 const fs = require('fs');
 const mv = require('mv')
+const client = require('scp2');
 
 var bodyParser = require("body-parser");
 var multer = require('multer');
@@ -171,23 +172,42 @@ router.route('/publish')
                             if (extention.toLowerCase() !== '.gif') {
                                 sharp(Ofile)
                                     .resize(1000)
-                                    .toFile(`/var/www/html/images/${filename}`, (err) => {
-                                        if (!err) {
-                                            return fs.unlink(Ofile, (e) => {
-                                                if (!e) {
-                                                    console.log('done')
-                                                }
-                                                else {
-                                                    console.log('error ocured when attempt to remove file')
-                                                }
+                                    .toBuffer()
+                                    .then((data)=>{
+                                            client.scp(data , {
+                                                host: '173.249.14.92',
+                                                username: 'root',
+                                                password: 'J123t6pm89C3rnzW',
+                                                path: '/home/test.jpg'
+                                            }, function(err) {
+                                                console.log(err)
                                             })
-
-                                        }
-                                        console.log(err)
-
-                                    })
-
-
+                                        return fs.unlink(Ofile, (e) => {
+                                                            if (!e) {
+                                                                 console.log('done')
+                                                             }
+                                                             else {
+                                                                 console.log('error ocured when attempt to remove file')
+                                                             }
+                                    },
+                                        (err)=>{
+                                    console.log(err)
+                                        });
+                                    // .toFile(`/var/www/html/images/${filename}`, (err) => {
+                                    //     if (!err) {
+                                    //         return fs.unlink(Ofile, (e) => {
+                                    //             if (!e) {
+                                    //                 console.log('done')
+                                    //             }
+                                    //             else {
+                                    //                 console.log('error ocured when attempt to remove file')
+                                    //             }
+                                    //         })
+                                    //
+                                    //     }
+                                    //     console.log(err)
+                                    //
+                                    // })
                             }
                             else {
                                 mv(Ofile, `/var/www/html/images/${filename}`, (e) => {
