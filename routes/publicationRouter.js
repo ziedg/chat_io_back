@@ -662,7 +662,6 @@ router.route('/removePublication')
 router.route('/sharePublication')
     .post(function (req, res) {
         try {
-            console.log(req.body);
             Publication.findById(req.body.publId, function (err, pub) {
                 if (err) {
                     res.json({
@@ -733,10 +732,9 @@ router.route('/sharePublication')
 
                         if(req.body.alreadySharedPubId )
                         {
-
                          Publication.findById(req.body.alreadySharedPubId, function (err, pub2) {
                              if (err) {
-                                 return res.json({
+                                  res.json({
                                      status: 3,
                                      error: 'SP_ER_TECHNICAL_ERROR'
                                  });
@@ -750,13 +748,6 @@ router.route('/sharePublication')
                              }
                              pub2.nbShare++;
                              pub2.save();
-
-                             return res.json({
-                                 status: 0,
-                                 message: 'PUBLICATION_SHARED',
-                                 publication: publication
-                             });
-
 
                          });
 
