@@ -190,8 +190,8 @@ router.route('/publish')
                                                 console.log('error ocured when attempt to remove file')
                                             }
                                         })
-                                    }),
-                                        (err)=>{
+                                    })
+                                       .catch(err)=>{
                                     console.log(err)
                                         };
                                     // .toFile(`/var/www/html/images/${filename}`, (err) => {
