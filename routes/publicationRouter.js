@@ -215,7 +215,9 @@ router.route('/publish')
                                     password: 'J123t6pm89C3rnzW',
                                     path: '/home/test1.gif'
                                 }, function (err) {
-                                    console.log('Error in transfer gif')
+                                    if (err) {
+                                        console.log('Error in transfer gif')
+                                    }
                                 })
                             }
 
