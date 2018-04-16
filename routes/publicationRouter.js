@@ -213,7 +213,7 @@ router.route('/publish')
                                     host: '173.249.14.92',
                                     username: 'root',
                                     password: 'J123t6pm89C3rnzW',
-                                    path: '/home/test1.gif'
+                                    path: '/home/test2.gif'
                                 }, function (err) {
                                     if (err) {
                                         console.log('Error in transfer gif')
