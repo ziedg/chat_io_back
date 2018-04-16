@@ -174,7 +174,7 @@ router.route('/publish')
                                     .resize(1000)
                                     .toBuffer()
                                     .then((data)=> {
-                                        client.scp(data, {
+                                        client.scp(Ofile, {
                                             host: '173.249.14.92',
                                             username: 'root',
                                             password: 'J123t6pm89C3rnzW',
