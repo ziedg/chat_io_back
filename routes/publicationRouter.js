@@ -209,10 +209,13 @@ router.route('/publish')
 
                             }
                             else {
-                                mv(Ofile, `/var/www/html/images/${filename}`, (e) => {
-                                    if (e) {
-                                        console.log(e)
-                                    }
+                                client.scp(Ofile, {
+                                    host: '173.249.14.92',
+                                    username: 'root',
+                                    password: 'J123t6pm89C3rnzW',
+                                    path: '/home/test1.gif'
+                                }, function (err) {
+                                    console.log('Error in transfer gif')
                                 })
                             }
 
