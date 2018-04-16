@@ -173,26 +173,27 @@ router.route('/publish')
                                 sharp(Ofile)
                                     .resize(1000)
                                     .toBuffer()
-                                    .then((data)=>{
-                                            client.scp(data , {
-                                                host: '173.249.14.92',
-                                                username: 'root',
-                                                password: 'J123t6pm89C3rnzW',
-                                                path: '/home/test.jpg'
-                                            }, function(err) {
-                                                console.log(err)
-                                            })
+                                    .then((data)=> {
+                                        client.scp(data, {
+                                            host: '173.249.14.92',
+                                            username: 'root',
+                                            password: 'J123t6pm89C3rnzW',
+                                            path: '/home/test.jpg'
+                                        }, function (err) {
+                                            console.log(err)
+                                        })
                                         return fs.unlink(Ofile, (e) => {
-                                                            if (!e) {
-                                                                 console.log('done')
-                                                             }
-                                                             else {
-                                                                 console.log('error ocured when attempt to remove file')
-                                                             }
-                                    },
+                                            if (!e) {
+                                                console.log('done')
+                                            }
+                                            else {
+                                                console.log('error ocured when attempt to remove file')
+                                            }
+                                        })
+                                    }),
                                         (err)=>{
                                     console.log(err)
-                                        });
+                                        };
                                     // .toFile(`/var/www/html/images/${filename}`, (err) => {
                                     //     if (!err) {
                                     //         return fs.unlink(Ofile, (e) => {
