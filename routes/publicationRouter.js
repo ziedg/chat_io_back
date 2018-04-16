@@ -191,9 +191,9 @@ router.route('/publish')
                                             }
                                         })
                                     })
-                                       .catch(err)=>{
+                                       .catch((err) =>{
                                     console.log(err)
-                                        };
+                                        });
                                     // .toFile(`/var/www/html/images/${filename}`, (err) => {
                                     //     if (!err) {
                                     //         return fs.unlink(Ofile, (e) => {
