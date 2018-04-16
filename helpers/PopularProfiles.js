@@ -19,7 +19,7 @@ var job=new CronJob('0 */15 * * * *', function() {
 
             popularProfile.remove({}).exec(function (err,result) {
                 if (err) {
-                    console.log(err);
+                    console.log('Error when droping popularProfile database',err);
                 }
 
             });
