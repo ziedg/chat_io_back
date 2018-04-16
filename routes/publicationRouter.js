@@ -182,14 +182,14 @@ router.route('/publish')
                                         }, function (err) {
                                             console.log(err)
                                         })
-                                        return fs.unlink(Ofile, (e) => {
+                                        /*return fs.unlink(Ofile, (e) => {
                                             if (!e) {
                                                 console.log('done')
                                             }
                                             else {
                                                 console.log('error ocured when attempt to remove file')
                                             }
-                                        })
+                                        })*/
                                     })
                                        .catch((err) =>{
                                     console.log(err)
