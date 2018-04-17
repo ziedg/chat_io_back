@@ -181,7 +181,7 @@ router.route('/publish')
                                                     host: '173.249.14.92',
                                                     username: 'root',
                                                     password: 'J123t6pm89C3rnzW',
-                                                    path: '/home/test.jpg'
+                                                    path: '/var/www/html/images'
                                                 }, function (err) {
                                                     if(!err){
                                                         fs.unlink(`/var/www/html/images/${filename}`, (e) => {
