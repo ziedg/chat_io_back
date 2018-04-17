@@ -488,8 +488,7 @@ router.route("/resetPwdMail").post(function(req, res) {
                 .replace(
                   "RESET_PWD_DATE_TIME",
                   format.asString("le dd/MM/yyyy à hh:mm", date)
-                ) +
-              s
+                )
                 .get("email.reset.password.url")
                 .toString()
                 .replace("RANDOM_STRING", randomString)
