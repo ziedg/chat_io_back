@@ -501,18 +501,14 @@ router.route('/updatePassword')
 
                 ProfilesPasswords.findById(profile.id, function (err, profilePassword) {
 
-                    if (!(passwordHash.verify(req.body.oldPassword, profilePassword.password))) {
+                    if ( profilePassword && !(passwordHash.verify(req.body.oldPassword, profilePassword.password))) {
                         return res.json({
                             status: 1,
                             error: "SP_ER_WRONG_PASSWORD"
                         });
                     }
-                    if(!profilePassword){
-                        return res.json({
-                            status: 2,
-                            error: 'SP_ER_PROFILE_NOT_FOUND'
-                        });
-                    }
+                
+    
                     else {
                         profilePassword.password = passwordHash.generate(req.body.newPassword);
                         profilePassword.save();
