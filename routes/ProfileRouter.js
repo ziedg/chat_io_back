@@ -507,6 +507,14 @@ router.route('/updatePassword')
                             error: "SP_ER_WRONG_PASSWORD"
                         });
                     }
+
+                     if (!profilePassword){
+                        return res.json({
+                            status: 1,
+                            error: "SP_ER_WRONG_PASSWORD"
+                        });
+                         
+                     }
                 
     
                     else {
