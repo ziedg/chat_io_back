@@ -178,9 +178,9 @@ router.route('/publish')
                                             if (!e) {
                                                 console.log('done');
                                                 client.scp(`/var/www/html/images/${filename}`, {
-                                                    host: '173.249.14.92',
+                                                    host: '173.249.14.90',
                                                     username: 'root',
-                                                    password: 'J123t6pm89C3rnzW',
+                                                    password: 'MZ9xWqTJp5dS2teU',
                                                     path: '/var/www/html/images'
                                                 }, function (err) {
                                                     if(!err){
