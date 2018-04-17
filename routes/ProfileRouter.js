@@ -507,6 +507,12 @@ router.route('/updatePassword')
                             error: "SP_ER_WRONG_PASSWORD"
                         });
                     }
+                    if(!profilePassword){
+                        return res.json({
+                            status: 2,
+                            error: 'SP_ER_PROFILE_NOT_FOUND'
+                        });
+                    }
                     else {
                         profilePassword.password = passwordHash.generate(req.body.newPassword);
                         profilePassword.save();
