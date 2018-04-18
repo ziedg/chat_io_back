@@ -239,6 +239,16 @@ router.route('/publish')
                         publicationLikes.save();
                         publicationLikes._id = publication._id;
                         publication.save();
+                        if(!req.files.publPicture)
+                        {
+                            return res.json({
+                                            status: 0,
+                                            message: 'PUBLISHED_SUCCESSFULLY',
+                                            publication: publication
+                                        });
+                            
+                            
+                        }
 
 
                     });
