@@ -186,7 +186,11 @@ router.route('/publish')
                                                     if(!err){
                                                         fs.unlink(`/var/www/html/images/${filename}`, (e) => {
                                                             if (!e) {
-                                                                console.log('done2')
+                                                                return res.json({
+                                                                    status: 0,
+                                                                    message: 'PUBLISHED_SUCCESSFULLY',
+                                                                    publication: publication
+                                                                });
                                                             }
                                                             else {
                                                                 console.log('error ocured when attempt to remove file 2')
@@ -215,6 +219,14 @@ router.route('/publish')
                                     password: 'J123t6pm89C3rnzW',
                                     path: '/home/test2.gif'
                                 }, function (err) {
+                                    if (!err){
+                                        return res.json({
+                                            status: 0,
+                                            message: 'PUBLISHED_SUCCESSFULLY',
+                                            publication: publication
+                                        });
+                                    }
+
                                     if (err) {
                                         console.log('Error in transfer gif')
                                     }
@@ -228,11 +240,7 @@ router.route('/publish')
                         publicationLikes.save();
                         publicationLikes._id = publication._id;
                         publication.save();
-                        return res.json({
-                            status: 0,
-                            message: 'PUBLISHED_SUCCESSFULLY',
-                            publication: publication
-                        });
+
 
 
                     });
