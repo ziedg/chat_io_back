@@ -186,6 +186,11 @@ router.route('/publish')
                                                     if(!err){
                                                         fs.unlink(`/var/www/html/images/${filename}`, (e) => {
                                                             if (!e) {
+                                                                return res.json({
+                                                                    status: 0,
+                                                                    message: 'PUBLISHED_SUCCESSFULLY',
+                                                                    publication: publication
+                                                                });
                                                             }
                                                             else {
                                                                 console.log('error ocured when attempt to remove file 2')
@@ -227,11 +232,11 @@ router.route('/publish')
                         publicationLikes.save();
                         publicationLikes._id = publication._id;
                         publication.save();
-                        return res.json({
+                       /* return res.json({
                             status: 0,
                             message: 'PUBLISHED_SUCCESSFULLY',
                             publication: publication
-                        });
+                        });*/
 
 
 
