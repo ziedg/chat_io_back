@@ -489,8 +489,9 @@ router.route("/resetPwdMail").post(function(req, res) {
                   "RESET_PWD_DATE_TIME",
                   format.asString("le dd/MM/yyyy à hh:mm", date)
                 ) +
-              s
-                .get("email.reset.password.url")
+
+
+                properties.get("email.reset.password.url")
                 .toString()
                 .replace("RANDOM_STRING", randomString)
           };
@@ -546,9 +547,9 @@ router.route("/resetPwd").post(function(req, res) {
         });
       } else {
         if (profilePassword.resetPswdString == req.body.randomString) {
-          profilePassword.password = passwordHash.generate(
-            req.body.newPassword
-          );
+          //profilePassword.password = passwordHash.generate(
+          //  req.body.newPassword
+         // );
           profilePassword.resetPswdString = undefined;
           profilePassword.save();
 

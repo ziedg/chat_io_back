@@ -36,7 +36,7 @@ mongoose.connect(`mongodb://${properties.get('mongo.url')}/${properties.get('mon
 var db =mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
-    console.log("connect to MongoDB Successfully!")
+    console.log("connect to MongoDB Successfullllly!")
 });
 
 
