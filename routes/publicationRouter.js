@@ -219,6 +219,13 @@ router.route('/publish')
                                     password: 'MZ9xWqTJp5dS2teU',
                                     path: '/var/www/html/images'
                                 }, function (err) {
+                                    if(!err){
+                                        return res.json({
+                                            status: 0,
+                                            message: 'PUBLISHED_SUCCESSFULLY',
+                                            publication: publication
+                                        });
+                                    }
                                     if (err) {
                                         console.log('Error in transfer gif')
                                     }
@@ -232,12 +239,6 @@ router.route('/publish')
                         publicationLikes.save();
                         publicationLikes._id = publication._id;
                         publication.save();
-                       /* return res.json({
-                            status: 0,
-                            message: 'PUBLISHED_SUCCESSFULLY',
-                            publication: publication
-                        });*/
-
 
 
                     });
