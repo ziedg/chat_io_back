@@ -67,7 +67,7 @@ router.route('/addComment')
             var upload = multer({
                 storage: storage
             }).fields([{
-                name: 'publPicture',
+                name: 'commentpubl',
                 maxCount: 2
             }]);
 
@@ -105,17 +105,10 @@ router.route('/addComment')
                         
            
 
-                         if (req.files)  console.log(req.files)
-                      if (req.files.publPicture) 
-                   
-                       {
-                        const commentLink=req.files.publPicture[0].filename;
-                        comment.commentPicture =commentLink
-                        console.log(commentLink)
-
-                       }
-
-
+                        
+                      if (req.files){
+                          console.log(req.files)
+                      }
 
 
 
