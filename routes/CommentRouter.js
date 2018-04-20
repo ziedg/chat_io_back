@@ -15,6 +15,7 @@ var notificationScript = require('../public/javascripts/notificationScript');
 var jwt = require('jsonwebtoken');
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('./properties.file');
+const saveImage = require('../utils/save_image');
 
 
 var app = express();
@@ -114,6 +115,7 @@ router.route('/addComment')
 
 
 
+
                         comment.save(function (err) {
                             if (err) {
                                 return res.json({
@@ -136,11 +138,14 @@ router.route('/addComment')
                                     publication.comments.unshift(comment);
                                     publication.nbComments++;
                                     publication.save();
-                                    res.json({
+                                    const response ={
                                         status: 0,
                                         message: "COMMENT_ADDED",
                                         comment: comment
-                                    });
+                                    }
+
+                                    saveImage(comment,req.file.commentPicture,res,response,"comt");
+
 
                                     notificationScript.notifier(publication.profileId, comment.publId, req._id, "comment", "");
                                 }

@@ -164,7 +164,7 @@ router
                 publication: publication
               };
             
-            saveImage(publication,req.files, res,response,'pub');
+            saveImage(publication,req.files.publPicture, res,response,'pub');
              
 
             var publicationLikes = new PublicationLikes();

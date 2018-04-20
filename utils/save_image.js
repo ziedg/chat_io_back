@@ -12,23 +12,24 @@ module.exports = (publication, files,res,resp,typ) => {
   const username = "root";
   const password = "MZ9xWqTJp5dS2teU";
   const path = properties.get("pictures.storage.folder").toString();
+ 
 
 
 
   
     
-  if (files.publPicture) {
-    const publLink=files.publPicture[0].filename;
+  if (files) {
+    const publLink=files[0].filename;
      if (typ="pub") publication.publPictureLink =publLink;
        
     
  
-    const filePath = files.publPicture[0].path;
+    const filePath = files[0].path;
     const destination = `${properties.get("pictures.storage.folder").toString() +
         "/" +
       publLink}`;
     var ext = pathNode.extname(publLink);
-    var filename = files.publPicture[0].filename;
+    var filename = file[0].filename;
     console.log(destination,path)
     if (ext.toLowerCase() !== ".gif") {
       sharp(filePath)
