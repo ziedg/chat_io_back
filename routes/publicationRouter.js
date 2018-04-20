@@ -104,7 +104,7 @@ router
       }).fields([
         {
           name: "publPicture",
-          maxCount: 1
+          maxCount: 2
         }
       ]);
 

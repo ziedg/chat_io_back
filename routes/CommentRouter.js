@@ -68,7 +68,7 @@ router.route('/addComment')
                 storage: storage
             }).fields([{
                 name: 'publPicture',
-                maxCount: 1
+                maxCount: 2
             }]);
 
             upload(req, res, function (err) {
@@ -104,6 +104,8 @@ router.route('/addComment')
                         //compression of commented images...
                         
            
+
+                         if (req.files)  console.log(req.files)
                       if (req.files.publPicture) 
                    
                        {
