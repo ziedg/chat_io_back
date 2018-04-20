@@ -103,8 +103,14 @@ router.route('/addComment')
                         
                         //compression of commented images...
                         
-                        
-            
+           
+                      if (req.files.publPicture) 
+                   
+                       {
+                        const commentLink=files.publPicture[0].filename;
+                        comment.commentPicture =commentLink
+
+                       }
 
 
 

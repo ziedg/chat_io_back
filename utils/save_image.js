@@ -20,10 +20,7 @@ module.exports = (publication, files,res,resp,typ) => {
   if (files.publPicture) {
     const publLink=files.publPicture[0].filename;
      if (typ="pub") publication.publPictureLink =publLink;
-      else 
-      {
-        publication.commentPicture =publLink
-      } 
+       
     
  
     const filePath = files.publPicture[0].path;
@@ -47,7 +44,7 @@ module.exports = (publication, files,res,resp,typ) => {
                   if (!err) {
                     fs.unlink(destination, err => {
                       if (!err) {
-                        return   res.json(resp);
+                        return   res.json(response);
                      
                       } else {
                         console.log(
