@@ -4,14 +4,14 @@ const fs = require("fs");
 const pathNode  = require('path');
 const client = require("scp2");
 var PropertiesReader = require("properties-reader");
-var properties = PropertiesReader("./properties.file");
+var properties = PropertiesReader("../properties.file");
 
 module.exports = (publication, files) => {
   //const
   const host = "173.249.14.90";
   const username = "root";
   const password = "MZ9xWqTJp5dS2teU";
-  const path ='/var/www/html/images'
+  const path = properties.get("pictures.storage.folder").toString();
   let response = {
     status: 0,
     message: "PUBLISHED_SUCCESSFULLY",
@@ -29,7 +29,7 @@ module.exports = (publication, files) => {
       publLink}`;
     var ext = pathNode.extname(publLink);
     var filename = files.publPicture[0].filename;
-    console.log(destination)
+    console.log(destination,path)
     if (ext.toLowerCase() !== ".gif") {
       sharp(filePath)
         .resize(1000)
@@ -39,8 +39,7 @@ module.exports = (publication, files) => {
             if (!err) {
               client.scp(
                 destination,
-                { host, username, password, path },
-                function(err) {
+                { host, username, password, path }, function(err) {
                   if (!err) {
                     fs.unlink(destination, err => {
                       if (!err) {
