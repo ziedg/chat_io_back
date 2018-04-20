@@ -157,7 +157,14 @@ router
             publication.nbFcbkShare = 0;
             publication.nbTwitterShare = 0;
 
-         saveImage(publication,req.files, res,'pub');
+
+            const response = {
+                status: 0,
+                message: "PUBLISHED_SUCCESSFULLY",
+                publication: publication
+              };
+            
+            saveImage(publication,req.files, res,response,'pub');
              
 
             var publicationLikes = new PublicationLikes();

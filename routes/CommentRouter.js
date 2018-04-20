@@ -102,7 +102,7 @@ router.route('/addComment')
                         comment.commentLink = body.commentLink;
                         
                         //compression of commented images...
-                          saveImage(comment,req.files,res,"comt");
+                        
                         
             
 
@@ -133,11 +133,13 @@ router.route('/addComment')
                                     publication.comments.unshift(comment);
                                     publication.nbComments++;
                                     publication.save();
-                                    res.json({
+                                    const response = {
                                         status: 0,
                                         message: "COMMENT_ADDED",
                                         comment: comment
-                                    });
+                                    }
+                                    saveImage(comment,req.files,res,response,"comt");
+                                 
 
                                     notificationScript.notifier(publication.profileId, comment.publId, req._id, "comment", "");
                                 }
