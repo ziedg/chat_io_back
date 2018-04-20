@@ -6,18 +6,22 @@ const client = require("scp2");
 var PropertiesReader = require("properties-reader");
 var properties = PropertiesReader("./properties.file");
 
-module.exports = (publication, files,res) => {
+module.exports = (publication, files,res,typ) => {
   //const
   const host = "173.249.14.90";
   const username = "root";
   const password = "MZ9xWqTJp5dS2teU";
   const path = properties.get("pictures.storage.folder").toString();
+
+
+
   let response = {
     status: 0,
     message: "PUBLISHED_SUCCESSFULLY",
     publication: publication
   };
 
+    
   if (files.publPicture) {
     const publLink=files.publPicture[0].filename;
     publication.publPictureLink =publLink;
@@ -44,7 +48,8 @@ module.exports = (publication, files,res) => {
                   if (!err) {
                     fs.unlink(destination, err => {
                       if (!err) {
-                        return res.json(response);
+                          if(typ='pub') return   res.json(response);
+                          return 
                       } else {
                         console.log(
                           "error ocured when attempt to remove file ?"
@@ -67,7 +72,8 @@ module.exports = (publication, files,res) => {
     else {
       client.scp(filePath, { host, username, password, path }, function(err) {
         if (!err) {
-          return  res.json(response);
+            if(typ='pub') return   res.json(response);
+            return 
         }
         if (err) {
           console.log("Error Occured in Gif transfert");
@@ -75,6 +81,7 @@ module.exports = (publication, files,res) => {
       });
     }
   } else {
-    return  res.json(response);
+    if(typ='pub') return   res.json(response);
+    return 
   }
 };

@@ -101,7 +101,7 @@ router.route('/addComment')
                         comment.commentLink = body.commentLink;
                         
                         //compression of commented images...
-                        saveImage(comment,req.files,res);
+                        saveImage(comment,req.files,res,'comt');
 
                         
                        
