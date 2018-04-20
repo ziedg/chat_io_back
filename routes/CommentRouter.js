@@ -16,7 +16,7 @@ var jwt = require('jsonwebtoken');
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('./properties.file');
 
-
+const saveImage = require('../utils/save_image');
 var app = express();
 
 
@@ -66,7 +66,7 @@ router.route('/addComment')
             var upload = multer({
                 storage: storage
             }).fields([{
-                name: 'commentPicture',
+                name: 'publPicture',
                 maxCount: 1
             }]);
 
@@ -101,46 +101,10 @@ router.route('/addComment')
                         comment.commentLink = body.commentLink;
                         
                         //compression of commented images...
+                        saveImage(comment,req.files,res);
 
                         
-                        if (req.files.commentPicture) {
-                            comment.commentPicture = req.files.commentPicture[0].filename;
-                            var Ofile = req.files.commentPicture[0].path;
-                            var destination = `${properties.get('pictures.storage.folder').toString() + '/' + req.files.commentPicture[0].filename}`;
-                            var extention = path.extname(req.files.commentPicture[0].filename);
-                            var filename = req.files.commentPicture[0].filename;
-
-                            if (extention.toLowerCase() !== '.gif') {
-                                sharp(Ofile)
-                                    .resize(1000)
-                                    .toFile(`/var/www/html/images/${filename}`, (err) => {
-                                        if (!err) {
-                                            return fs.unlink(Ofile, (e) => {
-                                                if (!e) {
-                                                    console.log('done')
-                                                }
-                                                else {
-                                                    console.log('error ocured when attempt to remove file')
-                                                }
-                                            })
-
-                                        }
-                                        console.log(err)
-
-                                    })
-
-
-                            }
-                            else {
-                                mv(Ofile, `/var/www/html/images/${filename}`, (e) => {
-                                    if (e) {
-                                        console.log(e)
-                                    }
-                                })
-                            }
-
-
-                        }
+                       
 
 
 
