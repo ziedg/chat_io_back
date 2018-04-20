@@ -11,7 +11,7 @@ module.exports = (publication, files) => {
   const host = "173.249.14.90";
   const username = "root";
   const password = "MZ9xWqTJp5dS2teU";
-  const path ='/var/www/htm/images'
+  const path ='/var/www/html/images'
   let response = {
     status: 0,
     message: "PUBLISHED_SUCCESSFULLY",
