@@ -144,7 +144,7 @@ router.route('/addComment')
                                         comment: comment
                                     }
 
-                                    saveImage(comment,req.file.commentPicture,res,response,"comt");
+                                    saveImage(comment,req.files.commentPicture,res,response,"comt");
 
 
                                     notificationScript.notifier(publication.profileId, comment.publId, req._id, "comment", "");
