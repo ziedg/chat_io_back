@@ -9,6 +9,7 @@ const mv = require('mv')
 
 var Comment = require('../models/Comment');
 var Publication = require('../models/Publication');
+const saveImage = require('../utils/save_image');
 var Profile = require('../models/Profile');
 var notificationScript = require('../public/javascripts/notificationScript');
 
@@ -16,7 +17,7 @@ var jwt = require('jsonwebtoken');
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('./properties.file');
 
-const saveImage = require('../utils/save_image');
+
 var app = express();
 
 
@@ -101,10 +102,9 @@ router.route('/addComment')
                         comment.commentLink = body.commentLink;
                         
                         //compression of commented images...
-                        saveImage(comment,req.files,res,'comt');
-
+                          saveImage(comment,req.files,res,"comt");
                         
-                       
+            
 
 
 

@@ -24,7 +24,11 @@ module.exports = (publication, files,res,typ) => {
     
   if (files.publPicture) {
     const publLink=files.publPicture[0].filename;
-    publication.publPictureLink =publLink;
+     if (typ="pub") publication.publPictureLink =publLink;
+      else 
+      {
+        publication.commentPicture =publLink
+      } 
     
  
     const filePath = files.publPicture[0].path;
@@ -49,7 +53,7 @@ module.exports = (publication, files,res,typ) => {
                     fs.unlink(destination, err => {
                       if (!err) {
                           if(typ='pub') return   res.json(response);
-                          return 
+                     
                       } else {
                         console.log(
                           "error ocured when attempt to remove file ?"
@@ -73,7 +77,7 @@ module.exports = (publication, files,res,typ) => {
       client.scp(filePath, { host, username, password, path }, function(err) {
         if (!err) {
             if(typ='pub') return   res.json(response);
-            return 
+        
         }
         if (err) {
           console.log("Error Occured in Gif transfert");
@@ -82,6 +86,6 @@ module.exports = (publication, files,res,typ) => {
     }
   } else {
     if(typ='pub') return   res.json(response);
-    return 
+       
   }
 };
