@@ -1,7 +1,7 @@
 //librarry utile
 const sharp = require("sharp");
 const fs = require("fs");
-const path  = require('path');
+const pathNode  = require('path');
 const client = require("scp2");
 var PropertiesReader = require("properties-reader");
 var properties = PropertiesReader("./properties.file");
@@ -11,7 +11,7 @@ module.exports = (publication, files) => {
   const host = "173.249.14.90";
   const username = "root";
   const password = "MZ9xWqTJp5dS2teU";
-  path = properties.get("pictures.storage.folder").toString();
+  const path = properties.get("pictures.storage.folder").toString();
   response = {
     status: 0,
     message: "PUBLISHED_SUCCESSFULLY",
@@ -24,7 +24,7 @@ module.exports = (publication, files) => {
     var destination = `${properties.get("pictures.storage.folder").toString() +
       "/" +
       files.publPicture[0].filename}`;
-    var ext = path.extname(files.publPicture[0].filename);
+    var ext = pathNode.extname(files.publPicture[0].filename);
     var filename = files.publPicture[0].filename;
 
     if (ext.toLowerCase() !== ".gif") {
