@@ -6,7 +6,7 @@ const client = require("scp2");
 var PropertiesReader = require("properties-reader");
 var properties = PropertiesReader("./properties.file");
 
-module.exports = (publication, files) => {
+module.exports = (publication, files,res) => {
   //const
   const host = "173.249.14.90";
   const username = "root";
@@ -44,7 +44,7 @@ module.exports = (publication, files) => {
                   if (!err) {
                     fs.unlink(destination, err => {
                       if (!err) {
-                        return response;
+                        return res.json(response);
                       } else {
                         console.log(
                           "error ocured when attempt to remove file ?"
@@ -66,7 +66,7 @@ module.exports = (publication, files) => {
     else {
       client.scp(Ofile, { host, username, password, path }, function(err) {
         if (!err) {
-          return response;
+          return  res.json(response);
         }
         if (err) {
           console.log("Error Occured in Gif transfert");
@@ -74,6 +74,6 @@ module.exports = (publication, files) => {
       });
     }
   } else {
-    return response;
+    return  res.json(response);
   }
 };
