@@ -29,7 +29,7 @@ module.exports = (publication, files,res,resp,typ) => {
         "/" +
       publLink}`;
     var ext = pathNode.extname(publLink);
-    var filename = file[0].filename;
+    var filename = files[0].filename;
     console.log(destination,path)
     if (ext.toLowerCase() !== ".gif") {
       sharp(filePath)
