@@ -103,52 +103,14 @@ router.route('/addComment')
                         //compression of commented images...
 
 
-                        if(req.files){
-                            console.log(req.files)
-                        }
+                      
 
                         
                         if (req.files.commentPicture) {
                             comment.commentPicture = req.files.commentPicture[0].filename;
-                            var Ofile = req.files.commentPicture[0].path;
-                            var destination = `${properties.get('pictures.storage.folder').toString() + '/' + req.files.commentPicture[0].filename}`;
-                            var extention = path.extname(req.files.commentPicture[0].filename);
-                            var filename = req.files.commentPicture[0].filename;
-
-                            if (extention.toLowerCase() !== '.gif') {
-                                sharp(Ofile)
-                                    .resize(1000)
-                                    .toFile(`/var/www/html/images/${filename}`, (err) => {
-                                        if (!err) {
-                                            return fs.unlink(Ofile, (e) => {
-                                                if (!e) {
-                                                    console.log('done')
-                                                }
-                                                else {
-                                                    console.log('error ocured when attempt to remove file')
-                                                }
-                                            })
-
-                                        }
-                                        console.log(err)
-
-                                    })
-
-
-                            }
-                            else {
-                                mv(Ofile, `/var/www/html/images/${filename}`, (e) => {
-                                    if (e) {
-                                        console.log(e)
-                                    }
-                                })
-                            }
-
 
                         }
-
-
-
+                           
 
 
 
