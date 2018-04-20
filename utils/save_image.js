@@ -6,7 +6,7 @@ const client = require("scp2");
 var PropertiesReader = require("properties-reader");
 var properties = PropertiesReader("./properties.file");
 
-module.exports = (publication, files,res) => {
+module.exports = (publication,pictType, files,res) => {
   //const
   const host = "173.249.14.90";
   const username = "root";
@@ -18,17 +18,17 @@ module.exports = (publication, files,res) => {
     publication: publication
   };
 
-  if (files.publPicture) {
-    const publLink=files.publPicture[0].filename;
+  if (files.pictType) {
+    const publLink=files.pictType[0].filename;
     publication.publPictureLink =publLink;
     
  
-    const filePath = files.publPicture[0].path;
+    const filePath = files.pictType[0].path;
     const destination = `${properties.get("pictures.storage.folder").toString() +
         "/" +
       publLink}`;
     var ext = pathNode.extname(publLink);
-    var filename = files.publPicture[0].filename;
+    var filename = files.pictType[0].filename;
     console.log(destination,path)
     if (ext.toLowerCase() !== ".gif") {
       sharp(filePath)
