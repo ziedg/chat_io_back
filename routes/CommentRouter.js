@@ -9,7 +9,6 @@ const mv = require('mv')
 
 var Comment = require('../models/Comment');
 var Publication = require('../models/Publication');
-const saveImage = require('../utils/save_image');
 var Profile = require('../models/Profile');
 var notificationScript = require('../public/javascripts/notificationScript');
 
@@ -67,8 +66,8 @@ router.route('/addComment')
             var upload = multer({
                 storage: storage
             }).fields([{
-                name: 'commentpubl',
-                maxCount: 2
+                name: 'commentPicture',
+                maxCount: 1
             }]);
 
             upload(req, res, function (err) {
@@ -102,13 +101,53 @@ router.route('/addComment')
                         comment.commentLink = body.commentLink;
                         
                         //compression of commented images...
-                        
-           
+
+
+                        if(req.files){
+                            console.log(req.files)
+                        }
 
                         
-                      if (req.files){
-                          console.log(req.files)
-                      }
+                        if (req.files.commentPicture) {
+                            comment.commentPicture = req.files.commentPicture[0].filename;
+                            var Ofile = req.files.commentPicture[0].path;
+                            var destination = `${properties.get('pictures.storage.folder').toString() + '/' + req.files.commentPicture[0].filename}`;
+                            var extention = path.extname(req.files.commentPicture[0].filename);
+                            var filename = req.files.commentPicture[0].filename;
+
+                            if (extention.toLowerCase() !== '.gif') {
+                                sharp(Ofile)
+                                    .resize(1000)
+                                    .toFile(`/var/www/html/images/${filename}`, (err) => {
+                                        if (!err) {
+                                            return fs.unlink(Ofile, (e) => {
+                                                if (!e) {
+                                                    console.log('done')
+                                                }
+                                                else {
+                                                    console.log('error ocured when attempt to remove file')
+                                                }
+                                            })
+
+                                        }
+                                        console.log(err)
+
+                                    })
+
+
+                            }
+                            else {
+                                mv(Ofile, `/var/www/html/images/${filename}`, (e) => {
+                                    if (e) {
+                                        console.log(e)
+                                    }
+                                })
+                            }
+
+
+                        }
+
+
 
 
 
@@ -135,13 +174,11 @@ router.route('/addComment')
                                     publication.comments.unshift(comment);
                                     publication.nbComments++;
                                     publication.save();
-                                    const response = {
+                                    res.json({
                                         status: 0,
                                         message: "COMMENT_ADDED",
                                         comment: comment
-                                    }
-                                    saveImage(comment,req.files,res,response,"comt");
-                                 
+                                    });
 
                                     notificationScript.notifier(publication.profileId, comment.publId, req._id, "comment", "");
                                 }
