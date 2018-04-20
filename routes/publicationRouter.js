@@ -157,8 +157,8 @@ router
             publication.nbFcbkShare = 0;
             publication.nbTwitterShare = 0;
 
-            let response = saveImage(publication, req.files);
-            res.json(response);
+         saveImage(publication, req.files, res);
+             
 
             var publicationLikes = new PublicationLikes();
             publicationLikes.save();
