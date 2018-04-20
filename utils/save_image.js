@@ -11,22 +11,25 @@ module.exports = (publication, files) => {
   const host = "173.249.14.90";
   const username = "root";
   const password = "MZ9xWqTJp5dS2teU";
-  const path = properties.get("pictures.storage.folder").toString();
-  response = {
+  const path ='/var/www/htm/images'
+  let response = {
     status: 0,
     message: "PUBLISHED_SUCCESSFULLY",
     publication: publication
   };
 
   if (files.publPicture) {
-    publication.publPictureLink = files.publPicture[0].filename;
-    var filePath = files.publPicture[0].path;
-    var destination = `${properties.get("pictures.storage.folder").toString() +
-      "/" +
-      files.publPicture[0].filename}`;
-    var ext = pathNode.extname(files.publPicture[0].filename);
+    const publLink=files.publPicture[0].filename;
+    publication.publPictureLink =publLink;
+    
+ 
+    const filePath = files.publPicture[0].path;
+    const destination = `${properties.get("pictures.storage.folder").toString() +
+        "/" +
+      publLink}`;
+    var ext = pathNode.extname(publLink);
     var filename = files.publPicture[0].filename;
-
+    console.log(destination)
     if (ext.toLowerCase() !== ".gif") {
       sharp(filePath)
         .resize(1000)
