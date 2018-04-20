@@ -44,7 +44,7 @@ module.exports = (publication, files,res,resp,typ) => {
                   if (!err) {
                     fs.unlink(destination, err => {
                       if (!err) {
-                        return   res.json(response);
+                        return   res.json(resp);
                      
                       } else {
                         console.log(
