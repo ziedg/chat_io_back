@@ -157,7 +157,7 @@ router
             publication.nbFcbkShare = 0;
             publication.nbTwitterShare = 0;
 
-         saveImage(publication,req.files,publPicture,res);
+         saveImage(publication,req.files, res);
              
 
             var publicationLikes = new PublicationLikes();
