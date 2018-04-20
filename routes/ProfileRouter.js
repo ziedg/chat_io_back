@@ -579,7 +579,7 @@ router.route('/getPopularProfiles/:id?')
                                 var find = popularProfile.find(query)
                                     .where('likers').nin([ObjectId(profile._id)])
                                     .skip(index)
-                                    .limit(10)
+                                    .limit(12)
                                     .sort({
                                         nbLikes :-1
                                     });
