@@ -6,7 +6,7 @@ const client = require("scp2");
 var PropertiesReader = require("properties-reader");
 var properties = PropertiesReader("./properties.file");
 
-module.exports = (publication, files,res,resp) => {
+module.exports = (publication, files,res,resp,typ) => {
   //const
   const host = "173.249.14.90";
   const username = "root";
@@ -47,7 +47,7 @@ module.exports = (publication, files,res,resp) => {
                   if (!err) {
                     fs.unlink(destination, err => {
                       if (!err) {
-                        return   res.json(response);
+                        return   res.json(resp);
                      
                       } else {
                         console.log(
@@ -71,7 +71,7 @@ module.exports = (publication, files,res,resp) => {
     else {
       client.scp(filePath, { host, username, password, path }, function(err) {
         if (!err) {
-           return   res.json(response);
+           return   res.json(resp);
         
         }
         if (err) {
@@ -80,7 +80,7 @@ module.exports = (publication, files,res,resp) => {
       });
     }
   } else {
-   return   res.json(response);
+   return   res.json(resp);
        
   }
 };
