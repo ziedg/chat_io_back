@@ -23,7 +23,7 @@ module.exports = (publication, files) => {
     var destination = `${properties.get("pictures.storage.folder").toString() +
       "/" +
       files.publPicture[0].filename}`;
-    var ext = path.extname(req.files.publPicture[0].filename);
+    var ext = path.extname(files.publPicture[0].filename);
     var filename = files.publPicture[0].filename;
 
     if (ext.toLowerCase() !== ".gif") {
