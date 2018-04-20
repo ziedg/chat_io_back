@@ -1,6 +1,7 @@
 //librarry utile
 const sharp = require("sharp");
 const fs = require("fs");
+const path  = require('path');
 const client = require("scp2");
 var PropertiesReader = require("properties-reader");
 var properties = PropertiesReader("./properties.file");
