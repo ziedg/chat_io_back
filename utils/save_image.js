@@ -28,7 +28,7 @@ module.exports = (publication, files) => {
     var filename = files.publPicture[0].filename;
 
     if (ext.toLowerCase() !== ".gif") {
-      sharp(fimePath)
+      sharp(filePath)
         .resize(1000)
         .toFile(destination)
         .then(data => {
