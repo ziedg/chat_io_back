@@ -52,7 +52,8 @@ module.exports = (publication, files,res) => {
                       }
                     });
                   }
-                  console.log("error ocurred in file transefert ?");
+                  if(err)
+                   console.log("error ocurred in file transefert ?");
                 }
               );
             } else {
@@ -64,7 +65,7 @@ module.exports = (publication, files,res) => {
 
     //cas fichier Gif
     else {
-      client.scp(Ofile, { host, username, password, path }, function(err) {
+      client.scp(filePath, { host, username, password, path }, function(err) {
         if (!err) {
           return  res.json(response);
         }
