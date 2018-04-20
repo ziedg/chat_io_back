@@ -4,7 +4,7 @@ const fs = require("fs");
 const pathNode  = require('path');
 const client = require("scp2");
 var PropertiesReader = require("properties-reader");
-var properties = PropertiesReader("../properties.file");
+var properties = PropertiesReader("./properties.file");
 
 module.exports = (publication, files) => {
   //const
@@ -39,7 +39,8 @@ module.exports = (publication, files) => {
             if (!err) {
               client.scp(
                 destination,
-                { host, username, password, path }, function(err) {
+                { host, username, password, path },
+ function(err) {
                   if (!err) {
                     fs.unlink(destination, err => {
                       if (!err) {
