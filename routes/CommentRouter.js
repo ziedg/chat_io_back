@@ -109,6 +109,7 @@ router.route('/addComment')
                        {
                         const commentLink=files.publPicture[0].filename;
                         comment.commentPicture =commentLink
+                        console.log(commentLink)
 
                        }
 
