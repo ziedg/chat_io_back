@@ -343,8 +343,36 @@ router.route('/updateProfilePicture')
                                 properties.get('pictures.link') + req.files.profilePicture[0].filename;
                             profile.profilePictureMin =
                                 properties.get('pictures.link') + req.files.profilePicture[0].filename;
+
+                            //Update du photo dans les publications antérieures
+                            profile.publications.forEach((publicationId)=>{
+                                Publication.findById(publicationId,function (err,pub) {
+                                    if (!err){
+                                        pub.profilePicture =
+                                            properties.get('pictures.link') + req.files.profilePicture[0].filename;
+                                        pub.profilePictureMin =
+                                            properties.get('pictures.link') + req.files.profilePicture[0].filename;
+                                    }
+                                })
+
+                            })
+                            //Update du photo dans les commentaires antérieures
+
+                            profile.comments.forEach((commentId)=>{
+                                Comment.findById(commentId,function (err,comment) {
+                                    if (!err){
+                                        comment.profilePicture =
+                                            properties.get('pictures.link') + req.files.profilePicture[0].filename;
+                                        comment.profilePictureMin =
+                                            properties.get('pictures.link') + req.files.profilePicture[0].filename;
+                                    }
+                                })
+
+                            })
                         }
                         profile.save();
+
+
                         res.json({
                             status: 0,
                             profile: profile,
