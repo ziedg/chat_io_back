@@ -490,10 +490,9 @@ router.route('/removeComment')
                                 error: 'SP_ER_PROFILE_NOT_FOUND'
                             });
                         }
-                        profile.comments.splice(indexOf(req.body.commentId),1);
+                        profile.comments.splice(profile.comments.indexOf(req.body.commentId), 1);
                         profile.save();
-                    }
-
+                    })
                     Publication.findById(req.body.publId, function (err, publication) {
                         if (err) {
                             return res.json({

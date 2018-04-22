@@ -610,7 +610,7 @@ router.route("/removePublication").post(function(req, res) {
 
         profile.nbPublications--;
         profile.nbLikes -= publication.nbLikes;
-          profile.publications.splice(indexOf(req.body.publId),1);
+          profile.publications.splice(profile.publications.indexOf(req.body.publId),1);
         profile.save();
       });
       publication.remove();
