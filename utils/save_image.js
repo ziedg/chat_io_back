@@ -1,36 +1,28 @@
 //librarry utile
 const sharp = require("sharp");
 const fs = require("fs");
-const pathNode  = require('path');
+const pathNode = require("path");
 const client = require("scp2");
 var PropertiesReader = require("properties-reader");
 var properties = PropertiesReader("./properties.file");
 
-module.exports = (publication, files,res,resp,typ) => {
+module.exports = (publication, files, res, resp, typ) => {
   //const
-  const host = "173.249.14.90";
-  const username = "root";
-  const password = "MZ9xWqTJp5dS2teU";
+  const host = properties.get("security.scp.ip").toString();
+  const username = properties.get("security.scp.user").toString();
+  const password = properties.get("security.scp.secret").toString();
   const path = properties.get("pictures.storage.folder").toString();
- 
 
-
-
-  
-    
   if (files) {
-    const publLink=files[0].filename;
-     if (typ="pub") publication.publPictureLink =publLink;
-       
-    
- 
+    const publLink = files[0].filename;
+    if ((typ = "pub")) publication.publPictureLink = publLink;
+
     const filePath = files[0].path;
-    const destination = `${properties.get("pictures.storage.folder").toString() +
-        "/" +
+    const destination = `${path+
+      "/" +
       publLink}`;
     var ext = pathNode.extname(publLink);
-    var filename = files[0].filename;
-    console.log(destination,path)
+    console.log(destination, path);
     if (ext.toLowerCase() !== ".gif") {
       sharp(filePath)
         .resize(1000)
@@ -41,12 +33,11 @@ module.exports = (publication, files,res,resp,typ) => {
               client.scp(
                 destination,
                 { host, username, password, path },
- function(err) {
+                function(err) {
                   if (!err) {
                     fs.unlink(destination, err => {
                       if (!err) {
-                        return   res.json(resp);
-                     
+                        return res.json(resp);
                       } else {
                         console.log(
                           "error ocured when attempt to remove file ?"
@@ -54,8 +45,7 @@ module.exports = (publication, files,res,resp,typ) => {
                       }
                     });
                   }
-                  if(err)
-                  console.log("error ocurred in file transefert ?");
+                  if (err) console.log("error ocurred in file transefert ?");
                 }
               );
             } else {
@@ -69,8 +59,7 @@ module.exports = (publication, files,res,resp,typ) => {
     else {
       client.scp(filePath, { host, username, password, path }, function(err) {
         if (!err) {
-           return   res.json(resp);
-        
+          return res.json(resp);
         }
         if (err) {
           console.log("Error Occured in Gif transfert");
@@ -78,7 +67,6 @@ module.exports = (publication, files,res,resp,typ) => {
       });
     }
   } else {
-   return   res.json(resp);
-       
+    return res.json(resp);
   }
 };

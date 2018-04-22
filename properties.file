@@ -3,7 +3,7 @@ port.http = 3002
 port.https = 3005
 
 [ssl]
-enable = true
+enable =true
 privkey1 = /etc/letsencrypt/archive/speegar.com/privkey1.pem
 fullchain1 = /etc/letsencrypt/archive/speegar.com/fullchain1.pem
 chain1 = /etc/letsencrypt/archive/speegar.com/chain1.pem
@@ -17,8 +17,12 @@ link = https://speegar.com/images/
 avatars.link = https://speegar.com:3005/avatars/
 storage.folder = /var/www/html/images
 storage.temp=/var/www/html
+
 [security]
 jwt.secret = f09cce0a0753496b9baaae70b343a15f
+scp.secret =  MZ9xWqTJp5dS2teU
+scp.ip = 173.249.14.90
+scp.user = root 
 
 [email]
 transporter.host = speegar.com
