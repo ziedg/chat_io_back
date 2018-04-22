@@ -89,6 +89,7 @@ router.route('/addComment')
                         });
                     } else {
                         profile.comments.push(comment._id);
+                        profile.save();
                         comment.profileFirstName = profile.firstName;
                         comment.profileLastName = profile.lastName;
                         comment.profilePicture = profile.profilePicture;

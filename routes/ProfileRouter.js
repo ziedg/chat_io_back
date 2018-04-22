@@ -353,6 +353,7 @@ router.route('/updateProfilePicture')
                                             properties.get('pictures.link') + req.files.profilePicture[0].filename;
                                         pub.profilePictureMin =
                                             properties.get('pictures.link') + req.files.profilePicture[0].filename;
+                                        pub.save();
                                     }
                                 })
 
@@ -366,6 +367,7 @@ router.route('/updateProfilePicture')
                                             properties.get('pictures.link') + req.files.profilePicture[0].filename;
                                         comment.profilePictureMin =
                                             properties.get('pictures.link') + req.files.profilePicture[0].filename;
+                                        comment.save();
                                     }
                                 })
 
