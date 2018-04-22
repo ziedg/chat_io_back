@@ -349,11 +349,13 @@ router.route('/updateProfilePicture')
                             profile.publications.forEach((publicationId)=>{
                                 Publication.findById(publicationId,function (err,pub) {
                                     if (!err){
-                                        pub.profilePicture =
-                                            properties.get('pictures.link') + req.files.profilePicture[0].filename;
-                                        pub.profilePictureMin =
-                                            properties.get('pictures.link') + req.files.profilePicture[0].filename;
-                                        pub.save();
+                                        if(pub) {
+                                            pub.profilePicture =
+                                                properties.get('pictures.link') + req.files.profilePicture[0].filename;
+                                            pub.profilePictureMin =
+                                                properties.get('pictures.link') + req.files.profilePicture[0].filename;
+                                            pub.save();
+                                        }
                                     }
                                 })
 
@@ -363,11 +365,13 @@ router.route('/updateProfilePicture')
                             profile.comments.forEach((commentId)=>{
                                 Comment.findById(commentId,function (err,comment) {
                                     if (!err){
-                                        comment.profilePicture =
-                                            properties.get('pictures.link') + req.files.profilePicture[0].filename;
-                                        comment.profilePictureMin =
-                                            properties.get('pictures.link') + req.files.profilePicture[0].filename;
-                                        comment.save();
+                                        if (comment) {
+                                            comment.profilePicture =
+                                                properties.get('pictures.link') + req.files.profilePicture[0].filename;
+                                            comment.profilePictureMin =
+                                                properties.get('pictures.link') + req.files.profilePicture[0].filename;
+                                            comment.save();
+                                        }
                                     }
                                 })
 

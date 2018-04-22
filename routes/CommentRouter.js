@@ -476,6 +476,24 @@ router.route('/removeComment')
                     }
 
                     comment.remove();
+
+                    Profile.findById(req._id, function (err, profile) {
+                        if (err) {
+                            return res.json({
+                                status: 3,
+                                error: 'SP_ER_TECHNICAL_ERROR'
+                            });
+                        }
+                        if (!profile) {
+                            return res.json({
+                                status: 2,
+                                error: 'SP_ER_PROFILE_NOT_FOUND'
+                            });
+                        }
+                        profile.comments.splice(indexOf(req.body.commentId),1);
+                        profile.save();
+                    }
+
                     Publication.findById(req.body.publId, function (err, publication) {
                         if (err) {
                             return res.json({
