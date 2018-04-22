@@ -17,7 +17,7 @@ var profileSchema = new Schema(
     pictures: [String],
     publications: [String],
       comments :[String],
-    subscriptions: [Schema.ObjectId],
+    subscribers: [Schema.ObjectId],
     likers: [Schema.ObjectId],
     ignoredProfiles: [Schema.ObjectId],
     nbSubscriptions: Number,

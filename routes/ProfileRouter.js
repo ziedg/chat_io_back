@@ -82,8 +82,7 @@ router.route('/getProfile')
                         });
                     }
 
-                    profile.isFollowed =
-                        (connectedProfile.subscribers.indexOf(req.query.ProfileId) > -1);
+                    profile.isFollowed = (connectedProfile.subscribers.indexOf(req.query.ProfileId) > -1);
 
                     var user = profile.toObject();
                     delete user["password"];
@@ -344,7 +343,7 @@ router.route('/updateProfilePicture')
                             profile.profilePictureMin =
                                 properties.get('pictures.link') + req.files.profilePicture[0].filename;
 
-                            /*
+
                             //Update du photo dans les publications anterieures
 
                             profile.publications.forEach((publicationId)=>{
@@ -370,7 +369,7 @@ router.route('/updateProfilePicture')
                                     }
                                 })
 
-                            })*/
+                            })
                         }
                         profile.save();
 
