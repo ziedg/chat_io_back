@@ -344,7 +344,9 @@ router.route('/updateProfilePicture')
                             profile.profilePictureMin =
                                 properties.get('pictures.link') + req.files.profilePicture[0].filename;
 
-                            //Update du photo dans les publications antérieures
+                            /*
+                            //Update du photo dans les publications anterieures
+
                             profile.publications.forEach((publicationId)=>{
                                 Publication.findById(publicationId,function (err,pub) {
                                     if (!err){
@@ -356,7 +358,7 @@ router.route('/updateProfilePicture')
                                 })
 
                             })
-                            //Update du photo dans les commentaires antérieures
+                            //Update du photo dans les commentaires anterieures
 
                             profile.comments.forEach((commentId)=>{
                                 Comment.findById(commentId,function (err,comment) {
@@ -368,7 +370,7 @@ router.route('/updateProfilePicture')
                                     }
                                 })
 
-                            })
+                            })*/
                         }
                         profile.save();
 

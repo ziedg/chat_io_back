@@ -137,7 +137,7 @@ router
               return;
             }
             profile.nbPublications++;
-            profile.publications.push(publication._id);
+           // profile.publications.push(publication._id);
             profile.save();
             publication.profileFirstName = profile.firstName;
             publication.profileLastName = profile.lastName;

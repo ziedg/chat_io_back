@@ -88,7 +88,7 @@ router.route('/addComment')
                             error: 'SP_ER_PROFILE_NOT_FOUND'
                         });
                     } else {
-                        profile.comments.push(comment._id);
+                       // profile.comments.push(comment._id);
                         comment.profileFirstName = profile.firstName;
                         comment.profileLastName = profile.lastName;
                         comment.profilePicture = profile.profilePicture;
