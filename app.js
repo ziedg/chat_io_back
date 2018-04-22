@@ -9,12 +9,13 @@ var flash    = require('connect-flash');
 var https = require('https');
 var fs = require('fs');
 
+
 var PropertiesReader = require('properties-reader');
-var properties = PropertiesReader('/usr/local/properties.file');
+var properties = PropertiesReader('properties.file');
 
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json({limit: '50mb'}));
-
+app.use(express.static(path.join(__dirname,'public')));
 
 var Abonnee = require('./models/Profile');
 var Publication = require('./models/Publication');
@@ -30,7 +31,13 @@ var Notification = require('./models/Notification');
 
 // connection to mongoose database
 var mongoose = require('mongoose');
-var db = mongoose.connect('mongodb://'+properties.get('mongo.url')+'/'+properties.get('mongo.db.name'));
+mongoose.connect(`mongodb://${properties.get('mongo.url')}/${properties.get('mongo.db.name')}`);
+
+var db =mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+    console.log("connect to MongoDB Successfullllly!")
+});
 
 
 app.use(function(req, res, next) { 
@@ -79,9 +86,12 @@ app.use('/', router);
 
 // START SERVER
 //============================================
-
+//cron 
+var cronJob =require('./helpers/PopularProfiles');
 var https_port = properties.get('server.port.https');
 var http_port = properties.get('server.port.http');
+
+	
 
 if(properties.get('ssl.enable')){
 	https.createServer({
@@ -91,9 +101,8 @@ if(properties.get('ssl.enable')){
 	}, app).listen(https_port);
 } else {
 	app.listen(http_port);
+	app.listen(3000);
 	console.log('the server is launched on the port ' + http_port+', mode ssl is disabled, '+new Date());
 }
-
-
 
 

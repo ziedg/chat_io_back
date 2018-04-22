@@ -2,6 +2,10 @@ var express = require('express');
 var router = express.Router();
 
 var multer = require('multer');
+const sharp = require('sharp');
+const path = require('path')
+const fs = require('fs');
+const mv = require('mv')
 
 var Comment = require('../models/Comment');
 var Publication = require('../models/Publication');
@@ -11,12 +15,13 @@ var notificationScript = require('../public/javascripts/notificationScript');
 var jwt = require('jsonwebtoken');
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('./properties.file');
+const saveImage = require('../utils/save_image');
 
 
 var app = express();
 
 
-// route middleware to verify a token
+// route middleware to verify a token!
 router.use(function (req, res, next) {
     if (req.method === 'OPTIONS') {
         next();
@@ -52,7 +57,7 @@ router.route('/addComment')
 
             var storage = multer.diskStorage({
                 destination: function (req, file, callback) {
-                    callback(null,  properties.get('pictures.storage.folder').toString());
+                    callback(null,  properties.get('pictures.storage.temp').toString());
                 },
                 filename: function (req, file, callback) {
                     callback(null, comment.id + '_' + file.originalname);
@@ -83,6 +88,8 @@ router.route('/addComment')
                             error: 'SP_ER_PROFILE_NOT_FOUND'
                         });
                     } else {
+                        profile.comments.push(comment._id);
+                        profile.save();
                         comment.profileFirstName = profile.firstName;
                         comment.profileLastName = profile.lastName;
                         comment.profilePicture = profile.profilePicture;
@@ -95,11 +102,22 @@ router.route('/addComment')
                         comment.nbSignals = 0;
                         comment.commentText = body.commentText;
                         comment.commentLink = body.commentLink;
-                        if (req.files) {
-                            if (req.files.commentPicture) {
-                                comment.commentPicture = req.files.commentPicture[0].filename;
-                            }
+                        
+                        //compression of commented images...
+
+
+                      
+
+                        
+                        if (req.files.commentPicture) {
+                            comment.commentPicture = req.files.commentPicture[0].filename;
+
                         }
+                           
+
+
+
+
                         comment.save(function (err) {
                             if (err) {
                                 return res.json({
@@ -122,11 +140,14 @@ router.route('/addComment')
                                     publication.comments.unshift(comment);
                                     publication.nbComments++;
                                     publication.save();
-                                    res.json({
+                                    const response ={
                                         status: 0,
                                         message: "COMMENT_ADDED",
                                         comment: comment
-                                    });
+                                    }
+
+                                    saveImage(comment,req.files.commentPicture,res,response,"comt");
+
 
                                     notificationScript.notifier(publication.profileId, comment.publId, req._id, "comment", "");
                                 }
@@ -455,6 +476,23 @@ router.route('/removeComment')
                     }
 
                     comment.remove();
+
+                    Profile.findById(req._id, function (err, profile) {
+                        if (err) {
+                            return res.json({
+                                status: 3,
+                                error: 'SP_ER_TECHNICAL_ERROR'
+                            });
+                        }
+                        if (!profile) {
+                            return res.json({
+                                status: 2,
+                                error: 'SP_ER_PROFILE_NOT_FOUND'
+                            });
+                        }
+                        profile.comments.splice(profile.comments.indexOf(req.body.commentId), 1);
+                        profile.save();
+                    })
                     Publication.findById(req.body.publId, function (err, publication) {
                         if (err) {
                             return res.json({

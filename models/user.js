@@ -9,6 +9,10 @@ var userSchema = mongoose.Schema({
     local            : {
         email        : String,
         password     : String,
+        isVerified:{
+            type:Boolean,
+            default:false
+        }
     },
     facebook         : {
         id           : String,

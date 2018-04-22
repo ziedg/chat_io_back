@@ -51,7 +51,7 @@ router.route('/getNotifications')
             }
 
             var query = Notification.find(criteria).sort({_id: -1}).limit(5);
-            query.execFind(function (err, notifications) {
+            query.exec(function (err, notifications) {
                 if (err) {
                     res.json({
                         status: 3,
@@ -114,8 +114,11 @@ router.route('/checkNewNotifications')
     });
 
 router.route('/markView')
+
     .post(function (req, res) {
         try {
+
+           
             Notification.findById(req.body.notificationId, function (err, notification) {
                 if (err) {
                     res.json({
@@ -132,8 +135,9 @@ router.route('/markView')
                     });
                 }
                 else {
-                    notification.isSeen = "true";
+                    notification.isSeen=true;
                     notification.save();
+                   
                     res.json({
                         status: 1,
                         message: "NOTIFICATION_UPDATED"
