@@ -13,7 +13,7 @@ module.exports = (publication, files, res, resp, typ) => {
 
   const username = properties.get("security.scp.user").toString();
   const password = properties.get("security.scp.secret").toString();
-  const path = properties.get("pictures.storage.folder").toString();
+  const path = properties.get('storage.production')? properties.get("pictures.storage.folder").toString():properties.get("pictures.storage.folder.integration").toString();
 
   if (files) {
     const publLink = files[0].filename;

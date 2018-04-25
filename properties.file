@@ -16,6 +16,7 @@ url =127.0.0.1
 link = https://speegar.com/images/
 avatars.link = https://speegar.com:3005/avatars/
 storage.folder = /var/www/html/images
+storage.folder.integration=/var/www/html/images2
 storage.temp=/var/www/html
 
 [security]
