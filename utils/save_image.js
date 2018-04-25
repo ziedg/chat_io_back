@@ -52,6 +52,9 @@ module.exports = (publication, files, res, resp, typ) => {
                 }
               
               );}
+              else{
+                return res.json(resp);
+              }
               
 
             } else {
