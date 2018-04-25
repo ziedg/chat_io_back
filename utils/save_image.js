@@ -8,7 +8,9 @@ var properties = PropertiesReader("./properties.file");
 
 module.exports = (publication, files, res, resp, typ) => {
   //const
-  const host = properties.get("security.scp.ip").toString();
+
+   const host = properties.get('storage.production')?properties.get("server.production.ip").toString(): properties.get("security.scp.ip").toString();
+
   const username = properties.get("security.scp.user").toString();
   const password = properties.get("security.scp.secret").toString();
   const path = properties.get("pictures.storage.folder").toString();
