@@ -16,7 +16,7 @@ db.name =SpeegarDB
 url =127.0.0.1
 
 [pictures]
-link = https://speegar.com/images/
+link = https://speegar.com/images
 avatars.link = https://speegar.com/images/avatars/
 storage.folder = /var/www/html/images
 storage.temp=/var/tmp/
