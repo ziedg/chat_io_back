@@ -8,7 +8,9 @@ var properties = PropertiesReader("./properties.file");
 
 module.exports = (publication, files, res, resp, typ) => {
   //const
-  const host = properties.get("security.scp.ip").toString();
+
+   const host = properties.get('storage.production')?properties.get("server.production.ip").toString(): properties.get("security.scp.ip").toString();
+
   const username = properties.get("security.scp.user").toString();
   const password = properties.get("security.scp.secret").toString();
   const path = properties.get("pictures.storage.folder").toString();
@@ -30,6 +32,7 @@ module.exports = (publication, files, res, resp, typ) => {
         .then(data => {
           fs.unlink(filePath, err => {
             if (!err) {
+              if(properties.get('storage.production')){
               client.scp(
                 destination,
                 { host, username, password, path },
@@ -47,7 +50,13 @@ module.exports = (publication, files, res, resp, typ) => {
                   }
                   if (err) console.log("error ocurred in file transefert ?");
                 }
-              );
+              
+              );}
+              else{
+                return res.json(resp);
+              }
+              
+
             } else {
               console.log("error ocured when attempt to remove file ?");
             }

@@ -337,11 +337,13 @@ router.route('/updateProfilePicture')
                             });
                         }
 
+
+                         const link=properties.get('server.production')?  properties.get('pictures.link') :  properties.get('pictures.integration.link') 
                         if (req.files.profilePicture[0]) {
                             profile.profilePicture =
-                                properties.get('pictures.link') + req.files.profilePicture[0].filename;
+                                link + req.files.profilePicture[0].filename;
                             profile.profilePictureMin =
-                                properties.get('pictures.link') + req.files.profilePicture[0].filename;
+                                link + req.files.profilePicture[0].filename;
 
 
                             //Update du photo dans les publications anterieures

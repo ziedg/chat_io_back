@@ -250,8 +250,13 @@ router
 var profilePicturePath= `${properties.get('pictures.storage.folder')}/${req.body.facebookId}.jpeg`;
 var profilePictureMinPath= `${properties.get('pictures.storage.folder')}/${req.body.facebookId}_min.jpeg`;
 
-var dbProfilePicturePath= `https://speegar.com/images/${req.body.facebookId}.jpeg`;
-var dbProfilePictureMinPath=`https://speegar.com/images/${req.body.facebookId}_min.jpeg` ;
+ var imagePath=properties.get('server.integration.ip').toString();
+ if(properties.get('server.production'))
+   {
+      imagePath=properties.get('server.storage.image').toString();
+   }
+var dbProfilePicturePath= `${imagePath}/${req.body.facebookId}.jpeg`;
+var dbProfilePictureMinPath=`${imagePath}/${req.body.facebookId}_min.jpeg` ;
 
     Profile.findOne(
       {
