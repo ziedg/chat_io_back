@@ -16,7 +16,7 @@ db.name =SpeegarDBI
 url =127.0.0.1
 
 [pictures]
-link = https://integration.speegar.com/images/
+link = https://integration.speegar.com/images
 avatars.link = https://integration.speegar.com/avatars/
 storage.folder = /var/www/html/images
 storage.temp=/var/tmp/
