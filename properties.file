@@ -26,7 +26,7 @@ scp.secret =  MZ9xWqTJp5dS2teU
 scp.ip =5.189.133.165
 scp.user =root 
 [server]
-production=true
+production=false
 storage.image = https://storage1.speegar.com/images
 integration.ip: https://integration.speegar.com/images
 production.domain:https://speegar.com
