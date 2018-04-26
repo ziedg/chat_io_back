@@ -9,7 +9,7 @@ var properties = PropertiesReader("./properties.file");
 module.exports = (publication, files, res, resp, typ) => {
   //const
 
-   const host = properties.get('storage.production')?properties.get("server.production.ip").toString(): properties.get("security.scp.ip").toString();
+  const host = properties.get("security.scp.ip").toString();
 
   const username = properties.get("security.scp.user").toString();
   const password = properties.get("security.scp.secret").toString();
@@ -20,9 +20,7 @@ module.exports = (publication, files, res, resp, typ) => {
     if ((typ = "pub")) publication.publPictureLink = publLink;
 
     const filePath = files[0].path;
-    const destination = `${path+
-      "/" +
-      publLink}`;
+    const destination = `${path + "/" + publLink}`;
     var ext = pathNode.extname(publLink);
     console.log(destination, path);
     if (ext.toLowerCase() !== ".gif") {
@@ -32,31 +30,28 @@ module.exports = (publication, files, res, resp, typ) => {
         .then(data => {
           fs.unlink(filePath, err => {
             if (!err) {
-              if(properties.get('storage.production')){
-              client.scp(
-                destination,
-                { host, username, password, path },
-                function(err) {
-                  if (!err) {
-                    fs.unlink(destination, err => {
-                      if (!err) {
-                        return res.json(resp);
-                      } else {
-                        console.log(
-                          "error ocured when attempt to remove file ?"
-                        );
-                      }
-                    });
+              if (properties.get("server.production")) {
+                client.scp(
+                  destination,
+                  { host, username, password, path },
+                  function(err) {
+                    if (!err) {
+                      fs.unlink(destination, err => {
+                        if (!err) {
+                          return res.json(resp);
+                        } else {
+                          console.log(
+                            "error ocured when attempt to remove file ?"
+                          );
+                        }
+                      });
+                    }
+                    if (err) console.log("error ocurred in file transefert ?");
                   }
-                  if (err) console.log("error ocurred in file transefert ?");
-                }
-              
-              );}
-              else{
+                );
+              } else {
                 return res.json(resp);
               }
-              
-
             } else {
               console.log("error ocured when attempt to remove file ?");
             }

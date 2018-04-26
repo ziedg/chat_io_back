@@ -250,11 +250,10 @@ router
 var profilePicturePath= `${properties.get('pictures.storage.folder')}/${req.body.facebookId}.jpeg`;
 var profilePictureMinPath= `${properties.get('pictures.storage.folder')}/${req.body.facebookId}_min.jpeg`;
 
- var imagePath=properties.get('server.integration.ip').toString();
- if(properties.get('server.production'))
-   {
-      imagePath=properties.get('server.storage.image').toString();
-   }
+ var imagePath=properties.get('server.ip').toString();
+
+    
+  
 var dbProfilePicturePath= `${imagePath}/${req.body.facebookId}.jpeg`;
 var dbProfilePictureMinPath=`${imagePath}/${req.body.facebookId}_min.jpeg` ;
 

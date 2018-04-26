@@ -338,7 +338,7 @@ router.route('/updateProfilePicture')
                         }
 
 
-                         const link=properties.get('server.production')?  properties.get('pictures.link') :  properties.get('pictures.integration.link') 
+                         const link=  properties.get('pictures.link'); 
                         if (req.files.profilePicture[0]) {
                             profile.profilePicture =
                                 link + req.files.profilePicture[0].filename;
