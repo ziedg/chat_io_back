@@ -1,6 +1,6 @@
 [server]
 port.http = 3002
-port.https = 
+port.https = 3005
 storage.image = https://integration.speegar.com/images
 ip = https://integration.speegar.com/
 production=false
