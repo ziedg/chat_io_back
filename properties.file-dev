@@ -1,0 +1,43 @@
+[server]
+port.http = 3002
+port.https = 3005
+storage.image = https://integration.speegar.com/images
+ip = https://integration.speegar.com
+production=false
+
+[ssl]
+enable =true
+privkey1 = /etc/letsencrypt/archive/speegar.com/privkey1.pem
+fullchain1 = /etc/letsencrypt/archive/speegar.com/fullchain1.pem
+chain1 = /etc/letsencrypt/archive/speegar.com/chain1.pem
+
+[mongo]
+db.name =SpeegarDBI
+url =127.0.0.1
+
+[pictures]
+link = https://integration.speegar.com/images
+avatars.link = https://integration.speegar.com/images/avatars/
+storage.folder = /var/www/html/images
+storage.temp=/var/tmp/
+
+[security]
+jwt.secret = f09cce0a0753496b9baaae70b343a15f
+scp.secret = MZ9xWqTJp5dS2teU
+scp.ip = 5.189.133.165
+scp.user =root 
+
+
+
+
+
+
+[email]
+transporter.host = speegar.com
+transporter.port = 25
+transporter.auth.user = contact@speegar.com
+transporter.auth.pass = contact
+reset.password.from = contact@speegar.com
+reset.password.subject = Changez votre mot de passe Speegar
+reset.password.html = Vous avez demandé à changer le mot de passe de votre compte Speegar RESET_PWD_DATE_TIME.<br><br>Cliquez ci-dessous afin de créer votre nouveau mot de passe.<br>
+reset.password.url =  www.speegar.com/login/reset-password/RANDOM_STRING
