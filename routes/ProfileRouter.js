@@ -338,12 +338,12 @@ router.route('/updateProfilePicture')
                         }
 
 
-                         const link=  properties.get('pictures.link'); 
+                         const link=  properties.get('pictures.link').toString(); 
                         if (req.files.profilePicture[0]) {
                             profile.profilePicture =
-                                link + req.files.profilePicture[0].filename;
+                                link +'/'+ req.files.profilePicture[0].filename;
                             profile.profilePictureMin =
-                                link + req.files.profilePicture[0].filename;
+                                link +'/'+ req.files.profilePicture[0].filename;
 
 
                             //Update du photo dans les publications anterieures
@@ -369,9 +369,9 @@ router.route('/updateProfilePicture')
                                     if (!err){
                                         if (comment) {
                                             comment.profilePicture =
-                                                properties.get('pictures.link') + req.files.profilePicture[0].filename;
+                                                properties.get('pictures.link') +'/' +req.files.profilePicture[0].filename;
                                             comment.profilePictureMin =
-                                                properties.get('pictures.link') + req.files.profilePicture[0].filename;
+                                                properties.get('pictures.link') +'/'+ req.files.profilePicture[0].filename;
                                             comment.save();
                                         }
                                     }
