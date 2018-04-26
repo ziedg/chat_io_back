@@ -14,7 +14,7 @@ url =127.0.0.1
 
 [pictures]
 link = https://speegar.com/images/
-integration.link=https://5.189.133.165/images/
+integration.link=https://integration.speegar.com/images/
 avatars.link = https://speegar.com:3005/avatars/
 storage.folder = /var/www/html/images
 storage.folder.integration=/var/www/html/images2
@@ -28,7 +28,7 @@ scp.user =root
 [server]
 production=false
 storage.image = https://storage1.speegar.com/images
-integration.ip: https://5.189.133.165/images
+integration.ip: https://integration.speegar.com/images
 production.domain:https://speegar.com
 production.ip=173.249.14.90
 
