@@ -250,7 +250,7 @@ router
 var profilePicturePath= `${properties.get('pictures.storage.folder')}/${req.body.facebookId}.jpeg`;
 var profilePictureMinPath= `${properties.get('pictures.storage.folder')}/${req.body.facebookId}_min.jpeg`;
 
- var imagePath=properties.get('server.ip').toString();
+ var imagePath=properties.get('pictures.link').toString();
 
     
   
