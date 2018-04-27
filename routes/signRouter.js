@@ -282,26 +282,7 @@ var dbProfilePictureMinPath=`${imagePath}/${req.body.facebookId}_min.jpeg` ;
 
             download.image(options)
                 .then(({ filename, image }) => {
-                //     sharp(filename)
-                //         .resize(1000)
-                //         .toFile(profilePicturePath, (err) => {
-                //             if (!err) {
-                //                 return fs.unlink(filename, (e) => {
-                //                     if (!e) {
-                //                         console.log('done')
-                //                     }
-                //                     else {
-                //                         console.log('error ocured when attempt to remove file')
-                //                     }
-                //                 })
-
-                //             }
-                //             console.log(err)
-
-                //         })
-                //
-
-                saveImage(filename,profilePicturePath);
+                  saveImage(filename,profilePicturePath);
 
 
 
@@ -316,23 +297,7 @@ var dbProfilePictureMinPath=`${imagePath}/${req.body.facebookId}_min.jpeg` ;
             })
             download.image(options2)
                 .then(({ filename, image }) => {
-                    sharp(filename)
-                        .resize(70)
-                        .toFile(profilePictureMinPath, (err) => {
-                            if (!err) {
-                                return fs.unlink(filename, (e) => {
-                                    if (!e) {
-                                        console.log('done')
-                                    }
-                                    else {
-                                        console.log('error ocured when attempt to remove file')
-                                    }
-                                })
-
-                            }
-                            console.log(err)
-
-                        })
+                   saveImage(filename,profilePictureMinPath)
                 }).catch((err) => {
                 throw err
             })

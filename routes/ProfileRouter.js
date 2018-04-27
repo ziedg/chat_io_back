@@ -19,6 +19,7 @@ var ObjectId = require('mongodb').ObjectId;
 var jwt = require('jsonwebtoken');
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('properties.file');
+const saveImage = require('../utils/save_user_image')
 
 var path = require('path');
 
@@ -340,10 +341,11 @@ router.route('/updateProfilePicture')
 
                          const link=  properties.get('pictures.link').toString(); 
                         if (req.files.profilePicture[0]) {
-                            profile.profilePicture =
-                                link +'/'+ req.files.profilePicture[0].filename;
-                            profile.profilePictureMin =
-                                link +'/'+ req.files.profilePicture[0].filename;
+                            
+                                const filename = req.files.profilePicture[0].path;
+                                const destination = properties.get("pictures.storage.folder").toString();+'/'+req.files.profilePicture[0].filename
+                                saveImage(filename,destination)
+                                
 
 
                             //Update du photo dans les publications anterieures
