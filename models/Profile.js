@@ -23,6 +23,7 @@ var profileSchema = new Schema(
     nbSubscriptions: Number,
     nbSubscribers: Number,
     nbPublications: Number,
+      nbSuivi :Number,
     nbLikes: Number,
     nbNotificationsNotSeen: Number,
     facebookId: String,
