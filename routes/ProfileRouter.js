@@ -294,7 +294,7 @@ router.route('/updateProfilePicture')
                 destination: function (req, file, callback) {
                     callback(
                         null,
-                        properties.get('pictures.storage.folder')
+                        properties.get('pictures.storage.temp')
                             .toString()
                     );
                 },
