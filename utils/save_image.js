@@ -1,4 +1,4 @@
-//librarry utile
+//library utileS
 const sharp = require("sharp");
 const fs = require("fs");
 const pathNode = require("path");

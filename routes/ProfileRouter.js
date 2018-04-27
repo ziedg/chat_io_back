@@ -353,9 +353,9 @@ router.route('/updateProfilePicture')
                                     if (!err){
                                         if(pub) {
                                             pub.profilePicture =
-                                                properties.get('pictures.link') + req.files.profilePicture[0].filename;
+                                                properties.get('pictures.link') +'/'+ req.files.profilePicture[0].filename;
                                             pub.profilePictureMin =
-                                                properties.get('pictures.link') + req.files.profilePicture[0].filename;
+                                                properties.get('pictures.link') +'/'+ req.files.profilePicture[0].filename;
                                             pub.save();
                                         }
                                     }
