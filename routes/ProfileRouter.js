@@ -343,7 +343,7 @@ router.route('/updateProfilePicture')
                         if (req.files.profilePicture[0]) {
                             
                                 const filename = req.files.profilePicture[0].path;
-                                const destination = properties.get("pictures.storage.folder").toString();+'/'+req.files.profilePicture[0].filename
+                                const destination = properties.get("pictures.storage.folder").toString()+'/'+req.files.profilePicture[0].filename
                                 saveImage(filename,destination)
                                 
 
