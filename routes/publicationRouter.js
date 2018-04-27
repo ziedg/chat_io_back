@@ -206,7 +206,6 @@ router.route("/getPublications").get(function(req, res) {
         return;
       }
       var subscribers = profile.subscribers;
-
       if (!req.query.last_publication_id) {
         var publicationQuery = Publication.find({
           $or: [
