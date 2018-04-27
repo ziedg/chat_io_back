@@ -19,7 +19,7 @@ url =127.0.0.1
 link = https://storage1.speegar.com/images
 avatars.link = https://speegar.com/images/avatars/
 storage.folder = /var/www/html/images
-storage.temp=/var/tmp/
+storage.temp=/var/tmp
 
 [security]
 jwt.secret =f09cce0a0753496b9baaae70b343a15f

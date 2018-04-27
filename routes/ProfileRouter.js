@@ -19,6 +19,7 @@ var ObjectId = require('mongodb').ObjectId;
 var jwt = require('jsonwebtoken');
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('properties.file');
+const saveImage = require('../utils/save_user_image')
 
 var path = require('path');
 
@@ -293,7 +294,7 @@ router.route('/updateProfilePicture')
                 destination: function (req, file, callback) {
                     callback(
                         null,
-                        properties.get('pictures.storage.folder')
+                        properties.get('pictures.storage.temp')
                             .toString()
                     );
                 },
@@ -340,10 +341,13 @@ router.route('/updateProfilePicture')
 
                          const link=  properties.get('pictures.link').toString(); 
                         if (req.files.profilePicture[0]) {
-                            profile.profilePicture =
-                                link +'/'+ req.files.profilePicture[0].filename;
-                            profile.profilePictureMin =
-                                link +'/'+ req.files.profilePicture[0].filename;
+                            
+                                const filename = req.files.profilePicture[0].path;
+                                const destination = properties.get("pictures.storage.folder").toString()+'/'+req.files.profilePicture[0].filename
+                                saveImage(filename,destination)
+                                profile.profilePicture= properties.get('pictures.link') +'/'+ req.files.profilePicture[0].filename;
+                                profile.profilePictureMin= properties.get('pictures.link') +'/'+ req.files.profilePicture[0].filename;
+                                
 
 
                             //Update du photo dans les publications anterieures
@@ -353,9 +357,9 @@ router.route('/updateProfilePicture')
                                     if (!err){
                                         if(pub) {
                                             pub.profilePicture =
-                                                properties.get('pictures.link') + req.files.profilePicture[0].filename;
+                                                properties.get('pictures.link') +'/'+ req.files.profilePicture[0].filename;
                                             pub.profilePictureMin =
-                                                properties.get('pictures.link') + req.files.profilePicture[0].filename;
+                                                properties.get('pictures.link') +'/'+ req.files.profilePicture[0].filename;
                                             pub.save();
                                         }
                                     }

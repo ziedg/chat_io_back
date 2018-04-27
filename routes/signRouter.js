@@ -13,6 +13,8 @@ const download = require('image-downloader')
 var path = require('path');
 var sharp = require('sharp');
 const fs = require('fs');
+const saveImage =require('../utils//save_user_image');
+
 
 var Profile = require("../models/Profile");
 var ProfilesPasswords = require("../models/profilesPasswords");
@@ -280,45 +282,22 @@ var dbProfilePictureMinPath=`${imagePath}/${req.body.facebookId}_min.jpeg` ;
 
             download.image(options)
                 .then(({ filename, image }) => {
-                    sharp(filename)
-                        .resize(1000)
-                        .toFile(profilePicturePath, (err) => {
-                            if (!err) {
-                                return fs.unlink(filename, (e) => {
-                                    if (!e) {
-                                        console.log('done')
-                                    }
-                                    else {
-                                        console.log('error ocured when attempt to remove file')
-                                    }
-                                })
+                  saveImage(filename,profilePicturePath);
 
-                            }
-                            console.log(err)
 
-                        })
-                }).catch((err) => {
+
+
+                   
+              
+               })
+                
+                
+                .catch((err) => {
                 throw err
             })
             download.image(options2)
                 .then(({ filename, image }) => {
-                    sharp(filename)
-                        .resize(70)
-                        .toFile(profilePictureMinPath, (err) => {
-                            if (!err) {
-                                return fs.unlink(filename, (e) => {
-                                    if (!e) {
-                                        console.log('done')
-                                    }
-                                    else {
-                                        console.log('error ocured when attempt to remove file')
-                                    }
-                                })
-
-                            }
-                            console.log(err)
-
-                        })
+                   saveImage(filename,profilePictureMinPath)
                 }).catch((err) => {
                 throw err
             })
