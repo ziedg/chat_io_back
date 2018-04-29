@@ -322,6 +322,7 @@ router.route('/updateProfilePicture')
                     });
                 }
                 else {
+                    console.log(req.files)
             
 
                     Profile.findById(req._id, function (err, profile) {
