@@ -11,10 +11,7 @@ var Notification = require('./../../models/Notification');
 				var critere ={profileId : profileId ,publId : publId,type :type} 
 				Notification.findOne(critere, function(err, notification) {
 					if (err){
-						/*return res.json({
-								status : 0,
-								err: err
-							});		*/
+					
 					}
 					else if (!notification){
 						var notification = new Notification();
@@ -32,6 +29,7 @@ var Notification = require('./../../models/Notification');
 								
 								notification.profiles.unshift(profile);
 								notification.isSeen="false";
+								notification.date_notification= new Date();
 								notification.save();
 								profile.save();
 							}
@@ -65,7 +63,8 @@ var Notification = require('./../../models/Notification');
 								if(!isExist)
 								{
 									notification.profiles.unshift(profile);
-								    notification.isSeen="false";
+									notification.isSeen="false";
+									notification.date_notification= new Date();
 							     	notification.save();
                                     profile.save();
 
@@ -78,7 +77,7 @@ var Notification = require('./../../models/Notification');
 				});}
 	 
 	
-  //commenter une publication 
+/* commenter sur un publication */
    else if ( type =="comment")
    {
 
@@ -105,6 +104,7 @@ var Notification = require('./../../models/Notification');
 				else if (profile){
 					notification.profiles.unshift(profile);
 					notification.isSeen="false";
+					notification.date_notification= new Date();
 					notification.save();
 					profile.save();
 				}
@@ -115,10 +115,28 @@ var Notification = require('./../../models/Notification');
 					/*res.send(err);*/
 				}
 				else if(profile){
+
+					var users = []
+							  users= notification.profiles.map(p =>{
+								  return p._id 
+							 })
+								
+								let isExist = false
+								for (let id of users){
+									
+								   if(String(id)== String(profile._id))
+								   {
+									   isExist=true;
+									
+								   }
+								}
+								if(!isExist){
 					notification.profiles.unshift(profile);
 					notification.isSeen="false";
+					notification.date_notification= new Date();
 					notification.save();
 					profile.save();
+								}
 				}
 			});
 			
@@ -140,6 +158,7 @@ var Notification = require('./../../models/Notification');
 					}
 					else if(profile){
 						notification.profiles.unshift(profile);
+						notification.date_notification= new Date();
 						notification.isSeen="false";
 						notification.save();
 						profile.save();

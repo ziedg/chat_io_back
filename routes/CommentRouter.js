@@ -476,6 +476,7 @@ router.route('/removeComment')
                     }
 
                     comment.remove();
+                
 
                     Profile.findById(req._id, function (err, profile) {
                         if (err) {
