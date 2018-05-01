@@ -50,7 +50,7 @@ router.route('/getNotifications')
                 criteria = {$and: [{profileId: req._id}, {_id: {$lt: req.query.lastNotificationId}}]}
             }
 
-            var query = Notification.find(criteria).sort({_id: -1}).limit(5);
+            var query = Notification.find(criteria).sort({date_notification : -1}).limit(5);
             query.exec(function (err, notifications) {
                 if (err) {
                     res.json({
