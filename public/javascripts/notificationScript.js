@@ -29,6 +29,7 @@ var Notification = require('./../../models/Notification');
 								
 								notification.profiles.unshift(profile);
 								notification.isSeen="false";
+								notification.date_notification= new Date();
 								notification.save();
 								profile.save();
 							}
@@ -62,7 +63,8 @@ var Notification = require('./../../models/Notification');
 								if(!isExist)
 								{
 									notification.profiles.unshift(profile);
-								    notification.isSeen="false";
+									notification.isSeen="false";
+									notification.date_notification= new Date();
 							     	notification.save();
                                     profile.save();
 
@@ -102,6 +104,7 @@ var Notification = require('./../../models/Notification');
 				else if (profile){
 					notification.profiles.unshift(profile);
 					notification.isSeen="false";
+					notification.date_notification= new Date();
 					notification.save();
 					profile.save();
 				}
@@ -130,6 +133,7 @@ var Notification = require('./../../models/Notification');
 								if(!isExist){
 					notification.profiles.unshift(profile);
 					notification.isSeen="false";
+					notification.date_notification= new Date();
 					notification.save();
 					profile.save();
 								}
@@ -154,6 +158,7 @@ var Notification = require('./../../models/Notification');
 					}
 					else if(profile){
 						notification.profiles.unshift(profile);
+						notification.date_notification= new Date();
 						notification.isSeen="false";
 						notification.save();
 						profile.save();
