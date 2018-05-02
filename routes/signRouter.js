@@ -222,13 +222,13 @@ router
             .catch(e => {
               res.json({
                 status: 3,
-                error: "Email n'est pas Valide"
+                error: "Mail invalide"
               });
             });
         } else {
           res.json({
             status: 3,
-            error: "Domaine n'existe Pas"
+            error: "Mail invalide"
           });
         }
       });
