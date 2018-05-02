@@ -35,9 +35,9 @@ scp.user =root
 [email]
 transporter.host = speegar.com
 transporter.port = 25
-transporter.auth.user = contact@speegar.com
-transporter.auth.pass = contact
-reset.password.from = contact@speegar.com
+transporter.auth.user = reset.speegar@gmail.com
+transporter.auth.pass = speegarresetmail
+reset.password.from =  reset.speegar@gmail.com
 reset.password.subject = Changez votre mot de passe Speegar
 reset.password.html = Vous avez demandé à changer le mot de passe de votre compte Speegar RESET_PWD_DATE_TIME.<br><br>Cliquez ci-dessous afin de créer votre nouveau mot de passe.<br>
-reset.password.url =  www.speegar.com/login/reset-password/RANDOM_STRING
+reset.password.url =  https://speegar.com/login/reset-password/RANDOM_STRING
