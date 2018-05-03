@@ -561,9 +561,9 @@ router.route("/resetPwd").post(function(req, res) {
         });
       } else {
         if (profilePassword.resetPswdString == req.body.randomString) {
-          //profilePassword.password = passwordHash.generate(
-          //  req.body.newPassword
-         // );
+          profilePassword.password = passwordHash.generate(
+           req.body.newPassword
+         );
           profilePassword.resetPswdString = undefined;
           profilePassword.save();
 
