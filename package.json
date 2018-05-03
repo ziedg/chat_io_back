@@ -7,6 +7,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "@sendgrid/mail": "^6.2.1",
     "async": "2.0.1",
     "bcrypt-nodejs": "latest",
     "body-parser": "^1.15.2",
