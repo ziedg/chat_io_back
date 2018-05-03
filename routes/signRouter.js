@@ -14,7 +14,7 @@ var path = require('path');
 var sharp = require('sharp');
 const fs = require('fs');
 const saveImage =require('../utils//save_user_image');
-
+const sgMail=require('@sendgrid/mail');
 
 var Profile = require("../models/Profile");
 var ProfilesPasswords = require("../models/profilesPasswords");
@@ -222,13 +222,13 @@ router
             .catch(e => {
               res.json({
                 status: 3,
-                error: "Email n'est pas Valide"
+                error: "Mail invalide"
               });
             });
         } else {
           res.json({
             status: 3,
-            error: "Domaine n'existe Pas"
+            error: "Mail invalide"
           });
         }
       });
@@ -447,51 +447,82 @@ router.route("/resetPwdMail").post(function(req, res) {
               profilePassword.save();
             }
           });
-          var transporter = nodemailer.createTransport(
-            smtpTransport({
-              host: properties.get("email.transporter.host").toString(),
-              port: properties.get("email.transporter.port"),
-              auth: {
-                user: properties.get("email.transporter.auth.user").toString(),
-                pass: properties.get("email.transporter.auth.pass").toString()
-              },
-              tls: {
-                rejectUnauthorized: false
-              }
-            })
-          );
-          var mailOptions = {
-            from: properties.get("email.reset.password.from").toString(),
-            to: user.email,
-            subject: properties.get("email.reset.password.subject").toString(),
-            html:
-              properties
-                .get("email.reset.password.html")
-                .toString()
-                .replace(
-                  "RESET_PWD_DATE_TIME",
-                  format.asString("le dd/MM/yyyy à hh:mm", date)
-                ) +
+          // var transporter = nodemailer.createTransport(
+          //   smtpTransport({
+          //     host: properties.get("email.transporter.host").toString(),
+          //     port: properties.get("email.transporter.port"),
+          //     auth: {
+          //       user: properties.get("email.transporter.auth.user").toString(),
+          //       pass: properties.get("email.transporter.auth.pass").toString()
+          //     },
+          //     tls: {
+          //       rejectUnauthorized: false
+          //     }
+          //   })
+          // );
+          // var mailOptions = {
+          //   from: properties.get("email.reset.password.from").toString(),
+          //   to: user.email,
+          //   subject: properties.get("email.reset.password.subject").toString(),
+          //   html:
+          //     properties
+          //       .get("email.reset.password.html")
+          //       .toString()
+          //       .replace(
+          //         "RESET_PWD_DATE_TIME",
+          //         format.asString("le dd/MM/yyyy à hh:mm", date)
+          //       ) +
+          //
+          //
+          //       properties.get("email.reset.password.url")
+          //       .toString()
+          //       .replace("RANDOM_STRING", randomString)
+          // };
+          // transporter.sendMail(mailOptions, function(error, response) {
+          //   if (error) {
+          //     res.json({
+          //       status: 1,
+          //       error: "SP_ER_EMAIL_NOT_VALID"
+          //     });
+          //     return;
+          //   } else {
+          //     res.json({
+          //       status: 0,
+          //       message: "EMAIL_IS_SENT"
+          //     });
+          //   }
+          // });
+            sgMail.setApiKey( properties.get("email.apiKey").toString());
+            const msg = {
+                to: user.email,
+                from: properties.get("email.reset.password.from").toString(),
+                subject: properties.get("email.reset.password.subject").toString(),
+                 html:
+                    properties
+                     .get("email.reset.password.html")
+                    .toString()
+                    .replace(
+                       "RESET_PWD_DATE_TIME",
+                       format.asString("le dd/MM/yyyy à hh:mm", date)
+                     ) +
 
 
-                properties.get("email.reset.password.url")
-                .toString()
-                .replace("RANDOM_STRING", randomString)
-          };
-          transporter.sendMail(mailOptions, function(error, response) {
-            if (error) {
-              res.json({
-                status: 1,
-                error: "SP_ER_EMAIL_NOT_VALID"
-              });
-              return;
-            } else {
-              res.json({
-                status: 0,
-                message: "EMAIL_IS_SENT"
-              });
-            }
-          });
+                      properties.get("email.reset.password.url")
+                      .toString()
+                      .replace("RANDOM_STRING", randomString)
+            };
+            sgMail.send(msg).then(() =>
+                res.json({
+                       status: 0,
+                       message: "EMAIL_IS_SENT"
+        }))
+    .catch((err)=>{
+            res.json({
+                     status: 1,
+                     error: "SP_ER_EMAIL_NOT_VALID"
+                   });
+    })
+
         }
       }
     );
