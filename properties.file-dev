@@ -40,5 +40,5 @@ transporter.auth.pass = speegarresetmail
 reset.password.from =  reset.speegar@gmail.com
 reset.password.subject = Changez votre mot de passe Speegar
 reset.password.html = Vous avez demandé à changer le mot de passe de votre compte Speegar RESET_PWD_DATE_TIME.<br><br>Cliquez ci-dessous afin de créer votre nouveau mot de passe.<br>
-reset.password.url =  https://speegar.com/login/reset-password/RANDOM_STRING
+reset.password.url =  https://integration.speegar.com/login/reset-password/RANDOM_STRING
 apiKey = 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
