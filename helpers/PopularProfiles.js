@@ -5,7 +5,7 @@ var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('properties.file');
 var CronJob = require('cron').CronJob;
 
-var job=new CronJob('0 0 5 * * *', function() {
+var job=new CronJob('0 0 23 * * *', function() {
     Profile.find()
         .sort({
             nbLikes :-1
