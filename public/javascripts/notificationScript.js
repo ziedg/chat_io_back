@@ -27,7 +27,7 @@ var Notification = require('./../../models/Notification');
 							   
 								   
 								
-								notification.profiles.unshift(profile);
+								notification.profiles.push(profile);
 								notification.isSeen="false";
 								notification.date_notification= new Date();
 								notification.save();
