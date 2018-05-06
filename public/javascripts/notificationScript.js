@@ -62,7 +62,7 @@ var Notification = require('./../../models/Notification');
 							
 								if(!isExist)
 								{
-									notification.profiles.unshift(profile);
+									notification.profiles.push(profile);
 									notification.isSeen="false";
 									notification.date_notification= new Date();
 							     	notification.save();
@@ -102,7 +102,7 @@ var Notification = require('./../../models/Notification');
 					/*res.send(err);*/
 				}
 				else if (profile){
-					notification.profiles.unshift(profile);
+					notification.profiles.push(profile);
 					notification.isSeen="false";
 					notification.date_notification= new Date();
 					notification.save();
@@ -131,7 +131,7 @@ var Notification = require('./../../models/Notification');
 								   }
 								}
 								if(!isExist){
-					notification.profiles.unshift(profile);
+					notification.profiles.push(profile);
 					notification.isSeen="false";
 					notification.date_notification= new Date();
 					notification.save();
@@ -157,7 +157,7 @@ var Notification = require('./../../models/Notification');
 					/*	res.send(err);*/
 					}
 					else if(profile){
-						notification.profiles.unshift(profile);
+						notification.profiles.push(profile);
 						notification.date_notification= new Date();
 						notification.isSeen="false";
 						notification.save();
