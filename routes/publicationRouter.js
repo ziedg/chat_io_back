@@ -154,6 +154,7 @@ router
             publication.publTitle = body.publTitle;
             publication.publText = body.publText;
             publication.publyoutubeLink = body.publyoutubeLink;
+            publication.publfacebookLink = body.publfacebookLink;
             publication.publExternalLink = body.publExternalLink;
             publication.nbFcbkShare = 0;
             publication.nbTwitterShare = 0;
