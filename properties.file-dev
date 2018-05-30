@@ -7,9 +7,9 @@ production=false
 
 [ssl]
 enable =true
-privkey1 = /etc/letsencrypt/archive/speegar.com/privkey1.pem
-fullchain1 = /etc/letsencrypt/archive/speegar.com/fullchain1.pem
-chain1 = /etc/letsencrypt/archive/speegar.com/chain1.pem
+privkey1 = /etc/letsencrypt/archive/integration.speegar.com/privkey1.pem
+fullchain1 = /etc/letsencrypt/archive/integration.speegar.com/fullchain1.pem
+chain1 = /etc/letsencrypt/archive/integration.speegar.com/chain1.pem
 
 [mongo]
 db.name =SpeegarDBI

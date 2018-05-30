@@ -101,8 +101,8 @@ if(properties.get('ssl.enable')){
 	}, app).listen(https_port);
 } else {
 	app.listen(http_port);
-	app.listen(3000);
+	//app.listen(3000);
 	console.log('the server is launched on the port ' + http_port+', mode ssl is disabled, '+new Date());
 }
-
+module.exports = app;
 
