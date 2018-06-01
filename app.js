@@ -1,22 +1,35 @@
-var express = require('express'); // call express
-var app = express(); // define our app using express
+
+var express = require('express'); 
 var bodyParser = require('body-parser');
 var jwtScript = require('./public/javascripts/jwtScript');
 var path = require('path');
 var passport = require('passport');
 var flash    = require('connect-flash');
-
 var https = require('https');
+var http = require('http');
 var fs = require('fs');
 
 
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('properties.file');
 
+
+
+//configure socket.io and express server
+
+const app = express();
+const server = http.createServer(app);
+const io = require('socket.io')(server);
+require('./sockets/notification.js')(io);
+
+
+//includes the middlewars
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(express.static(path.join(__dirname,'public')));
 
+
+//requieres the application models
 var Abonnee = require('./models/Profile');
 var Publication = require('./models/Publication');
 var Notification = require('./models/Notification');
@@ -100,7 +113,7 @@ if(properties.get('ssl.enable')){
 		ca: fs.readFileSync(properties.get('ssl.chain1').toString())
 	}, app).listen(https_port);
 } else {
-	app.listen(http_port);
+	server.listen(http_port);
 	//app.listen(3000);
 	console.log('the server is launched on the port ' + http_port+', mode ssl is disabled, '+new Date());
 }

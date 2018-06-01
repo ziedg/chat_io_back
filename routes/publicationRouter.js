@@ -8,6 +8,8 @@ var sharp = require("sharp");
 const fs = require("fs");
 const mv = require("mv");
 const client = require("scp2");
+const webPusher=require('../utils/web_push.js');
+const NotificationSub = require('../models/NotificationSubsciption.js');
 
 var bodyParser = require("body-parser");
 var multer = require("multer");
@@ -339,6 +341,33 @@ router.route("/likePublication").post(function(req, res) {
           ""
         );
 
+        if(publication.profileId != req._id)
+        {
+
+
+          Profile.findById(req._id).then(profile =>{
+            NotificationSub.findOne({userId:publication.profileId}).then((sub)=>{
+
+              const subscription = {
+                   endpoint: sub.subsciptions[0].endpoint,
+                   keys:{
+                       auth:sub.subsciptions[0].keys.auth,
+                       p256dh:sub.subsciptions[0].keys.p256dh
+                   }
+              }
+              const payload=   
+              {title:"Speegar",
+              icon:profile.profilePictureMin
+              ,body:`${profile.lastName} ${profile.firstName} a réagi a votre publication`
+                }
+              return  webPusher(subscription,payload,res)
+          })
+
+
+
+          })
+       
+    }
         Profile.findById(publication.profileId, function(err, profile) {
           if (!err) {
             profile.nbLikes++;
@@ -424,7 +453,7 @@ router.route("/removeLikePublication").post(function(req, res) {
 router.route("/dislikePublication").post(function(req, res) {
   try {
     var publication = new Publication();
-
+    
     Publication.findById(req.body.publId, function(err, publication) {
       if (err) {
         res.json({
@@ -455,6 +484,40 @@ router.route("/dislikePublication").post(function(req, res) {
         status: 0,
         message: "PUBLICATION_DISLIKED"
       });
+
+
+      
+    
+
+
+
+           if(publication.profileId != req._id)
+        {
+
+
+          Profile.findById(req._id).then(profile =>{
+            NotificationSub.findOne({userId:publication.profileId}).then((sub)=>{
+
+              const subscription = {
+                   endpoint: sub.subsciptions[0].endpoint,
+                   keys:{
+                       auth:sub.subsciptions[0].keys.auth,
+                       p256dh:sub.subsciptions[0].keys.p256dh
+                   }
+              }
+              const payload=   
+              {title:"Speegar",
+              icon:profile.profilePictureMin
+              ,body:`${profile.lastName} ${profile.firstName} a réagi a votre publication`
+                }
+              return  webPusher(subscription,payload,res)
+          })
+
+
+
+          })
+       
+    }
       notificationScript.notifier(
         publication.profileId,
         req.body.publId,

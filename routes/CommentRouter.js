@@ -6,6 +6,8 @@ const sharp = require('sharp');
 const path = require('path')
 const fs = require('fs');
 const mv = require('mv')
+const webPusher=require('../utils/web_push.js');
+const NotificationSub = require('../models/NotificationSubsciption.js');
 
 var Comment = require('../models/Comment');
 var Publication = require('../models/Publication');
@@ -150,6 +152,22 @@ router.route('/addComment')
 
 
                                     notificationScript.notifier(publication.profileId, comment.publId, req._id, "comment", "");
+                                    NotificationSub.findOne({userId:publication.profileId}).then((sub)=>{
+
+                                        const subscription = {
+                                             endpoint: sub.subsciptions[0].endpoint,
+                                             keys:{
+                                                 auth:sub.subsciptions[0].keys.auth,
+                                                 p256dh:sub.subsciptions[0].keys.p256dh
+                                             }
+                                        }
+                                        const payload=   
+                                        {title:"Comment"
+                                        ,body:"someone Comment a votre publication"
+                                          }
+                                        return  webPusher(subscription,payload,res)
+                                    })
+                                  
                                 }
                             });
                         });

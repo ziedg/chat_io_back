@@ -1,4 +1,5 @@
 var express = require('express');
+const webPush = require('web-push');
 var router = express.Router();
 
 var Notification = require('../models/Notification');
@@ -8,6 +9,7 @@ var Profile = require('../models/Profile');
 var jwt = require('jsonwebtoken');
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('./properties.file');
+var NotificationSub  = require('../models/NotificationSubsciption.js');
 
 
 // route middleware to verify a token
@@ -35,6 +37,7 @@ router.use(function (req, res, next) {
                 error: 'No token provided.'
             });
         }
+    
     }
 });
 
@@ -152,5 +155,70 @@ router.route('/markView')
             });
         }
     });
+
+
+    //store the subsciption inside the mongodb collection
+    router.route('/api/push-subscribe')
+    .post((req,res)=>{
+        
+        const vapidKeys = 
+        {"publicKey":"BLE6G7YseOYTfwcmwnsPdhhOXvk_5CBjwMRPtJmm4sRG2pSQ0L9J_02roKLCzsuCCH4reC3yy3rFkV55iKUdS0M",
+        "privateKey":"nK7p6pYtjUfKrO2yZc5AurPaNkO0rViBX5cAsg8Y3ys"}
+
+       webPush.setVapidDetails(
+        'mailto:ziedsaidig@gmail.com',
+        vapidKeys.publicKey,
+        vapidKeys.privateKey
+    );
+       const data = req.body;
+       const subsciption = {
+           endpoint:data.endpoint,
+           keys:{
+               auth:data.keys.auth,
+               p256dh:data.keys.p256dh
+           }
+       }
+
+       const userId= req._id;
+
+       NotificationSub.findOne({userId:req._id}).then((sub) =>{
+           if(sub){
+               console.log("1")
+            return res.send({
+                status: 1,
+                message: "Subscription Stored."
+            });
+           
+               
+           }
+           else{
+               console.log(2)
+            const  sub= new NotificationSub();
+            sub.userId=req._id;
+            sub.subsciptions=[...sub.subsciptions,subsciption]
+            sub.save().then((result)=>{
+             return res.send({
+                 status: 1,
+                 message: "Subscription Stored."
+             });
+ 
+                
+ 
+ 
+ 
+            })
+
+           }
+    
+     
+
+        
+        })})
+
+    
+
+       
+
+    
 
 module.exports = router;

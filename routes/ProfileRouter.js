@@ -20,8 +20,9 @@ var jwt = require('jsonwebtoken');
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('properties.file');
 const saveImage = require('../utils/save_user_image')
-
+const webPusher = require('../utils/web_push.js');
 var path = require('path');
+const NotificationSub = require('../models/NotificationSubsciption.js');
 
 router.use(function (req, res, next) {
     if (req.method === 'OPTIONS') {
@@ -109,6 +110,13 @@ router.route('/getProfile')
 router.route('/subscribe')
     .post(function (req, res) {
         try {
+
+
+        
+            //webPusher()
+          
+
+       
             
             Profile.findById(req.body.profileId, function (err, targetProfile) {
                 if (err) {
@@ -152,6 +160,37 @@ router.route('/subscribe')
                         console.log(req.body)
                         notificationScript.notifier(req.body.profileId, "", req._id, "subscribe", "");
 
+                      
+                    
+                        NotificationSub.findOne({userId:req.body.profileId}).then((sub)=>{
+
+                            Profile.findById(req._id).then(profile => 
+                                
+                                {
+
+                                    
+                                    const subscription = {
+                                        endpoint: sub.subsciptions[0].endpoint,
+                                        keys:{
+                                            auth:sub.subsciptions[0].keys.auth,
+                                            p256dh:sub.subsciptions[0].keys.p256dh
+                                        }
+                                   }
+                                   const payload=   
+                                   {title:"Speegar",
+                                   icon:profile.profilePictureMin,
+                                
+                                   body:`${profile.lastName} ${profile.firstName} Commence a Vous suivre`
+                                     }
+                                    return  webPusher(subscription,payload,res)
+
+                                })
+
+                           
+                        
+                        })
+
+                    
                         return res.json({
                             status: 0,
                             message: 'SUBSCRIBED'
