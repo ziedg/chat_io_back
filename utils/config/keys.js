@@ -1,6 +1,7 @@
 module.exports ={
-    VAPIDKEYS:{
-        "publicKey":"BLE6G7YseOYTfwcmwnsPdhhOXvk_5CBjwMRPtJmm4sRG2pSQ0L9J_02roKLCzsuCCH4reC3yy3rFkV55iKUdS0M",
-        "privateKey":"nK7p6pYtjUfKrO2yZc5AurPaNkO0rViBX5cAsg8Y3ys"
+    VAPIDKEYS:
+        {"publicKey":"BHn00d_6fnohGvH7qt91DmK3t6FhJGXPThdJ5ixYd_iU6X0noS0-KkpKfTIhgM141g8pXTFgh3VLzAxLPrk0Yps",
+        "privateKey":"ubN1c78vu39ARkhgv5g2xa0eTLvOZU-_OEWQ7MMrGG0"
     }
+    
 }
