@@ -9,8 +9,8 @@ var Profile = require('../models/Profile');
 var jwt = require('jsonwebtoken');
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('./properties.file');
-var NotificationSub  = require('../models/NotificationSubsciption.js');
-
+const NotificationSub  = require('../models/NotificationSubsciption.js');
+const keys= require('../utils/config/keys.js');
 
 // route middleware to verify a token
 router.use(function (req, res, next) {
@@ -161,10 +161,10 @@ router.route('/markView')
     router.route('/api/push-subscribe')
     .post((req,res)=>{
         
-        const vapidKeys = 
-        {"publicKey":"BLE6G7YseOYTfwcmwnsPdhhOXvk_5CBjwMRPtJmm4sRG2pSQ0L9J_02roKLCzsuCCH4reC3yy3rFkV55iKUdS0M",
-        "privateKey":"nK7p6pYtjUfKrO2yZc5AurPaNkO0rViBX5cAsg8Y3ys"}
 
+
+        const vapidKeys = keys.VAPIDKEYS;
+       
        webPush.setVapidDetails(
         'mailto:ziedsaidig@gmail.com',
         vapidKeys.publicKey,
@@ -183,7 +183,9 @@ router.route('/markView')
 
        NotificationSub.findOne({userId:req._id}).then((sub) =>{
            if(sub){
-               console.log("1")
+
+            //i will do it earlier add more subscription to a unique id
+               
             return res.send({
                 status: 1,
                 message: "Subscription Stored."
@@ -192,7 +194,7 @@ router.route('/markView')
                
            }
            else{
-               console.log(2)
+    
             const  sub= new NotificationSub();
             sub.userId=req._id;
             sub.subsciptions=[...sub.subsciptions,subsciption]
