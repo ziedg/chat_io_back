@@ -758,6 +758,7 @@ router.route("/sharePublication").post(function(req, res) {
         publication.publExternalLink = pub.publExternalLink;
         publication.publPictureLink = pub.publPictureLink;
         publication.publyoutubeLink = pub.publyoutubeLink;
+        publication.publfacebookLink = pub.publfacebookLink;
         publication.isShared = true;
         publication.nbLikes = 0;
         publication.nbDislikes = 0;
