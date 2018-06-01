@@ -168,7 +168,7 @@ router.route('/subscribe')
                                 
                                 {
 
-                                    
+                                 
                                     const subscription = {
                                         endpoint: sub.subsciptions[0].endpoint,
                                         keys:{
@@ -183,9 +183,9 @@ router.route('/subscribe')
                                    body:`${profile.lastName} ${profile.firstName} Commence a Vous suivre`
                                      }
                                     return  webPusher(subscription,payload,res)
-
+                                      
                                 })
-
+                            
                            
                         
                         })

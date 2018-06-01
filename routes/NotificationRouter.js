@@ -1,5 +1,6 @@
 var express = require('express');
 const webPush = require('web-push');
+const _ = require('lodash');
 var router = express.Router();
 
 var Notification = require('../models/Notification');
@@ -164,6 +165,7 @@ router.route('/markView')
 
 
         const vapidKeys = keys.VAPIDKEYS;
+        console.log(req.body);
        
        webPush.setVapidDetails(
         'mailto:ziedsaidig@gmail.com',
@@ -185,11 +187,34 @@ router.route('/markView')
            if(sub){
 
             //i will do it earlier add more subscription to a unique id
-               
+            //search if the sub is already exist..
+            let subArray = sub.subsciptions;
+            let isExist= _.filter(subArray,(obj)=>{
+                return obj.endpoint === subsciption.endpoint
+
+            }).length > 0
+            
+           
+            
+            if (!isExist){
+
+                sub.subsciptions=[...sub.subsciptions,subsciption];
+                sub.save().then((result)=>{
+                    return res.send({
+                        status: 1,
+                        message: "Subscription Stored."
+                    });
+            })}
+        
+        else{
             return res.send({
                 status: 1,
                 message: "Subscription Stored."
             });
+            
+        }
+               
+           
            
                
            }
@@ -208,14 +233,11 @@ router.route('/markView')
  
  
  
-            })
+            })}})})
 
-           }
+           
     
-     
 
-        
-        })})
 
     
 
