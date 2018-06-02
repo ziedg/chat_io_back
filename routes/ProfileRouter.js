@@ -167,22 +167,26 @@ router.route('/subscribe')
                             Profile.findById(req._id).then(profile => 
                                 
                                 {
-
-                                 
-                                    const subscription = {
-                                        endpoint: sub.subsciptions[0].endpoint,
+                                   let   subscriptions=[];
+                                   _.forEach(sub.subsciptions ,(sub)=>{
+                                    subscription = {
+                                        endpoint: sub.endpoint,
                                         keys:{
-                                            auth:sub.subsciptions[0].keys.auth,
-                                            p256dh:sub.subsciptions[0].keys.p256dh
+                                            auth:sub.keys.auth,
+                                            p256dh:sub.keys.p256dh
                                         }
                                    }
+                                   subscriptions.push(subscription);
+
+                                   })
+                                     
                                    const payload=   
                                    {title:"Speegar",
                                    icon:profile.profilePictureMin,
                                 
                                    body:`${profile.lastName} ${profile.firstName} Commence a Vous suivre`
                                      }
-                                    return  webPusher(subscription,payload,res)
+                                    return  webPusher(subscriptions,payload,res)
                                       
                                 })
                             
