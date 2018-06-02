@@ -519,7 +519,7 @@ router.route("/dislikePublication").post(function(req, res) {
               icon:profile.profilePictureMin
               ,body:`${profile.lastName} ${profile.firstName} a réagi a votre publication`
                 }
-              return  webPusher(subscription,payload,res)
+              return  webPusher(subscriptions,payload,res)
           })
 
 
