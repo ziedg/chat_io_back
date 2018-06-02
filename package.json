@@ -28,7 +28,7 @@
     "l": "^0.6.0",
     "legit": "0.0.7",
     "lodash": "^4.17.5",
-    "mongoose": "^5.0.12",
+    "mongoose": "^5.0.3",
     "morgan": "^1.6.1",
     "multer": "1.1.0",
     "multiparty": "4.1.2",
@@ -46,7 +46,7 @@
     "request": "2.64.0",
     "scp2": "^0.5.0",
     "serve-favicon": "~2.3.0",
-    "sharp": "^0.20.1",
+    "sharp": "^0.20.3",
     "socket.io": "^2.1.1",
     "web-push": "^3.3.1"
   }

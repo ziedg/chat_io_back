@@ -322,7 +322,18 @@ router.route("/likePublication").post(function(req, res) {
           err,
           publicationLikes
         ) {
+
+          var userInteractions = new Object();
+          userInteractions.userId           = req.body.profileId;
+          userInteractions.profilefirstname = req.body.profilefirstname;
+          userInteractions.profilelastname  = req.body.profilelastname;
+          userInteractions.profilepicture   = req.body.profilepicture; 
+
+          //console.log('used pushed like'+userInteractions);
+
+          publicationLikes.userlikes.unshift(userInteractions);
           publicationLikes.likes.unshift(req._id);
+
           publicationLikes.save();
         });
 
@@ -420,6 +431,11 @@ router.route("/removeLikePublication").post(function(req, res) {
           err,
           publicationLikes
         ) {
+
+          publicationLikes.userlikes = publicationLikes.userlikes.filter(x => x.userId !== req._id);
+
+          //console.log('user removed like'+req._id);
+
           var index = publicationLikes.likes.indexOf(req._id);
           publicationLikes.likes.splice(index, 1);
           publicationLikes.save();
@@ -478,6 +494,16 @@ router.route("/dislikePublication").post(function(req, res) {
         err,
         publicationLikes
       ) {
+        
+        var userInteractions = new Object();
+        userInteractions.userId           = req.body.profileId;
+        userInteractions.profilefirstname = req.body.profilefirstname;
+        userInteractions.profilelastname  = req.body.profilelastname;
+        userInteractions.profilepicture   = req.body.profilepicture; 
+
+        //console.log('user push dislike'+userInteractions);
+
+        publicationLikes.userdislikes.unshift(userInteractions);
         publicationLikes.dislikes.unshift(req._id);
         publicationLikes.save();
       });
@@ -566,11 +592,16 @@ router.route("/removeDislikePublication").post(function(req, res) {
 
       PublicationLikes.findById(req.body.publId, function(
         err,
-        publicationDislikes
+        publicationLikes
       ) {
-        var index = publicationDislikes.dislikes.indexOf(req._id);
-        publicationDislikes.dislikes.splice(index, 1);
-        publicationDislikes.save();
+
+        publicationLikes.userdislikes = publicationLikes.userdislikes.filter(x => x.userId !== req._id);
+
+        //console.log('user cancelled dislike'+req._id);
+
+        var index = publicationLikes.dislikes.indexOf(req._id);
+        publicationLikes.dislikes.splice(index, 1);
+        publicationLikes.save();
       });
 
       publication.nbDislikes--;
