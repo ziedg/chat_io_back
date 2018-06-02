@@ -152,21 +152,34 @@ router.route('/addComment')
 
 
                                     notificationScript.notifier(publication.profileId, comment.publId, req._id, "comment", "");
-                                    NotificationSub.findOne({userId:publication.profileId}).then((sub)=>{
-
-                                        const subscription = {
-                                             endpoint: sub.subsciptions[0].endpoint,
-                                             keys:{
-                                                 auth:sub.subsciptions[0].keys.auth,
-                                                 p256dh:sub.subsciptions[0].keys.p256dh
-                                             }
-                                        }
-                                        const payload=   
-                                        {title:"Comment"
-                                        ,body:"someone Comment a votre publication"
-                                          }
-                                        return  webPusher(subscription,payload,res)
-                                    })
+                                    Profile.findById(req._id).then(profile =>{
+                                        NotificationSub.findOne({userId:publication.profileId}).then((sub)=>{
+                            
+                                          let   subscriptions=[];
+                                                               _.forEach(sub.subsciptions ,(sub)=>{
+                                                                subscription = {
+                                                                    endpoint: sub.endpoint,
+                                                                    keys:{
+                                                                        auth:sub.keys.auth,
+                                                                        p256dh:sub.keys.p256dh
+                                                                    }
+                                                               }
+                                                               subscriptions.push(subscription);
+                            
+                                                               })
+                                          const payload=   
+                                          {title:"Speegar",
+                                          icon:profile.profilePictureMin
+                                          ,body:`${profile.lastName} ${profile.firstName} commenté votre publication`
+                                            }
+                                          return  webPusher(subscriptions,payload,res)
+                                      })
+                            
+                            
+                            
+                                      })
+                                   
+                                
                                   
                                 }
                             });
