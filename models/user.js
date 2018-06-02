@@ -1,4 +1,4 @@
-// app/models/user.js
+//node// app/models/user.js
 // load the things we need
 var mongoose = require('mongoose');
 var bcrypt   = require('bcrypt-nodejs');
