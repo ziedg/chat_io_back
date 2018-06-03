@@ -155,10 +155,48 @@ router.route('/markView')
                 error: 'SP_ER_TECHNICAL_ERROR'
             });
         }
+
     });
 
 
     //store the subsciption inside the mongodb collection
+
+    router.route('/api/push-unsubscribe')
+          .post((req,res)=>{
+              const  subscription = req.body;
+              console.log('[INSIDE UNSUBSIBE ROUTE]',subscription);
+              const userId        = req._id;
+              NotificationSub.findOne({userId}).then(sub =>{
+                  //to avoid side effets and it's a good practise to no change the original array directly
+                
+                  const subsciptions = sub.subsciptions;
+                  console.log("before")
+                  console.log(sub.subsciptions)
+                 
+                   const subIndex= _.findIndex(subsciptions,(s)=> s.endpoint === subscription.endpoint)
+                   console.log(subIndex);
+                   subsciptions.splice(subIndex,1)
+                   sub.subsciptions=[...subsciptions];
+                   console.log("after")
+                   console.log(sub.subsciptions);
+                   sub.save()
+                    .then( result =>{
+                        return res.send({
+                            status: 1,
+                            message: "Subscription removed"
+                        });
+
+                    })
+
+
+              })
+
+
+
+
+          })
+
+
     router.route('/api/push-subscribe')
     .post((req,res)=>{
         
@@ -189,6 +227,8 @@ router.route('/markView')
             //i will do it earlier add more subscription to a unique id
             //search if the sub is already exist..
             let subArray = sub.subsciptions;
+
+
             let isExist= _.filter(subArray,(obj)=>{
                 return obj.endpoint === subsciption.endpoint
 
