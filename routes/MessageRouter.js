@@ -1,8 +1,10 @@
 var express = require('express');
 var router = express.Router();
 var Message = require('../models/Message');
+var Profile = require('../models/Profile')
 
 // route middleware to verify a token
+
 router.use(function (req, res, next) {
     if (req.method === 'OPTIONS') {
         next();
@@ -107,5 +109,31 @@ router.route('/messages/:_id').put( (req, res) => {
 		res.json(message);
 	});
 });
+
+//Suggestion 
+router.route('/suggestions/:_id').get( (req, res) => {
+	var id = req.params._id;
+    Profile.findOne({_id: id}, (err,profile) => {
+        if ( err ){
+            return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
+            });
+        }
+        suggestions = profile.subscribers.slice(profile.subscribers.length-3,profile.subscribers.length);
+        Profile.find({_id: { $in : suggestions }}, (err,profiles) => {
+            if ( err ){
+                return res.json({
+                    status: 3,
+                    error: 'SP_ER_TECHNICAL_ERROR'
+                });
+            }
+            res.json(profiles);
+        });
+
+    });
+    
+});
+
 
 module.exports = router;
