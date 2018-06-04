@@ -1,0 +1,111 @@
+var express = require('express');
+var router = express.Router();
+var Message = require('../models/Message');
+
+// route middleware to verify a token
+router.use(function (req, res, next) {
+    if (req.method === 'OPTIONS') {
+        next();
+    } else {
+        var token = req.headers['x-access-token'];
+        if (token) {
+            var jwtSecret = properties.get('security.jwt.secret').toString();
+            jwt.verify(token, jwtSecret, function (err, decoded) {
+                if (err) {
+                    return res.status(403).send({
+                        success: false,
+                        error: 'Failed to authenticate token.'
+                    });
+                } else {
+                    req._id = decoded['_id'];
+                    next();
+                }
+            });
+        } else {
+            return res.status(403).send({
+                success: false,
+                error: 'No token provided.'
+            });
+        }
+    
+    }
+});
+
+router.route('/messages').get(function (req, res) {
+    var limit = req.query.limit;
+    var page = req.query.page ;
+    Message.getMessagesList((err, messages) => {
+		if(err){
+			return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
+            });
+		}
+		res.json(messages);
+	}, limit, page);
+    }
+);
+
+
+router.route('/messages/:fromUser/:toUser').get(function (req, res) {
+    var fromUser = req.params.fromUser;
+    var toUser = req.params.toUser;
+    var limit = req.query.limit;
+    var page = req.query.page ;
+    Message.getMessages(fromUser, toUser, (err, message) => {
+        if(err){
+            return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
+            });
+        }
+        res.json(message);
+    }, limit, page);
+}
+);
+
+router.route('/messages').post(function (req, res) {
+        var message = req.body;
+        Message.addMessage(message, (err, message) => {
+            if(err){
+                return res.json({
+                    status: 3,
+                    error: 'SP_ER_TECHNICAL_ERROR'
+                });
+            }
+            res.json(message);
+        });
+    }
+);
+
+//Delete Message
+
+router.route('/messages').delete(function (req, res) {
+    var id = req.body._id;
+    Message.removeMessage(id, (err, message) => {
+        if(err){
+            return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
+            });
+        }
+        res.json(message);
+    });
+}
+);
+
+//Update Message
+router.route('/messages/:_id').put( (req, res) => {
+	var id = req.params._id;
+	Message.seeMessage(id, (err, message) => {
+		if(err){
+			return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
+            });
+		}
+		res.json(message);
+	});
+});
+
+module.exports = router;
