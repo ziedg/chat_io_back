@@ -20,7 +20,7 @@ var properties = PropertiesReader('properties.file');
 const app = express();
 const server = http.createServer(app);
 const io = require('socket.io')(server);
-require('./sockets/notification.js')(io);
+require('./sockets/message.js')(io);
 
 
 //includes the middlewars

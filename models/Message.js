@@ -35,8 +35,9 @@ const Message = module.exports = mongoose.model('Message', MessageSchema);
 module.exports.getMessagesList = (callback, limit, page) => {
 	Message.find(callback).skip(page).limit(limit).sort({date: -1});
 }
+//module.exports.getMessages = (fromUser, toUser, callback, limit, page) => {
 
-module.exports.getMessages = (fromUser, toUser, callback, limit, page) => {
+module.exports.getMessages = (fromUser, toUser, callback) => {
         const queryData = {
             '$or' : [
                 { '$and': [
@@ -57,7 +58,9 @@ module.exports.getMessages = (fromUser, toUser, callback, limit, page) => {
             },
         ]
     };
-	Message.find(queryData, callback).skip(page).limit(limit).sort({date: -1});
+   // Message.find(queryData, callback).skip(page).limit(limit).sort({date: -1});
+
+	Message.find(queryData, callback);
 }
 
 // Add Message
@@ -79,4 +82,22 @@ module.exports.seeMessage = (id, callback) => {
         seenDate: Date.now()
 	}
 	Message.findOneAndUpdate(query, update, callback);
+}
+
+//check if the user have done conversations
+
+module.exports.haveConversation=(id,callback)=>{
+    const queryData = {
+       
+             '$or': [
+                {
+                    'toUser': id
+                },{
+                    'fromUser': id
+                }  
+    ]
+
+};
+Message.find(queryData, callback);
+
 }
