@@ -69,13 +69,13 @@ router.route('/messages/:fromUser/:toUser').get(function (req, res) {
         }
         console.log(messages)
         res.json(messages); 
-}
+    }
 );
 });
 
 router.route('/messages').post(function (req, res) {
         var message = req.body;
-        console.log(message)
+        console.log('new message   ' + message)
         Message.addMessage(message, (err, message) => {
             if(err){
                 console.log(err)

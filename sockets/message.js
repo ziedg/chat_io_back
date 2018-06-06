@@ -1,5 +1,6 @@
 const socketQuery =require ('./socketQueries');
 const CONSTANTS=require('../utils/config/constants')
+var Message = require('../models/Message');
 
 module.exports = function(io){
     io.use( async (socket, next) => {
@@ -39,14 +40,18 @@ module.exports = function(io){
             }); 
         }else{
             try{
-
-         const  message= await socketQuery.insertMessage(data);
-         const toSocketId = await socketQuery.getDestinationSocketId(data.toUserId)
-         .then((profile)=>{
-           return profile.socketId
-         })
-         console.log(toSocketId);
-               io.to(toSocketId).emit(`add-message-response`,data); 
+                Message.addMessage(data,(err, message) => {
+                    if(err){
+                        throw err;
+                    }
+                });
+                const  message= await socketQuery.insertMessage(data);
+                const toSocketId = await socketQuery.getDestinationSocketId(data.toUserId)
+                .then((profile)=>{
+                return profile.socketId
+                })
+                console.log(toSocketId);
+                io.to(toSocketId).emit(`add-message-response`,data); 
             } catch (error) {
                io.to(socket.id).emit(`add-message-response`,{
                     error : true,
@@ -63,7 +68,6 @@ module.exports = function(io){
         })
 
     })
-
 
     
 }

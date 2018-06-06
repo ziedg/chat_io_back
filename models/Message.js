@@ -2,12 +2,12 @@ var mongoose     = require('mongoose');
 var Schema       = mongoose.Schema;
 
 var MessageSchema   = new Schema({
-    fromUser : { 
+    fromUserId : { 
         type: Schema.Types.ObjectId, 
         ref: 'User', 
         required: true
     },
-    toUser: {
+    toUserId: {
         type: Schema.Types.ObjectId, 
         ref: 'User', 
         required: true
@@ -40,8 +40,8 @@ module.exports.getMessagesList = (callback, limit, page) => {
 module.exports.getMessages = (fromUser, toUser, callback) => {
         const queryData = {
             $or : [
-                { $and: [{'toUser': toUser},{ 'fromUser': fromUser }] },
-                { $and: [{'toUser': fromUser},{ 'fromUser': toUser}] }
+                { $and: [{'toUserId': toUser},{ 'fromUserId': fromUser }] },
+                { $and: [{'toUserId': fromUser},{ 'fromUserId': toUser}] }
             ]
     };
    // Message.find(queryData, callback).skip(page).limit(limit).sort({date: -1});
@@ -77,9 +77,9 @@ module.exports.haveConversation=(id,callback)=>{
        
              $or: [
                 {
-                    'toUser': id
+                    'toUserId': id
                 },{
-                    'fromUser': id
+                    'fromUserId ': id
                 }  
     ]
 
