@@ -67,7 +67,6 @@ router.route('/messages/:fromUser/:toUser').get(function (req, res) {
                 error: 'SP_ER_TECHNICAL_ERROR'
             });
         }
-        console.log(messages)
         res.json(messages); 
     }
 );
@@ -120,7 +119,6 @@ router.route('/messages/:_id').put( (req, res) => {
 
 //Suggestion 
 router.route('/suggestions/:_id').get( (req, res) => {
-    console.log(req.params);
     var id = req.params._id;
     Message.haveConversation(id,(err,messages)=>{
         if(err){
@@ -134,8 +132,8 @@ router.route('/suggestions/:_id').get( (req, res) => {
         let suggestionsIds=[];
 
         messages.forEach(message => {
-        if(message.fromUser == id) suggestionsIds.push(message.fromUser)
-        else suggestionsIds.push(message.toUser)
+        if(message.fromUserId == id) suggestionsIds.push(message.toUserId)
+        else suggestionsIds.push(message.fromUserId)
         });
 
        Profile.find({_id: { $in : suggestionsIds }},(err,profiles)=>{

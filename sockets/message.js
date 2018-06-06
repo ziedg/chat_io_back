@@ -18,11 +18,9 @@ module.exports = function(io){
     
     io.on('connection',(socket)=>{
         console.log("user connected ...")
-      console.log(socket.id);
 
 
       socket.on(`add-message`, async (data) => {
-          console.log(data);
         if (data.message === '') {
            io.to(socket.id).emit(`add-message-response`,{
                 error : true,
@@ -45,12 +43,10 @@ module.exports = function(io){
                         throw err;
                     }
                 });
-                const  message= await socketQuery.insertMessage(data);
                 const toSocketId = await socketQuery.getDestinationSocketId(data.toUserId)
                 .then((profile)=>{
                 return profile.socketId
                 })
-                console.log(toSocketId);
                 io.to(toSocketId).emit(`add-message-response`,data); 
             } catch (error) {
                io.to(socket.id).emit(`add-message-response`,{

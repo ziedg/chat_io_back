@@ -33,16 +33,6 @@ getDestinationSocketId(userId){
     
 }
 
-insertMessage(data){
-
-var message=new Message();
-message.fromUser= new ObjectId(data.fromUser);
-message.toUser=new ObjectId (data.toUser);
-message.message=data.message;
-return message.save()
-    
-}
-
 }
 
 module.exports= new SocketQueries();
