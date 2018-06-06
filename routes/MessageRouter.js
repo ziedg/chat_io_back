@@ -7,7 +7,6 @@ var properties = PropertiesReader('./properties.file');
 var jwt = require('jsonwebtoken');
 
 // route middleware to verify a token
-
 router.use(function (req, res, next) {
     if (req.method === 'OPTIONS') {
         next();
@@ -76,12 +75,15 @@ router.route('/messages/:fromUser/:toUser').get(function (req, res) {
 
 router.route('/messages').post(function (req, res) {
         var message = req.body;
+        console.log(message)
         Message.addMessage(message, (err, message) => {
             if(err){
+                console.log(err)
                 return res.json({
                     status: 3,
                     error: 'SP_ER_TECHNICAL_ERROR'
                 });
+                
             }
             res.json(message);
         });

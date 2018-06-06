@@ -41,7 +41,7 @@ module.exports.getMessages = (fromUser, toUser, callback) => {
         const queryData = {
             $or : [
                 { $and: [{'toUser': toUser},{ 'fromUser': fromUser }] },
-                { $and: [{'toUser': fromUser},{ 'fromUserId': toUser}] }
+                { $and: [{'toUser': fromUser},{ 'fromUser': toUser}] }
             ]
     };
    // Message.find(queryData, callback).skip(page).limit(limit).sort({date: -1});
