@@ -38,7 +38,8 @@ var profileSchema = new Schema(
     isAdmin: Number,
     name: String,
     isFollowed: Boolean,
-    dateInscription: String
+    dateInscription: String,
+    socketId:String
   },
   { versionKey: false }
 );

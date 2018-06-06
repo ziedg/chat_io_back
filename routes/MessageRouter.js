@@ -2,6 +2,9 @@ var express = require('express');
 var router = express.Router();
 var Message = require('../models/Message');
 var Profile = require('../models/Profile')
+var PropertiesReader = require('properties-reader');
+var properties = PropertiesReader('./properties.file');
+var jwt = require('jsonwebtoken');
 
 // route middleware to verify a token
 
@@ -52,6 +55,7 @@ router.route('/messages').get(function (req, res) {
 router.route('/messages/:fromUser/:toUser').get(function (req, res) {
     var fromUser = req.params.fromUser;
     var toUser = req.params.toUser;
+   
     /*
     A revenir apres dans des versions ultérieures
     var limit = req.query.limit;
@@ -64,11 +68,11 @@ router.route('/messages/:fromUser/:toUser').get(function (req, res) {
                 error: 'SP_ER_TECHNICAL_ERROR'
             });
         }
+        console.log(messages)
         res.json(messages); 
 }
 );
-}
-);
+});
 
 router.route('/messages').post(function (req, res) {
         var message = req.body;
@@ -81,8 +85,7 @@ router.route('/messages').post(function (req, res) {
             }
             res.json(message);
         });
-    }
-);
+    });
 
 //Delete Message
 
@@ -97,8 +100,7 @@ router.route('/messages').delete(function (req, res) {
         }
         res.json(message);
     });
-}
-);
+});
 
 //Update Message
 router.route('/messages/:_id').put( (req, res) => {
@@ -116,6 +118,7 @@ router.route('/messages/:_id').put( (req, res) => {
 
 //Suggestion 
 router.route('/suggestions/:_id').get( (req, res) => {
+    console.log(req.params);
     var id = req.params._id;
     Message.haveConversation(id,(err,messages)=>{
         if(err){

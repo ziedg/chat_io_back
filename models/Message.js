@@ -39,24 +39,10 @@ module.exports.getMessagesList = (callback, limit, page) => {
 
 module.exports.getMessages = (fromUser, toUser, callback) => {
         const queryData = {
-            '$or' : [
-                { '$and': [
-                    {
-                        'toUser': toUser
-                    },{
-                        'fromUser': fromUser
-                    }
-                ]
-            },{
-                '$and': [ 
-                    {
-                        'toUser': fromUser
-                    }, {
-                        'fromUserId': toUser
-                    }
-                ]
-            },
-        ]
+            $or : [
+                { $and: [{'toUser': toUser},{ 'fromUser': fromUser }] },
+                { $and: [{'toUser': fromUser},{ 'fromUserId': toUser}] }
+            ]
     };
    // Message.find(queryData, callback).skip(page).limit(limit).sort({date: -1});
 
@@ -85,11 +71,11 @@ module.exports.seeMessage = (id, callback) => {
 }
 
 //check if the user have done conversations
-
+// logic:retreive message sent or received bu the user
 module.exports.haveConversation=(id,callback)=>{
     const queryData = {
        
-             '$or': [
+             $or: [
                 {
                     'toUser': id
                 },{
