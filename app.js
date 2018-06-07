@@ -51,8 +51,13 @@ db.once('open', function() {
 });
 
 
-app.use(function(req, res, next) { 
-	res.header('Access-Control-Allow-Origin', "*");
+app.use(function(req, res, next) {
+	var allowedOrigins = ['https://integration.speegar.com', 'http://localhost:4200'];
+	var origin = req.headers.origin;
+	if(allowedOrigins.indexOf(origin) > -1){
+		 res.setHeader('Access-Control-Allow-Origin', origin);
+	}
+	//res.header('Access-Control-Allow-Origin', "https://integration.speegar.com/");
 	res.header('Access-Control-Allow-Methods','GET, POST, OPTIONS, PUT, PATCH, DELETE');
 	res.header('Access-Control-Allow-Headers', "*");
 	// Request headers you wish to allow
@@ -60,7 +65,7 @@ app.use(function(req, res, next) {
 
 	// Set to true if you need the website to include cookies in the requests sent
 	// to the API (e.g. in case you use sessions)
-	res.setHeader('Access-Control-Allow-Credentials', false);
+	res.setHeader('Access-Control-Allow-Credentials', true);
 
 
 	next();
@@ -68,12 +73,6 @@ app.use(function(req, res, next) {
 })
 
 const server = http.createServer(app);
-const io = require('socket.io')(server,  {
-    origins: '*:*',
-    transports: ['websocket', 'htmlfile', 'xhr-polling', 'jsonp-polling', 'polling']
-});
-
-require('./sockets/message.js')(io);
 
 /*
 
@@ -113,7 +112,7 @@ var http_port = properties.get('server.port.http');
 	
 
 if(properties.get('ssl.enable')){
-	https.createServer({
+	server = https.createServer({
 		key: fs.readFileSync(properties.get('ssl.privkey1').toString()),
 		cert: fs.readFileSync(properties.get('ssl.fullchain1').toString()),
 		ca: fs.readFileSync(properties.get('ssl.chain1').toString())
@@ -123,5 +122,11 @@ if(properties.get('ssl.enable')){
 	//app.listen(3000);
 	console.log('the server is launched on the port ' + http_port+', mode ssl is disabled, '+new Date());
 }
+const io = require('socket.io')(server,  {
+    origins: '*:*',
+    transports: ['websocket', 'htmlfile', 'xhr-polling', 'jsonp-polling', 'polling']
+});
+
+require('./sockets/message.js')(io);
 module.exports = app;
 
