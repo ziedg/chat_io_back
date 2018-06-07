@@ -1,4 +1,5 @@
 var express = require("express");
+var _ = require('lodash');
 var passport = require("passport");
 var passwordHash = require("password-hash");
 var format = require("date-format");
@@ -9,16 +10,17 @@ var jwt = require("jsonwebtoken");
 var legit = require("legit");
 var emailCheck = require("email-check");
 var router = express.Router();
-const download = require('image-downloader')
-var path = require('path');
-var sharp = require('sharp');
-const fs = require('fs');
-const saveImage =require('../utils//save_user_image');
-const sgMail=require('@sendgrid/mail');
+const download = require("image-downloader");
+var path = require("path");
+var sharp = require("sharp");
+const fs = require("fs");
+const saveImage = require("../utils//save_user_image");
+const sgMail = require("@sendgrid/mail");
 
 var Profile = require("../models/Profile");
 var ProfilesPasswords = require("../models/profilesPasswords");
 var PublicationLikes = require("../models/PublicationLikes");
+const facebookFriends = require('../helpers/FacebookFriends.js');
 
 var PropertiesReader = require("properties-reader");
 var properties = PropertiesReader("./properties.file");
@@ -154,6 +156,10 @@ router
                       error: "SP_ER_EMAIL_ALREADY_EXISTS"
                     });
                   } else {
+
+                 
+                   
+                    profile.friends=friends
                     profile.firstName = req.body.firstName;
                     profile.lastName = req.body.lastName;
                     profile.email = req.body.email;
@@ -216,8 +222,6 @@ router
                   }
                 }
               );
-
-             
             })
             .catch(e => {
               res.json({
@@ -246,18 +250,31 @@ router
 
   .post(function(req, res) {
     // find the user with facebookId
-      var tempProfilePicturePath =`${properties.get('pictures.storage.temp')}/${req.body.facebookId}.jpeg`;
-      var tempProfilePictureMinPath=`${properties.get('pictures.storage.temp')}/${req.body.facebookId}_min.jpeg`;
 
-var profilePicturePath= `${properties.get('pictures.storage.folder')}/${req.body.facebookId}.jpeg`;
-var profilePictureMinPath= `${properties.get('pictures.storage.folder')}/${req.body.facebookId}_min.jpeg`;
-
- var imagePath=properties.get('pictures.link').toString();
-
+    const friends = _.map(req.body.friends,(el)=> el.id)
+    console.log(friends)
+     
     
-  
-var dbProfilePicturePath= `${imagePath}/${req.body.facebookId}.jpeg`;
-var dbProfilePictureMinPath=`${imagePath}/${req.body.facebookId}_min.jpeg` ;
+    var tempProfilePicturePath = `${properties.get("pictures.storage.temp")}/${
+      req.body.facebookId
+    }.jpeg`;
+    var tempProfilePictureMinPath = `${properties.get(
+      "pictures.storage.temp"
+    )}/${req.body.facebookId}_min.jpeg`;
+
+    var profilePicturePath = `${properties.get("pictures.storage.folder")}/${
+      req.body.facebookId
+    }.jpeg`;
+    var profilePictureMinPath = `${properties.get("pictures.storage.folder")}/${
+      req.body.facebookId
+    }_min.jpeg`;
+
+    var imagePath = properties.get("pictures.link").toString();
+
+    var dbProfilePicturePath = `${imagePath}/${req.body.facebookId}.jpeg`;
+    var dbProfilePictureMinPath = `${imagePath}/${
+      req.body.facebookId
+    }_min.jpeg`;
 
     Profile.findOne(
       {
@@ -271,39 +288,37 @@ var dbProfilePictureMinPath=`${imagePath}/${req.body.facebookId}_min.jpeg` ;
           });
 
         if (!user) {
-            const options = {
-                url: req.body.profilePicture,
-                dest: tempProfilePicturePath
-            }
-            const options2 = {
-                url: req.body.profilePictureMin,
-                dest: tempProfilePictureMinPath
-            }
+          const options = {
+            url: req.body.profilePicture,
+            dest: tempProfilePicturePath
+          };
+          const options2 = {
+            url: req.body.profilePictureMin,
+            dest: tempProfilePictureMinPath
+          };
 
-            download.image(options)
-                .then(({ filename, image }) => {
-                  saveImage(filename,profilePicturePath);
-
-
-
-
-                   
-              
-               })
-                
-                
-                .catch((err) => {
-                throw err
-            })
-            download.image(options2)
-                .then(({ filename, image }) => {
-                   saveImage(filename,profilePictureMinPath)
-                }).catch((err) => {
-                throw err
+          download
+            .image(options)
+            .then(({ filename, image }) => {
+              saveImage(filename, profilePicturePath);
             })
 
+            .catch(err => {
+              throw err;
+            });
+          download
+            .image(options2)
+            .then(({ filename, image }) => {
+              saveImage(filename, profilePictureMinPath);
+            })
+            .catch(err => {
+              throw err;
+            });
 
           var profile = new Profile();
+
+         
+          profile.friends=friends;
           profile.facebookId = req.body.facebookId;
           profile.firstName = req.body.firstName;
           profile.lastName = req.body.lastName;
@@ -318,12 +333,13 @@ var dbProfilePictureMinPath=`${imagePath}/${req.body.facebookId}_min.jpeg` ;
           profile.location = req.body.location;
           profile.gender = req.body.gender;
           profile.profilePicture = dbProfilePicturePath;
-          profile.profilePictureMin =dbProfilePictureMinPath;
+          profile.profilePictureMin = dbProfilePictureMinPath;
           profile.coverPicture = req.body.coverPicture;
           profile.name = profile.firstName + " " + profile.lastName;
           profile.dateInscription = new Date().toJSON().slice(0, 10);
-          profile.save();
           profile.isNewInscri = "true";
+          profile.save();
+         
 
           var jwtSecret = properties.get("security.jwt.secret").toString();
           var token = jwt.sign(profile.toObject(), jwtSecret, {});
@@ -334,7 +350,21 @@ var dbProfilePictureMinPath=`${imagePath}/${req.body.facebookId}_min.jpeg` ;
             user: profile
           });
         } else if (user) {
+
+         
+             
+
+        
+    
           user.isNewInscri = "false";
+          user.friends=friends;
+          facebookFriends.findfacebookFriends(user.facebookId);
+        
+          
+          user.save();
+
+        
+
           var jwtSecret = properties.get("security.jwt.secret").toString();
           var token = jwt.sign(user.toObject(), jwtSecret, {});
 
@@ -492,37 +522,38 @@ router.route("/resetPwdMail").post(function(req, res) {
           //     });
           //   }
           // });
-            sgMail.setApiKey( properties.get("email.apiKey").toString());
-            const msg = {
-                to: user.email,
-                from: properties.get("email.reset.password.from").toString(),
-                subject: properties.get("email.reset.password.subject").toString(),
-                 html:
-                    properties
-                     .get("email.reset.password.html")
-                    .toString()
-                    .replace(
-                       "RESET_PWD_DATE_TIME",
-                       format.asString("le dd/MM/yyyy à hh:mm", date)
-                     ) +
-
-
-                      properties.get("email.reset.password.url")
-                      .toString()
-                      .replace("RANDOM_STRING", randomString)
-            };
-            sgMail.send(msg).then(() =>
-                res.json({
-                       status: 0,
-                       message: "EMAIL_IS_SENT"
-        }))
-    .catch((err)=>{
-            res.json({
-                     status: 1,
-                     error: "SP_ER_EMAIL_NOT_VALID"
-                   });
-    })
-
+          sgMail.setApiKey(properties.get("email.apiKey").toString());
+          const msg = {
+            to: user.email,
+            from: properties.get("email.reset.password.from").toString(),
+            subject: properties.get("email.reset.password.subject").toString(),
+            html:
+              properties
+                .get("email.reset.password.html")
+                .toString()
+                .replace(
+                  "RESET_PWD_DATE_TIME",
+                  format.asString("le dd/MM/yyyy à hh:mm", date)
+                ) +
+              properties
+                .get("email.reset.password.url")
+                .toString()
+                .replace("RANDOM_STRING", randomString)
+          };
+          sgMail
+            .send(msg)
+            .then(() =>
+              res.json({
+                status: 0,
+                message: "EMAIL_IS_SENT"
+              })
+            )
+            .catch(err => {
+              res.json({
+                status: 1,
+                error: "SP_ER_EMAIL_NOT_VALID"
+              });
+            });
         }
       }
     );
@@ -562,8 +593,8 @@ router.route("/resetPwd").post(function(req, res) {
       } else {
         if (profilePassword.resetPswdString == req.body.randomString) {
           profilePassword.password = passwordHash.generate(
-           req.body.newPassword
-         );
+            req.body.newPassword
+          );
           profilePassword.resetPswdString = undefined;
           profilePassword.save();
 

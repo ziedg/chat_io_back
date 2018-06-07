@@ -19,6 +19,7 @@ var profileSchema = new Schema(
       comments :[String],
     subscribers: [Schema.ObjectId],
     likers: [Schema.ObjectId],
+    friends:[String],
     ignoredProfiles: [Schema.ObjectId],
     nbSubscriptions: Number,
     nbSubscribers: Number,
