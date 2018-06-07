@@ -18,9 +18,7 @@ var properties = PropertiesReader('properties.file');
 //configure socket.io and express server
 
 const app = express();
-const server = http.createServer(app);
-const io = require('socket.io')(server);
-require('./sockets/message.js')(io);
+
 
 
 //includes the middlewars
@@ -69,6 +67,12 @@ app.use(function(req, res, next) {
 	//jwtScript.JWT(req, res, next);
 })
 
+const server = http.createServer(app);
+const io = require('socket.io')(server,  {
+    origins: '*:*',
+    transports: ['websocket', 'htmlfile', 'xhr-polling', 'jsonp-polling', 'polling']
+});
+require('./sockets/message.js')(io);
 
 /*
 
