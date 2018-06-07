@@ -72,7 +72,7 @@ app.use(function(req, res, next) {
 	//jwtScript.JWT(req, res, next);
 })
 
-const server = http.createServer(app);
+
 
 /*
 
@@ -102,6 +102,7 @@ var router = require('./routes/MessageRouter');
 app.use('/', router);
 
 
+
 // START SERVER
 //============================================
 //cron 
@@ -110,14 +111,16 @@ var https_port = properties.get('server.port.https');
 var http_port = properties.get('server.port.http');
 
 	
-
+var server;
 if(properties.get('ssl.enable')){
 	server = https.createServer({
 		key: fs.readFileSync(properties.get('ssl.privkey1').toString()),
 		cert: fs.readFileSync(properties.get('ssl.fullchain1').toString()),
 		ca: fs.readFileSync(properties.get('ssl.chain1').toString())
-	}, app).listen(https_port);
+	}, app);
+	server.listen(https_port);
 } else {
+	server = http.createServer(app);
 	server.listen(http_port);
 	//app.listen(3000);
 	console.log('the server is launched on the port ' + http_port+', mode ssl is disabled, '+new Date());
@@ -126,7 +129,7 @@ const io = require('socket.io')(server,  {
     origins: '*:*',
     transports: ['websocket', 'htmlfile', 'xhr-polling', 'jsonp-polling', 'polling']
 });
-
 require('./sockets/message.js')(io);
+
 module.exports = app;
 
