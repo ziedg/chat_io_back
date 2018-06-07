@@ -3,7 +3,7 @@ const CONSTANTS=require('../utils/config/constants')
 var Message = require('../models/Message');
 
 module.exports = function(io){
-    io.set('origins', '*')
+    io.set('origins', '*:*')
     io.use( async (socket, next) => {
         try {
             await socketQuery.addSocketId({
@@ -14,7 +14,7 @@ module.exports = function(io){
         } catch (error) {
               // Error
               console.error(error);
-          }
+        }
       });
     
     io.on('connection',(socket)=>{
