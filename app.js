@@ -56,11 +56,11 @@ app.use(function(req, res, next) {
 	res.header('Access-Control-Allow-Methods','GET, POST, OPTIONS, PUT, PATCH, DELETE');
 	res.header('Access-Control-Allow-Headers', "*");
 	// Request headers you wish to allow
-	res.setHeader('Access-Control-Allow-Headers', 'content-type,x-access-token');
+	res.setHeader('Access-Control-Allow-Headers', 'content-type,x-access-token,X-Requested-With');
 
 	// Set to true if you need the website to include cookies in the requests sent
 	// to the API (e.g. in case you use sessions)
-	res.setHeader('Access-Control-Allow-Credentials', false);
+	res.setHeader('Access-Control-Allow-Credentials', true);
 
 
 	next();
@@ -72,6 +72,7 @@ const io = require('socket.io')(server,  {
     origins: '*:*',
     transports: ['websocket', 'htmlfile', 'xhr-polling', 'jsonp-polling', 'polling']
 });
+
 require('./sockets/message.js')(io);
 
 /*
