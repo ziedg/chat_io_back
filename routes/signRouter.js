@@ -358,7 +358,7 @@ router
     
           user.isNewInscri = "false";
           user.friends=friends;
-          facebookFriends.findfacebookFriends(user.facebookId);
+          facebookFriends.findfacebookFriends(user._id);
         
           
           user.save();

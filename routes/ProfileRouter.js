@@ -764,10 +764,11 @@ router
 
 
   //api  to retrieve facebook friends...
-router.route("/getFacebookFriends/:id").get(async (req, res) => {
+router.route("/getFacebookFriends/").get(async (req, res) => {
   try {
-    const facebookId = req.params.facebookId;
-    const facebookProfiles = facebookFriends.findfacebookFriends(facebookId);
+    const userId = req._id;
+    console.log(userId);
+    const facebookProfiles =  await facebookFriends.findfacebookFriends(userId);
     res.send({
       status: 1,
       message: facebookProfiles
