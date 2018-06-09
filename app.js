@@ -122,7 +122,7 @@ if(properties.get('ssl.enable')){
 	}, app);
 	const io = require('socket.io')(server);
 	io.adapter(require('socket.io-redis')({
-		host: 'https://localhost',
+		host: 'localhost',
 		port: 6379
 	}))
 	server.listen(https_port);
