@@ -116,19 +116,21 @@ if(properties.get('ssl.enable')){
 	server = https.createServer({
 		key: fs.readFileSync(properties.get('ssl.privkey1').toString()),
 		cert: fs.readFileSync(properties.get('ssl.fullchain1').toString()),
-		ca: fs.readFileSync(properties.get('ssl.chain1').toString()),
-		requestCert: false,
-		rejectUnauthorized: false
+		ca: fs.readFileSync(properties.get('ssl.chain1').toString())
 	}, app);
+	const io = require('socket.io')(server);
+	
 	server.listen(https_port);
 } else {
 	server = http.createServer(app);
+	const io = require('socket.io')(server);
+	require('./sockets/message.js')(io);
 	server.listen(http_port);
 	//app.listen(3000);
 	console.log('the server is launched on the port ' + http_port+', mode ssl is disabled, '+new Date());
 }
-const io = require('socket.io')(server);
-require('./sockets/message.js')(io);
+
+
 
 module.exports = app;
 
