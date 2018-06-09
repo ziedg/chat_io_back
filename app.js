@@ -120,13 +120,27 @@ if(properties.get('ssl.enable')){
         cert: fs.readFileSync(properties.get('ssl.fullchain1').toString()),
         ca: fs.readFileSync(properties.get('ssl.chain1').toString())
     }, app);
-    const io = require('socket.io')(server);
+
+    
+    server.listen(https_port);
+    
+    
+    var io = require('socket.io').listen(server);
     io.adapter(require('socket.io-redis')({
         host: 'localhost',
         port: 6379
     }))
-    require('./sockets/message.js')(io);
-    server.listen(https_port);
+   
+
+io.set('transports', ['websocket',
+    'flashsocket',
+    'htmlfile',
+    'xhr-polling',
+    'jsonp-polling',
+    'polling']);
+    
+     require('./sockets/message.js')(io);
+
 } else {
     
 	server = http.createServer(app);
