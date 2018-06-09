@@ -3,6 +3,8 @@ const CONSTANTS=require('../utils/config/constants')
 var Message = require('../models/Message');
 
 module.exports = function(io){
+          io.set('transports', ['websocket']);
+
     io.use( async (socket, next) => {
         try {
             await socketQuery.addSocketId({
@@ -15,8 +17,7 @@ module.exports = function(io){
               console.error(error);
         }
       });
-      io.set('transports', ['websocket', 'polling']);
-    
+
     io.on('connection',(socket)=>{
         console.log("user connected ...")
 
