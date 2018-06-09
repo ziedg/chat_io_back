@@ -1,4 +1,3 @@
-
 var express = require('express');
 var bodyParser = require('body-parser');
 var jwtScript = require('./public/javascripts/jwtScript');
@@ -123,7 +122,7 @@ if(properties.get('ssl.enable')){
 	}, app);
 	const io = require('socket.io')(server);
 	io.adapter(require('socket.io-redis')({
-		host: 'localhost',
+		host: 'https://localhost',
 		port: 6379
 	}))
 	server.listen(https_port);
