@@ -15,6 +15,7 @@ module.exports = function(io){
               console.error(error);
         }
       });
+      io.set('transports', ['websocket', 'polling']);
     
     io.on('connection',(socket)=>{
         console.log("user connected ...")
