@@ -159,7 +159,7 @@ router
 
                  
                    
-                    profile.friends=friends
+                    profile.friends=req.body.friends;
                     profile.firstName = req.body.firstName;
                     profile.lastName = req.body.lastName;
                     profile.email = req.body.email;
@@ -251,8 +251,8 @@ router
   .post(function(req, res) {
     // find the user with facebookId
 
-    const friends = _.map(req.body.friends,(el)=> el.id)
-    console.log(friends)
+    const friends = _.map(req.body.friends,(el)=> el.id);
+    console.log(friends);
      
     
     var tempProfilePicturePath = `${properties.get("pictures.storage.temp")}/${
@@ -318,7 +318,7 @@ router
           var profile = new Profile();
 
          
-          profile.friends=friends;
+          profile.friends=req.body.friends;
           profile.facebookId = req.body.facebookId;
           profile.firstName = req.body.firstName;
           profile.lastName = req.body.lastName;
