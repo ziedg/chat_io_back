@@ -122,7 +122,10 @@ if(properties.get('ssl.enable')){
 		ca: fs.readFileSync(properties.get('ssl.chain1').toString())
 	}, app);
 	const io = require('socket.io')(server);
-
+	io.adapter(require('socket.io-redis')({
+		host: 'localhost',
+		port: 6379
+	}))
 	server.listen(https_port);
 } else {
 	server = http.createServer(app);

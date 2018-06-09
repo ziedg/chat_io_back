@@ -6,7 +6,7 @@ ip = https://integration.speegar.com
 production=false
 
 [ssl]
-enable = false
+enable = true
 privkey1 = /etc/letsencrypt/archive/integration.speegar.com/privkey1.pem
 fullchain1 = /etc/letsencrypt/archive/integration.speegar.com/fullchain1.pem
 chain1 = /etc/letsencrypt/archive/integration.speegar.com/chain1.pem
@@ -25,7 +25,7 @@ storage.temp=/var/tmp
 jwt.secret = f09cce0a0753496b9baaae70b343a15f
 scp.secret = MZ9xWqTJp5dS2teU
 scp.ip = 5.189.133.165
-scp.user =root 
+scp.user =root
 
 
 
