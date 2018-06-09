@@ -1,5 +1,5 @@
 
-var express = require('express'); 
+var express = require('express');
 var bodyParser = require('body-parser');
 var jwtScript = require('./public/javascripts/jwtScript');
 var path = require('path');
@@ -9,6 +9,7 @@ var https = require('https');
 var http = require('http');
 var fs = require('fs');
 var cors = require('cors');
+const redis = require('socket.io-redis');
 
 
 var PropertiesReader = require('properties-reader');
@@ -37,7 +38,7 @@ var Notification = require('./models/Notification');
 
 	// required for passport
 	//app.use(express.session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
-	app.use(passport.initialize()); 
+	app.use(passport.initialize());
 	app.use(passport.session()); // persistent login sessions
 	app.use(flash()); // use connect-flash for flash messages stored in session
 
@@ -91,7 +92,7 @@ app.use('/', router);
 var router = require('./routes/CommentRouter');
 app.use('/', router);
 
-var router = require('./routes/publicationRouter'); 
+var router = require('./routes/publicationRouter');
 app.use('/', router);
 
 var router = require('./routes/ProfileRouter');
@@ -107,12 +108,12 @@ app.use('/', router);
 
 // START SERVER
 //============================================
-//cron 
+//cron
 var cronJob =require('./helpers/PopularProfiles');
 var https_port = properties.get('server.port.https');
 var http_port = properties.get('server.port.http');
 
-	
+
 var server;
 if(properties.get('ssl.enable')){
 	server = https.createServer({
@@ -121,14 +122,21 @@ if(properties.get('ssl.enable')){
 		ca: fs.readFileSync(properties.get('ssl.chain1').toString())
 	}, app);
 	const io = require('socket.io')(server);
-	
+
 	server.listen(https_port);
 } else {
 	server = http.createServer(app);
+
 	const io = require('socket.io')(server);
+
+	io.adapter(require('socket.io-redis')({
+		host: 'localhost',
+		port: 6379
+	}))
+
 	require('./sockets/message.js')(io);
+
 	server.listen(http_port);
-	//app.listen(3000);
 	console.log('the server is launched on the port ' + http_port+', mode ssl is disabled, '+new Date());
 }
 
