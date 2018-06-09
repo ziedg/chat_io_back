@@ -125,6 +125,7 @@ if(properties.get('ssl.enable')){
         host: 'localhost',
         port: 6379
     }))
+    require('./sockets/message.js')(io);
     server.listen(https_port);
 } else {
     
