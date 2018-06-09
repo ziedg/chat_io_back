@@ -1,12 +1,12 @@
 [server]
-port.http = 3002
-port.https = 3005
+port.http = 3005
+port.https = 3002
 storage.image = https://integration.speegar.com/images
 ip = https://integration.speegar.com
 production=false
 
 [ssl]
-enable = true
+enable = false
 privkey1 = /etc/letsencrypt/archive/integration.speegar.com/privkey1.pem
 fullchain1 = /etc/letsencrypt/archive/integration.speegar.com/fullchain1.pem
 chain1 = /etc/letsencrypt/archive/integration.speegar.com/chain1.pem
