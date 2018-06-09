@@ -8,6 +8,7 @@ var flash    = require('connect-flash');
 var https = require('https');
 var http = require('http');
 var fs = require('fs');
+var cors = require('cors');
 
 
 var PropertiesReader = require('properties-reader');
@@ -25,6 +26,7 @@ const app = express();
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(express.static(path.join(__dirname,'public')));
+app.use(cors());
 
 
 //requieres the application models
