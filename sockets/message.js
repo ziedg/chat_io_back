@@ -3,7 +3,6 @@ const CONSTANTS=require('../utils/config/constants')
 var Message = require('../models/Message');
 
 module.exports = function(io){
-          io.set('transports', ['websocket']);
 
     io.use( async (socket, next) => {
         try {
