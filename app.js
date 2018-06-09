@@ -127,10 +127,7 @@ if(properties.get('ssl.enable')){
 	//app.listen(3000);
 	console.log('the server is launched on the port ' + http_port+', mode ssl is disabled, '+new Date());
 }
-const io = require('socket.io')(server,  {
-    origins: '*:*',
-    transports: ['websocket', 'htmlfile', 'xhr-polling', 'jsonp-polling', 'polling']
-});
+const io = require('socket.io')(server);
 require('./sockets/message.js')(io);
 
 module.exports = app;
