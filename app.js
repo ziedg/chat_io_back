@@ -111,21 +111,30 @@ app.use('/', router);
 var cronJob =require('./helpers/PopularProfiles');
 var https_port = properties.get('server.port.https');
 var http_port = properties.get('server.port.http');
+const crypto = require('crypto');
 
 
 var server;
 if(properties.get('ssl.enable')){
-	server = https.createServer({
-		key: fs.readFileSync(properties.get('ssl.privkey1').toString()),
-		cert: fs.readFileSync(properties.get('ssl.fullchain1').toString()),
-		ca: fs.readFileSync(properties.get('ssl.chain1').toString())
-	}, app);
+    server = http.createServer(app);
+
 	const io = require('socket.io')(server);
+
 	io.adapter(require('socket.io-redis')({
 		host: 'localhost',
 		port: 6379
 	}))
-	server.listen(https_port);
+
+	require('./sockets/message.js')(io);
+	var credentials = crypto.createCredentials({
+		key: fs.readFileSync(properties.get('ssl.privkey1').toString()),
+		cert: fs.readFileSync(properties.get('ssl.fullchain1').toString()),
+		ca: fs.readFileSync(properties.get('ssl.chain1').toString())
+	});
+	server.setSecure(credentials);
+
+	server.listen(http_port);
+	console.log('the server is launched on the port ' + http_port+', mode ssl is disabled, '+new Date());
 } else {
 	server = http.createServer(app);
 
