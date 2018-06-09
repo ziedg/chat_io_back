@@ -116,7 +116,9 @@ if(properties.get('ssl.enable')){
 	server = https.createServer({
 		key: fs.readFileSync(properties.get('ssl.privkey1').toString()),
 		cert: fs.readFileSync(properties.get('ssl.fullchain1').toString()),
-		ca: fs.readFileSync(properties.get('ssl.chain1').toString())
+		ca: fs.readFileSync(properties.get('ssl.chain1').toString()),
+		requestCert: false,
+		rejectUnauthorized: false
 	}, app);
 	server.listen(https_port);
 } else {
