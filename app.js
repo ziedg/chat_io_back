@@ -121,25 +121,25 @@ if(properties.get('ssl.enable')){
         ca: fs.readFileSync(properties.get('ssl.chain1').toString())
     }, app);
 
-    
-    server.listen(https_port);
-    
+    var httpsport = parseInt(https_port) + parseInt(process.env.NODE_APP_INSTANCE) ;
+    server.listen(httpsport);
     
     var io = require('socket.io').listen(server);
     io.adapter(require('socket.io-redis')({
         host: 'localhost',
         port: 6379
     }))
-   
 
-io.set('transports', ['websocket',
-    'flashsocket',
-    'htmlfile',
-    'xhr-polling',
-    'jsonp-polling',
-    'polling']);
+    io.set('transports', ['websocket',
+        'flashsocket',
+        'htmlfile',
+        'xhr-polling',
+        'jsonp-polling',
+        'polling']);
     
-     require('./sockets/message.js')(io);
+    require('./sockets/message.js')(io);
+    
+    console.log('the server is launched on the port ' + httpsport+', mode ssl is enabled, '+new Date());
 
 } else {
     
