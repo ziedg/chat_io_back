@@ -248,11 +248,11 @@ router
 router
   .route("/signWithFacebook")
 
-  .post(function(req, res) {
+  .post( function(req, res) {
     // find the user with facebookId
 
     const friends = _.map(req.body.friends,(el)=> el.id);
-    console.log(friends);
+    
      
     
     var tempProfilePicturePath = `${properties.get("pictures.storage.temp")}/${
@@ -318,7 +318,9 @@ router
           var profile = new Profile();
 
          
-          profile.friends=req.body.friends;
+          profile.friends=
+          
+          friends;
           profile.facebookId = req.body.facebookId;
           profile.firstName = req.body.firstName;
           profile.lastName = req.body.lastName;
@@ -358,7 +360,8 @@ router
     
           user.isNewInscri = "false";
           user.friends=friends;
-          facebookFriends.findfacebookFriends(user._id);
+            console.log("Inside SIGN router")
+            
         
           
           user.save();
