@@ -323,6 +323,7 @@ router.route("/likePublication").post(function(req, res) {
           publicationLikes
         ) {
 
+          if(publicationLikes.likes.indexOf(req._id) == -1){
           var userInteractions = new Object();
           userInteractions.userId           = req.body.profileId;
           userInteractions.profilefirstname = req.body.profilefirstname;
@@ -335,10 +336,13 @@ router.route("/likePublication").post(function(req, res) {
           publicationLikes.likes.unshift(req._id);
 
           publicationLikes.save();
+
+          publication.nbLikes++;
+          publication.save(); }
+
         });
 
-        publication.nbLikes++;
-        publication.save();
+       
         res.json({
           status: 0,
           message: "PUBLICATION_LIKED"
@@ -431,24 +435,24 @@ router.route("/removeLikePublication").post(function(req, res) {
           err,
           publicationLikes
         ) {
-
+          if(publicationLikes.likes.indexOf(req._id) > -1 ){
           publicationLikes.userlikes = publicationLikes.userlikes.filter(x => x.userId !== req._id);
-
-          //console.log('user removed like'+req._id);
 
           var index = publicationLikes.likes.indexOf(req._id);
           publicationLikes.likes.splice(index, 1);
           publicationLikes.save();
+
+          publication.nbLikes--;
+          publication.save();}
         });
-        Profile.findById(publication.profileId, function(err, profile) {
+        /*Profile.findById(publication.profileId, function(err, profile) {
           if (!err) {
             profile.nbLikes--;
             profile.save();
           }
-        });
+        });*/
 
-        publication.nbLikes--;
-        publication.save();
+  
         notificationScript.removeNotification(
           publication.profileId,
           req.body.publId,
@@ -494,7 +498,8 @@ router.route("/dislikePublication").post(function(req, res) {
         err,
         publicationLikes
       ) {
-        
+        if(publicationLikes.dislikes.indexOf(req._id) == -1 ) {
+
         var userInteractions = new Object();
         userInteractions.userId           = req.body.profileId;
         userInteractions.profilefirstname = req.body.profilefirstname;
@@ -506,10 +511,13 @@ router.route("/dislikePublication").post(function(req, res) {
         publicationLikes.userdislikes.unshift(userInteractions);
         publicationLikes.dislikes.unshift(req._id);
         publicationLikes.save();
+
+        publication.nbDislikes++;
+        publication.save();
+        }
       });
 
-      publication.nbDislikes++;
-      publication.save();
+      
       res.json({
         status: 0,
         message: "PUBLICATION_DISLIKED"
@@ -595,17 +603,19 @@ router.route("/removeDislikePublication").post(function(req, res) {
         publicationLikes
       ) {
 
+        if(publicationLikes.dislikes.indexOf(req._id) > -1 ){
         publicationLikes.userdislikes = publicationLikes.userdislikes.filter(x => x.userId !== req._id);
-
-        //console.log('user cancelled dislike'+req._id);
 
         var index = publicationLikes.dislikes.indexOf(req._id);
         publicationLikes.dislikes.splice(index, 1);
         publicationLikes.save();
+
+        publication.nbDislikes--;
+        publication.save();
+        }
       });
 
-      publication.nbDislikes--;
-      publication.save();
+      
       notificationScript.removeNotification(
         publication.profileId,
         req.body.publId,

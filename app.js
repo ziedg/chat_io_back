@@ -149,14 +149,15 @@ if(properties.get('ssl.enable')){
 
 	io.adapter(require('socket.io-redis')({
 		host: 'localhost',
-		port: 6379
+	
+	port: 6379
 	}))
 
 	require('./sockets/message.js')(io);
-    var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE) ;
+   // var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE) ;
 
-	server.listen(httpport);
-	console.log('the server is launched on the port ' + httpport+', mode ssl is disabled, '+new Date());
+	server.listen(http_port);
+	console.log('the server is launched on the port ' + http_port+', mode ssl is disabled, '+new Date());
 }
 
 
