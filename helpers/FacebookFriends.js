@@ -17,8 +17,8 @@ module.exports = {
       const facebookProfilesIds = await Profile.find(
         { facebookId: { $in: friendsIds } },
         "_id"
-      ).limit(10)
-      .skip((page-1)*10);
+      ).limit(2)
+      .skip((page-1)*2);
 
 
       facebookfriends = await Promise.all(

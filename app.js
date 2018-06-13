@@ -147,11 +147,11 @@ if(properties.get('ssl.enable')){
 
 	const io = require('socket.io')(server);
 
-	/*io.adapter(require('socket.io-redis')({
+	io.adapter(require('socket.io-redis')({
 		host: 'localhost',
 	
 	port: 6379
-	}))*/
+	}))
 
 	require('./sockets/message.js')(io);
    // var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE) ;
