@@ -7,7 +7,7 @@ async function findByUserId(user,id) {
 }
 
 module.exports = {
-  findfacebookFriends: async _id => {
+  findfacebookFriends: async (_id,page) => {
     try {
     
       const user = await Profile.findOne({ _id });
@@ -17,7 +17,8 @@ module.exports = {
       const facebookProfilesIds = await Profile.find(
         { facebookId: { $in: friendsIds } },
         "_id"
-      );
+      ).limit(10)
+      .skip((page-1)*10);
 
 
       facebookfriends = await Promise.all(
