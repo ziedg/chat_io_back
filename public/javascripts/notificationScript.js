@@ -3,17 +3,17 @@ var Notification = require('./../../models/Notification');
 
  module.exports = {
 	 notifier: function(profileId,publId,userID,type,raisonDelete)
-	 
 	 {
+		const {io} = require('../../app');
 			if(profileId == userID) return ;
 			if(type =="reagir"){
-
+              console.log('react type')
 				var critere ={profileId : profileId ,publId : publId,type :type} 
 				Notification.findOne(critere, function(err, notification) {
 					if (err){
-					
+					console.log(err)
 					}
-					else if (!notification){
+					else if (!notification)		{			
 						var notification = new Notification();
 						notification.profileId=profileId;
 						notification.publId=publId;
@@ -22,16 +22,27 @@ var Notification = require('./../../models/Notification');
 						Profile.findById(userID, function(err, profile) {
 							if (err){
 								/*res.send(err);*/
+								console.log(err)
 							}
 							else if (profile){
-							   
-								   
-								
+							   								
 								notification.profiles.push(profile);
 								notification.isSeen="false";
 								notification.date_notification= new Date();
-								notification.save();
+								notification.save().then((notif)=>{
+									Profile.findById(notif.profileId, function(err, user) {
+										if(!err){
+											console.log('user promise')
+											io.to(user.socketId).emit('new-event',notif)
+											console.log(user.socketId)
+										}else{
+											console.log(err)
+										}
+									})
+
+								});
 								profile.save();
+
 							}
 						});	
 					}else{
@@ -65,9 +76,33 @@ var Notification = require('./../../models/Notification');
 									notification.profiles.push(profile);
 									notification.isSeen="false";
 									notification.date_notification= new Date();
-							     	notification.save();
+									notification.save().then(notif=>{
+										Profile.findById(notif.profileId, function(err, user) {
+											if(!err){
+												io.to(user.socketId).emit('new-event',notif)
+											console.log(user.socketId)
+										}else{
+											console.log(err)
+										}
+										})
+	
+									});
                                     profile.save();
 
+								}else {
+									notification.isSeen="false";
+									notification.date_notification= new Date();
+									notification.save().then(notif=>{
+										Profile.findById(notif.profileId, function(err, user) {
+											if(!err){
+												io.to(user.socketId).emit('new-event',notif)
+											console.log(user.socketId)
+										}else{
+											console.log(err)
+										}
+										})
+	
+									});
 								}
 								
 							}
@@ -78,10 +113,9 @@ var Notification = require('./../../models/Notification');
 	 
 	
 /* commenter sur un publication */
+
    else if ( type =="comment")
    {
-
-
 
 	var critere ={profileId : profileId ,publId : publId,type :type} 
 	Notification.findOne(critere, function(err, notification) {
@@ -105,7 +139,15 @@ var Notification = require('./../../models/Notification');
 					notification.profiles.push(profile);
 					notification.isSeen="false";
 					notification.date_notification= new Date();
-					notification.save();
+					notification.save().then((notif)=>{
+						Profile.findById(notif.profileId, function(err, user) {
+							if(!err){
+								io.to(user.socketId).emit('new-event',notif)
+							}else{
+								console.log(err)
+							}
+						})
+					})
 					profile.save();
 				}
 			});	
@@ -130,18 +172,47 @@ var Notification = require('./../../models/Notification');
 									
 								   }
 								}
-								if(!isExist){
+
+					if(!isExist){
+
 					notification.profiles.push(profile);
 					notification.isSeen="false";
 					notification.date_notification= new Date();
-					notification.save();
+					notification.save().then(notif=>{
+										Profile.findById(notif.profileId, function(err, user) {
+											if(!err){
+												io.to(user.socketId).emit('new-event',notif)
+											console.log(user.socketId)
+										}else{
+											console.log(err)
+										}
+										})
+	
+									});
 					profile.save();
+								}else {
+									notification.isSeen="false";
+									notification.date_notification= new Date();
+									notification.save().then(notif=>{
+									Profile.findById(notif.profileId, function(err, user) {
+											if(!err){
+												io.to(user.socketId).emit('new-event',notif)
+											console.log(user.socketId)
+										}else{
+											console.log(err)
+										}
+										})
+	
+									});
 								}
+
+
 				}
 			});
 			
 		}
-	});}
+	});
+}
 
 	  
 	
@@ -160,7 +231,15 @@ var Notification = require('./../../models/Notification');
 						notification.profiles.push(profile);
 						notification.date_notification= new Date();
 						notification.isSeen="false";
-						notification.save();
+						notification.save().then((notif)=>{
+							Profile.findById(notif.profileId, function(err, user) {
+								if(!err){
+									io.to(user.socketId).emit('new-event',notif)
+								}else{
+									console.log(err)
+								}
+							})
+						})
 						profile.save();
 					}
 				});	

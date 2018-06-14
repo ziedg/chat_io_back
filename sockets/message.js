@@ -2,8 +2,7 @@ const socketQuery =require ('./socketQueries');
 const CONSTANTS=require('../utils/config/constants')
 var Message = require('../models/Message');
 
-module.exports = function(io){
-
+module.exports.initialiseIo= function(io){
     io.use( async (socket, next) => {
         try {
             await socketQuery.addSocketId({
@@ -57,7 +56,8 @@ module.exports = function(io){
             }
         }				
     });
-
+  
+    
     
 
         socket.on('disconnect',()=>{
@@ -65,6 +65,6 @@ module.exports = function(io){
         })
 
     })
-
+return io ;
     
 }

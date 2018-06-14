@@ -123,7 +123,7 @@ if(properties.get('ssl.enable')){
 
     var httpsport = parseInt(https_port) + parseInt(process.env.NODE_APP_INSTANCE) ;
     server.listen(httpsport);
-    
+
     var io = require('socket.io').listen(server);
     io.adapter(require('socket.io-redis')({
         host: 'localhost',
@@ -136,32 +136,34 @@ if(properties.get('ssl.enable')){
         'xhr-polling',
         'jsonp-polling',
         'polling']);
-    
-    require('./sockets/message.js')(io);
-    
+
+    require('./sockets/message.js').initialiseIo(io);
+
     console.log('the server is launched on the port ' + httpsport+', mode ssl is enabled, '+new Date());
 
-} else {
-    
-	server = http.createServer(app);
+}  else {
 
-	const io = require('socket.io')(server);
+    server = http.createServer(app);
 
-	io.adapter(require('socket.io-redis')({
-		host: 'localhost',
-	
-	port: 6379
-	}))
+    const io = require('socket.io')(server);
 
-	require('./sockets/message.js')(io);
-   // var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE) ;
+    io.adapter(require('socket.io-redis')({
+        host: 'localhost',
 
-	server.listen(http_port);
-	console.log('the server is launched on the port ' + http_port+', mode ssl is disabled, '+new Date());
+        port: 6379
+    }))
+
+    require('./sockets/message.js')(io);
+    // var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE) ;
+
+    server.listen(http_port);
+    console.log('the server is launched on the port ' + http_port+', mode ssl is disabled, '+new Date());
 }
 
 
 
 module.exports = app;
+
+
 
 
