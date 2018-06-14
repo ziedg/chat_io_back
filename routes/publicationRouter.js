@@ -636,6 +636,61 @@ router.route("/removeDislikePublication").post(function(req, res) {
   }
 });
 
+router.route("/getInteractions").post(function(req, res) {
+  try {
+    var publication = new Publication();
+    var likes = [];
+    var dislikes = [];
+    var page = parseInt(req.body.page);
+
+    Publication.findById(req.body.publId, function(err, publication) {
+      if (err) {
+        res.json({
+          status: 3,
+          error: "SP_ER_TECHNICAL_ERROR"
+        });
+        return;
+      }
+      if (!publication) {
+        return res.json({
+          status: 2,
+          error: "SP_ER_PUBLICATION_NOT_FOUND"
+        });
+        return;
+      }
+
+      PublicationLikes.findById(req.body.publId, function(
+        err,
+        publicationLikes
+      ) {
+            if(publicationLikes && publicationLikes != undefined) {
+
+              likes = publicationLikes.userlikes
+                      .skip((page-1)*2).limit(2);
+
+              dislikes = publicationLikes.userdislikes
+                         .skip((page-1)*2).limit(2);
+            }
+        
+      });
+      return res.json({
+        status: 0,
+        message: {
+          likes :likes,
+          dislikes :dislikes
+        }
+      });
+    });
+  } catch (error) {
+    console.log("Error when getting interactions", error);
+    return res.json({
+      status: 3,
+      error: "SP_ER_TECHNICAL_ERROR"
+    });
+  }
+});
+
+
 router.route("/reportPublication").post(function(req, res) {
   try {
     var publication = new Publication();
