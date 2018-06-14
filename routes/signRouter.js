@@ -27,7 +27,8 @@ var properties = PropertiesReader("./properties.file");
 
 var app = express();
 
-require("./passport")(passport); // pass passport for configuration
+require("./passport")(passport); // pass passport for 
+const facebookFriendsPush= require('../helpers/facebookFriendsPush.js');
 
 router
   .route("/signin")
@@ -252,6 +253,8 @@ router
     // find the user with facebookId
 
     const friends = _.map(req.body.friends,(el)=> el.id);
+      
+      
     
      
     
@@ -316,11 +319,11 @@ router
             });
 
           var profile = new Profile();
+          
+          
 
          
-          profile.friends=
-          
-          friends;
+          profile.friends= friends;
           profile.facebookId = req.body.facebookId;
           profile.firstName = req.body.firstName;
           profile.lastName = req.body.lastName;
@@ -340,7 +343,10 @@ router
           profile.name = profile.firstName + " " + profile.lastName;
           profile.dateInscription = new Date().toJSON().slice(0, 10);
           profile.isNewInscri = "true";
-          profile.save();
+          profile.save().then( profile => {
+            facebookFriendsPush.pushToFriend(profile._id,res);
+
+          })
          
 
           var jwtSecret = properties.get("security.jwt.secret").toString();
@@ -360,7 +366,10 @@ router
     
           user.isNewInscri = "false";
           user.friends=friends;
-            console.log("Inside SIGN router")
+          
+          
+        
+          
             
         
           

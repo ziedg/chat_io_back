@@ -161,7 +161,7 @@ router
 
 router.route("/api/push-unsubscribe").post((req, res) => {
   const subscription = req.body;
-  console.log("[INSIDE UNSUBSIBE ROUTE]", subscription);
+  
   const userId = req._id;
   NotificationSub.findOne({ userId }).then(sub => {
     //to avoid side effets and it's a good practise to not change the original array directly
