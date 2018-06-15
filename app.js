@@ -108,14 +108,13 @@ app.use('/', router);
 // START SERVER
 //============================================
 //cron
-var cronJob =require('./helpers/PopularProfiles');
-var https_port = properties.get('server.port.https');
+
 var http_port = properties.get('server.port.http');
-
-
 var server;
 
 if('local' == properties.get('server.environment').toString()){
+    //cron
+    require('./helpers/PopularProfiles');
 
     server = http.createServer(app);
     const io = require('socket.io')(server);
@@ -125,6 +124,13 @@ if('local' == properties.get('server.environment').toString()){
     console.log('the server is launched with local environment configuration on the port ' + http_port+ ', '+new Date());
 
 }  else {
+
+    var os = require("os");
+    var hostname = os.hostname();
+    console.log('test', hostname);
+
+    // cron
+    require('./helpers/PopularProfiles');
 
     if(properties.get('ssl.enable')){
         server = https.createServer({
