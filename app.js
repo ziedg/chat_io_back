@@ -150,7 +150,7 @@ if(properties.get('ssl.enable')){
     io.adapter(require('socket.io-redis')({
         host: 'localhost',
         port: 6379
-    })
+    }))
 
     var exportedIo =require('./sockets/message.js').initialiseIo(io);
 
