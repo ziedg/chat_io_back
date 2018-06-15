@@ -125,10 +125,6 @@ if('local' == properties.get('server.environment').toString()){
 
 }  else {
 
-    var os = require("os");
-    var hostname = os.hostname();
-    console.log('test', hostname);
-
     // cron
     require('./helpers/PopularProfiles');
 
