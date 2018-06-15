@@ -114,36 +114,27 @@ var http_port = properties.get('server.port.http');
 
 
 var server;
-if(properties.get('ssl.enable')){
-    server = https.createServer({
-        key: fs.readFileSync(properties.get('ssl.privkey1').toString()),
-        cert: fs.readFileSync(properties.get('ssl.fullchain1').toString()),
-        ca: fs.readFileSync(properties.get('ssl.chain1').toString())
-    }, app);
 
-    var httpsport = parseInt(https_port) + parseInt(process.env.NODE_APP_INSTANCE) ;
-    server.listen(httpsport);
+if('local' == properties.get('server.environment').toString()){
 
-    var io = require('socket.io').listen(server);
-    io.adapter(require('socket.io-redis')({
-        host: 'localhost',
-        port: 6379
-    }))
+    server = http.createServer(app);
+    const io = require('socket.io')(server);
+    var exportedIo =require('./sockets/message.js').initialiseIo(io);
+    server.listen(http_port);
 
-    io.set('transports', ['websocket',
-        'flashsocket',
-        'htmlfile',
-        'xhr-polling',
-        'jsonp-polling',
-        'polling']);
-
-    var exportedIo=require('./sockets/message.js').initialiseIo(io);
-
-    console.log('the server is launched on the port ' + httpsport+', mode ssl is enabled, '+new Date());
+    console.log('the server is launched with local environment configuration on the port ' + http_port+ ', '+new Date());
 
 }  else {
 
-    server = http.createServer(app);
+    if(properties.get('ssl.enable')){
+        server = https.createServer({
+            key: fs.readFileSync(properties.get('ssl.privkey1').toString()),
+            cert: fs.readFileSync(properties.get('ssl.fullchain1').toString()),
+            ca: fs.readFileSync(properties.get('ssl.chain1').toString())
+        }, app);
+    } else {
+        server = http.createServer(app);
+    }
 
     const io = require('socket.io')(server);
 
@@ -156,9 +147,8 @@ if(properties.get('ssl.enable')){
 
     var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE) ;
     server.listen(httpport);
-    console.log('the server is launched on the port ' + httpport+', mode ssl is disabled, '+new Date());
+    console.log('the server is launched on the port ' + httpport +', mode ssl is disabled, '+new Date());
 }
-
 
 module.exports = {app, io:exportedIo};
 

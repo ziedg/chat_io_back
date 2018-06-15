@@ -3,6 +3,7 @@ port.http = 3002
 port.https = 3005
 storage.image =https://storage1.speegar.com/images
 ip=173.249.14.90
+environment=production
 production=true
 
 [ssl]
@@ -24,8 +25,8 @@ storage.temp=/var/tmp
 [security]
 jwt.secret =f09cce0a0753496b9baaae70b343a15f
 scp.secret =MZ9xWqTJp5dS2teU
-scp.ip =173.249.14.90 
-scp.user =root 
+scp.ip =173.249.14.90
+scp.user =root
 
 
 
