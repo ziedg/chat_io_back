@@ -145,6 +145,14 @@ if('local' == properties.get('server.environment').toString()){
         port: 6379
     }))
 
+    io.set('transports', ['websocket',
+        'flashsocket',
+        'htmlfile',
+        'xhr-polling',
+        'jsonp-polling',
+        'polling']);
+
+
     var exportedIo =require('./sockets/message.js').initialiseIo(io);
 
     var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE) ;
