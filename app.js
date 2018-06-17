@@ -130,7 +130,7 @@ if('local' == properties.get('server.environment').toString()){
         databaseURL: "https://speegar-6deca.firebaseio.com"
       });
 
-	db = admin.database();
+	//db = admin.database();
 	//db.ref('messaging')
 
     server.listen(http_port);
@@ -170,7 +170,14 @@ if('local' == properties.get('server.environment').toString()){
 
     var exportedIo =require('./sockets/message.js').initialiseIo(io);
 	*/
+	admin = require("firebase-admin");
 
+	var serviceAccount = require('./speegar-6deca-firebase-adminsdk-wsx66-e216c5663c.json');
+
+	admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+        databaseURL: "https://speegar-6deca.firebaseio.com"
+      });
     var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE) ;
 	server.listen(httpport);
     console.log('the server is launched on the port ' + httpport +', mode ssl is disabled, '+new Date());
