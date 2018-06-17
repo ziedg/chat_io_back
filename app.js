@@ -117,8 +117,22 @@ if('local' == properties.get('server.environment').toString()){
     require('./helpers/PopularProfiles');
 
     server = http.createServer(app);
-    const io = require('socket.io')(server);
-    var exportedIo =require('./sockets/message.js').initialiseIo(io);
+	/*
+	const io = require('socket.io')(server);
+	var exportedIo =require('./sockets/message.js').initialiseIo(io);
+	*/
+	admin = require("firebase-admin");
+
+	var serviceAccount = require('./speegar-6deca-firebase-adminsdk-wsx66-e216c5663c.json');
+
+	admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+        databaseURL: "https://speegar-6deca.firebaseio.com"
+      });
+
+	db = admin.database();
+	//db.ref('messaging')
+
     server.listen(http_port);
 
     console.log('the server is launched with local environment configuration on the port ' + http_port+ ', '+new Date());
@@ -138,7 +152,8 @@ if('local' == properties.get('server.environment').toString()){
         server = http.createServer(app);
     }
 
-    const io = require('socket.io')(server);
+	/*
+	const io = require('socket.io')(server);
 
     io.adapter(require('socket.io-redis')({
         host: 'localhost',
@@ -154,15 +169,11 @@ if('local' == properties.get('server.environment').toString()){
 
 
     var exportedIo =require('./sockets/message.js').initialiseIo(io);
+	*/
 
     var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE) ;
-    server.listen(httpport);
+	server.listen(httpport);
     console.log('the server is launched on the port ' + httpport +', mode ssl is disabled, '+new Date());
 }
 
-module.exports = {app, io:exportedIo};
-
-
-
-
-
+module.exports = {app /*, io:exportedIo*/, admin};
