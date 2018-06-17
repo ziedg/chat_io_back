@@ -6,6 +6,8 @@ var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('./properties.file');
 var jwt = require('jsonwebtoken');
 
+var Messaging = require('../messaging/messaging');
+
 // route middleware to verify a token
 router.use(function (req, res, next) {
     if (req.method === 'OPTIONS') {
@@ -34,6 +36,20 @@ router.use(function (req, res, next) {
     
     }
 });
+
+router.route('/messages/:_id').get(function (req, res) {
+    var _id = req.params._id;
+    Message.getMessage(_id, (err, message) => {
+		if(err){
+			return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
+            });
+        }
+		res.json(message);
+	});
+    }
+);
 
 router.route('/messages').get(function (req, res) {
     var limit = req.query.limit;
@@ -73,6 +89,7 @@ router.route('/messages/:fromUser/:toUser').get(function (req, res) {
 });
 
 router.route('/messages').post(function (req, res) {
+        var admin = require('../app');
         var message = req.body;
         console.log('new message   ' + message)
         Message.addMessage(message, (err, message) => {
@@ -84,6 +101,7 @@ router.route('/messages').post(function (req, res) {
                 });
                 
             }
+            Messaging.sendMessage(message);
             res.json(message);
         });
     });
@@ -154,6 +172,7 @@ router.route('/suggestions/:_id').get( (req, res) => {
                         error: 'SP_ER_TECHNICAL_ERROR'
                     });
                 }
+                
                 suggestions = profile.subscribers.slice(profile.subscribers.length-3,profile.subscribers.length);
                 Profile.find({_id: { $in : suggestions }}, (err,profiles) => {
                     if ( err ){
@@ -164,7 +183,7 @@ router.route('/suggestions/:_id').get( (req, res) => {
                     }
                     res.json(profiles);
                 });
-        
+                
             });
         }
     })
