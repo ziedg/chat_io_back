@@ -1,14 +1,12 @@
 var Profile = require("../models/Profile");
 var popularProfile = require("../models/PopularProfile");
 var _ = require("lodash");
-var PropertiesReader = require("properties-reader");
-var properties = PropertiesReader("properties.file");
 var CronJob = require("cron").CronJob;
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('properties.file');
 
 var job = new CronJob(
-  "* 00 * * * *",
+  "* * * * * *",
   async function() {
     try {
       const limit=Number(properties.get('config.limit'))
@@ -18,7 +16,9 @@ var job = new CronJob(
           nbLikes: -1
         })
         .limit(limit);
+     
     
+
       _.map(popularProfiles, async profile => {
         var popularProf = await new popularProfile(
           JSON.parse(JSON.stringify(profile))
@@ -27,6 +27,7 @@ var job = new CronJob(
       });
     } catch (e) {
       console.log("err");
+
     }
   },
   true,
