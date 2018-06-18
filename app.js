@@ -108,46 +108,23 @@ app.use('/', router);
 // START SERVER
 //============================================
 //cron
-
+var cronJob =require('./helpers/PopularProfiles');
+var https_port = properties.get('server.port.https');
 var http_port = properties.get('server.port.http');
+
+
 var server;
+if(properties.get('ssl.enable')){
+    server = https.createServer({
+        key: fs.readFileSync(properties.get('ssl.privkey1').toString()),
+        cert: fs.readFileSync(properties.get('ssl.fullchain1').toString()),
+        ca: fs.readFileSync(properties.get('ssl.chain1').toString())
+    }, app);
 
-if('local' == properties.get('server.environment').toString()){
-    //cron
-    require('./helpers/PopularProfiles');
-
-    server = http.createServer(app);
-    const io = require('socket.io')(server);
-    var exportedIo =require('./sockets/message.js').initialiseIo(io);
-    server.listen(http_port);
-
-    console.log('the server is launched with local environment configuration on the port ' + http_port+ ', '+new Date());
-
-}  else {
-
-    // cron js wierd  ...
-if (process.env.pm_id==0);
-{  
-if(process.env.pm_id==0){
-   require('./helpers/PopularProfiles');
-
-   
-}
-}
-   
-
-    if(properties.get('ssl.enable')){
-        server = https.createServer({
-            key: fs.readFileSync(properties.get('ssl.privkey1').toString()),
-            cert: fs.readFileSync(properties.get('ssl.fullchain1').toString()),
-            ca: fs.readFileSync(properties.get('ssl.chain1').toString())
-        }, app);
-    } else {
-        server = http.createServer(app);
-    }
-
-    const io = require('socket.io')(server);
-
+    var httpsport = parseInt(https_port) + parseInt(process.env.NODE_APP_INSTANCE) ;
+    server.listen(httpsport);
+    
+    var io = require('socket.io').listen(server);
     io.adapter(require('socket.io-redis')({
         host: 'localhost',
         port: 6379
@@ -159,19 +136,26 @@ if(process.env.pm_id==0){
         'xhr-polling',
         'jsonp-polling',
         'polling']);
+    
+	var exportedIo = require('./sockets/message.js').initialiseIo(io);
+    
+    console.log('the server is launched on the port ' + httpsport+', mode ssl is enabled, '+new Date());
 
-
-    var exportedIo =require('./sockets/message.js').initialiseIo(io);
-
-  //  var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE) ;
-  var httpport=3012;
-    server.listen(httpport);
-    console.log('the server is launched on the port ' + httpport +', mode ssl is disabled, '+new Date());
+} else {
+    server = http.createServer(app);
+	const io = require('socket.io')(server);
+	io.adapter(require('socket.io-redis')({
+		host: 'localhost',
+		port: 6379
+	}))
+	var exportedIo = require('./sockets/message.js')(io).initialiseIo(io);
+    var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE) ;
+    
+	server.listen(httpport);
+	console.log('the server is launched on the port ' + httpport+', mode ssl is disabled, '+new Date());
 }
 
-module.exports = {app, io:exportedIo};
-
-
-
+module.exports = app
+	
 
 

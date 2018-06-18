@@ -21,6 +21,7 @@
     "email-check": "^1.1.0",
     "emailjs": "latest",
     "express": "^4.13.4",
+    "firebase-admin": "^5.12.1",
     "form-data": "1.0.0-rc3",
     "image-downloader": "^3.3.0",
     "image-size": "latest",

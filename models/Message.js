@@ -37,6 +37,12 @@ module.exports.getMessagesList = (callback, limit, page) => {
 }
 //module.exports.getMessages = (fromUser, toUser, callback, limit, page) => {
 
+
+module.exports.getMessage = (_id, callback) => {
+    Message.findById(_id, callback);
+}
+
+
 module.exports.getMessages = (fromUser, toUser, callback) => {
         const queryData = {
             $or : [
