@@ -1,40 +1,34 @@
-var Profile = require('../models/Profile');
-var popularProfile = require('../models/PopularProfile');
-var _ =require('lodash');
+var Profile = require("../models/Profile");
+var popularProfile = require("../models/PopularProfile");
+var _ = require("lodash");
+var PropertiesReader = require("properties-reader");
+var properties = PropertiesReader("properties.file");
+var CronJob = require("cron").CronJob;
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('properties.file');
-var CronJob = require('cron').CronJob;
 
-var job=new CronJob('* 00 * * * *', function() {
-    Profile.find()
+var job = new CronJob(
+  "* * * * * *",
+  async function() {
+    try {
+      const limit=Number(properties.get('config.limit'))
+      await popularProfile.remove({});
+      const popularProfiles = await Profile.find()
         .sort({
-            nbLikes :-1
+          nbLikes: -1
         })
-        .limit(100)
-        .exec(function (err,docs) {
-            if (err){
-                return console.log(err);
-            }
-
-            popularProfile.remove({}).exec(function (err,result) {
-                if (err) {
-                    console.log('Error when droping popularProfile database',err);
-                }
-
-            });
-
-
-            _.map(docs ,function (doc) {
-                var Popular =new popularProfile(JSON.parse(JSON.stringify(doc)));
-
-                Popular.save(err => {
-                    if (err) return console.log(err);
-                });
-            })
-        });
-
-},true,
-    'Tunisia');
-
-
-
+        .limit(limit);
+    
+      _.map(popularProfiles, async profile => {
+        var popularProf = await new popularProfile(
+          JSON.parse(JSON.stringify(profile))
+        );
+        await popularProf.save();
+      });
+    } catch (e) {
+      console.log("err");
+    }
+  },
+  true,
+  "Tunisia"
+);

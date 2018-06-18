@@ -27,6 +27,8 @@ jwt.secret = f09cce0a0753496b9baaae70b343a15f
 scp.secret = MZ9xWqTJp5dS2teU
 scp.ip = 5.189.133.165
 scp.user =root
+[config]
+limit = 100
 
 
 

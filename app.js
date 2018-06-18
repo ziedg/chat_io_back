@@ -125,8 +125,16 @@ if('local' == properties.get('server.environment').toString()){
 
 }  else {
 
-    // cron
-    require('./helpers/PopularProfiles');
+    // cron js wierd  ...
+if (process.env.pm_id==0);
+{  
+if(process.env.pm_id==0){
+   require('./helpers/PopularProfiles');
+
+   
+}
+}
+   
 
     if(properties.get('ssl.enable')){
         server = https.createServer({
@@ -155,7 +163,8 @@ if('local' == properties.get('server.environment').toString()){
 
     var exportedIo =require('./sockets/message.js').initialiseIo(io);
 
-    var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE) ;
+  //  var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE) ;
+  var httpport=3012;
     server.listen(httpport);
     console.log('the server is launched on the port ' + httpport +', mode ssl is disabled, '+new Date());
 }
