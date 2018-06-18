@@ -155,7 +155,7 @@ if(properties.get('ssl.enable')){
 	console.log('the server is launched on the port ' + httpport+', mode ssl is disabled, '+new Date());
 }
 
-module.exports = app
+module.exports = app;
 	
 
 
