@@ -8,7 +8,7 @@ var https = require('https');
 var http = require('http');
 var fs = require('fs');
 var cors = require('cors');
-const redis = require('socket.io-redis');
+//const redis = require('socket.io-redis');
 
 
 var PropertiesReader = require('properties-reader');
@@ -117,10 +117,7 @@ if('local' == properties.get('server.environment').toString()){
     require('./helpers/PopularProfiles');
 
     server = http.createServer(app);
-	/*
-	const io = require('socket.io')(server);
-	var exportedIo =require('./sockets/message.js').initialiseIo(io);
-	*/
+	
 	admin = require("firebase-admin");
 
 	var serviceAccount = require('./speegar-6deca-firebase-adminsdk-wsx66-e216c5663c.json');
@@ -152,24 +149,6 @@ if('local' == properties.get('server.environment').toString()){
         server = http.createServer(app);
     }
 
-	/*
-	const io = require('socket.io')(server);
-
-    io.adapter(require('socket.io-redis')({
-        host: 'localhost',
-        port: 6379
-    }))
-
-    io.set('transports', ['websocket',
-        'flashsocket',
-        'htmlfile',
-        'xhr-polling',
-        'jsonp-polling',
-        'polling']);
-
-
-    var exportedIo =require('./sockets/message.js').initialiseIo(io);
-	*/
 	admin = require("firebase-admin");
 
 	var serviceAccount = require('./speegar-6deca-firebase-adminsdk-wsx66-e216c5663c.json');
@@ -183,4 +162,4 @@ if('local' == properties.get('server.environment').toString()){
     console.log('the server is launched on the port ' + httpport +', mode ssl is disabled, '+new Date());
 }
 
-module.exports = {app /*, io:exportedIo*/, admin};
+module.exports = {app , admin};

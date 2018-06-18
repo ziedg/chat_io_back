@@ -4,7 +4,6 @@ var Notification = require('./../../models/Notification');
  module.exports = {
 	 notifier: function(profileId,publId,userID,type,raisonDelete)
 	 {
-		const {io} = require('../../app');
 			if(profileId == userID) return ;
 			if(type =="reagir"){
               console.log('react type')
@@ -29,18 +28,7 @@ var Notification = require('./../../models/Notification');
 								notification.profiles.push(profile);
 								notification.isSeen="false";
 								notification.date_notification= new Date();
-								notification.save().then((notif)=>{
-									Profile.findById(notif.profileId, function(err, user) {
-										if(!err){
-											console.log('user promise')
-											io.to(user.socketId).emit('new-event',notif)
-											console.log(user.socketId)
-										}else{
-											console.log(err)
-										}
-									})
-
-								});
+								notification.save();
 								profile.save();
 
 							}
@@ -76,33 +64,13 @@ var Notification = require('./../../models/Notification');
 									notification.profiles.push(profile);
 									notification.isSeen="false";
 									notification.date_notification= new Date();
-									notification.save().then(notif=>{
-										Profile.findById(notif.profileId, function(err, user) {
-											if(!err){
-												io.to(user.socketId).emit('new-event',notif)
-											console.log(user.socketId)
-										}else{
-											console.log(err)
-										}
-										})
-	
-									});
+									notification.save();
                                     profile.save();
 
 								}else {
 									notification.isSeen="false";
 									notification.date_notification= new Date();
-									notification.save().then(notif=>{
-										Profile.findById(notif.profileId, function(err, user) {
-											if(!err){
-												io.to(user.socketId).emit('new-event',notif)
-											console.log(user.socketId)
-										}else{
-											console.log(err)
-										}
-										})
-	
-									});
+									notification.save();
 								}
 								
 							}
@@ -139,15 +107,7 @@ var Notification = require('./../../models/Notification');
 					notification.profiles.push(profile);
 					notification.isSeen="false";
 					notification.date_notification= new Date();
-					notification.save().then((notif)=>{
-						Profile.findById(notif.profileId, function(err, user) {
-							if(!err){
-								io.to(user.socketId).emit('new-event',notif)
-							}else{
-								console.log(err)
-							}
-						})
-					})
+					notification.save();
 					profile.save();
 				}
 			});	
@@ -178,34 +138,13 @@ var Notification = require('./../../models/Notification');
 					notification.profiles.push(profile);
 					notification.isSeen="false";
 					notification.date_notification= new Date();
-					notification.save().then(notif=>{
-										Profile.findById(notif.profileId, function(err, user) {
-											if(!err){
-												io.to(user.socketId).emit('new-event',notif)
-											console.log(user.socketId)
-										}else{
-											console.log(err)
-										}
-										})
-	
-									});
+					notification.save();
 					profile.save();
 								}else {
 									notification.isSeen="false";
 									notification.date_notification= new Date();
-									notification.save().then(notif=>{
-									Profile.findById(notif.profileId, function(err, user) {
-											if(!err){
-												io.to(user.socketId).emit('new-event',notif)
-											console.log(user.socketId)
-										}else{
-											console.log(err)
-										}
-										})
-	
-									});
+									notification.save();
 								}
-
 
 				}
 			});
@@ -214,8 +153,6 @@ var Notification = require('./../../models/Notification');
 	});
 }
 
-	  
-	
 	//type subscribe
    
 	else{ 
@@ -231,15 +168,7 @@ var Notification = require('./../../models/Notification');
 						notification.profiles.push(profile);
 						notification.date_notification= new Date();
 						notification.isSeen="false";
-						notification.save().then((notif)=>{
-							Profile.findById(notif.profileId, function(err, user) {
-								if(!err){
-									io.to(user.socketId).emit('new-event',notif)
-								}else{
-									console.log(err)
-								}
-							})
-						})
+						notification.save();
 						profile.save();
 					}
 				});	
