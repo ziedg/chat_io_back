@@ -6,7 +6,7 @@ var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('properties.file');
 
 var job = new CronJob(
-  "* * * * * *",
+  "* 00 * * * *",
   async function() {
     try {
       const limit=Number(properties.get('config.limit'))
