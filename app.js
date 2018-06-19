@@ -8,12 +8,9 @@ var https = require("https");
 var http = require("http");
 var fs = require("fs");
 var cors = require("cors");
-//const redis = require('socket.io-redis');
 
 var PropertiesReader = require("properties-reader");
 var properties = PropertiesReader("properties.file");
-
-//configure socket.io and express server
 
 const app = express();
 
