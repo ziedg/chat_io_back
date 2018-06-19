@@ -767,9 +767,8 @@ router
 router.route("/getFacebookFriends/").get(async (req, res) => {
   try {
     const userId = req._id;
-    const page = parseInt(req.query.page);
     console.log(userId);
-    const facebookProfiles =  await facebookFriends.findfacebookFriends(userId,page);
+    const facebookProfiles =  await facebookFriends.findfacebookFriends(userId);
     res.send({
       status: 1,
       message: facebookProfiles

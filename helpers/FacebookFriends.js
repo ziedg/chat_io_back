@@ -7,7 +7,7 @@ async function findByUserId(user, id) {
 }
 
 module.exports = {
-  findfacebookFriends: async (_id, page) => {
+  findfacebookFriends: async _id => {
     try {
       const user = await Profile.findOne({ _id });
 
