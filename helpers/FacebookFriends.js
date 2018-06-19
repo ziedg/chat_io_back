@@ -15,9 +15,7 @@ module.exports = {
       const facebookProfilesIds = await Profile.find(
         {$and :[ {facebookId: { $in: friendsIds }},{_id:{$nin:user.ignoredProfiles}}]},
         "_id"
-      )
-        .limit(10)
-        .skip((page - 1) * 10);
+      );
 
       
 
