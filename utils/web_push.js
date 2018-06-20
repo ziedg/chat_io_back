@@ -34,15 +34,7 @@ module.exports =  (subscriptions,{title,body,icon},res)=> {
           , JSON.stringify(payload) )
           .then(() => res.status(200).end({message: "notification sent succussfully"}))
           .catch(err => {
-                 console.error("Error sending notification, reason: ", err);
                  return  res.status(500).end({message:"error occured push notification"});
           })
-    }))
-
-
-    
-
-
-
 
 }

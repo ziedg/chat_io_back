@@ -146,7 +146,7 @@ router.route("/subscribe").post(function(req, res) {
               pr.save();
             }
           });
-          console.log(req.body);
+         
           notificationScript.notifier(
             req.body.profileId,
             "",
