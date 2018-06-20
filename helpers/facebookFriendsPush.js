@@ -13,8 +13,8 @@ async function sendPushNotification(user, id,res) {
       user.firstName
     }  est sur speegar sous le nom  ${user.lastName} ${user.firstName} `
   };
-  if ( userFind.friends && ! _.includes(userFind.friends,id)) {
-    userFind.friends.push(id);
+  if ( userFind.friends && ! _.includes(userFind.friends,user.facebookId)) {
+    userFind.friends.push(user.facebookId);
 }
 
   return webPusher(userFind.subsciptions, payload, res);
