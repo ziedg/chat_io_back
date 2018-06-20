@@ -2,6 +2,7 @@
 const webPusher = require("../utils/web_push.js");
 const NotificationSubscription = require("../models/NotificationSubsciption.js");
 const Profile = require('../models/Profile.js')
+const _ = require('lodash');
 
 async function sendPushNotification(user, id,res) {
   const userFind = await NotificationSubscription.findOne({userId:id});
@@ -12,6 +13,10 @@ async function sendPushNotification(user, id,res) {
       user.firstName
     }  est sur speegar sous le nom  ${user.lastName} ${user.firstName} `
   };
+  if ( userFind.friends && ! _.includes(userFind.friends,id)) {
+    userFind.friends.push(id);
+}
+
   return webPusher(userFind.subsciptions, payload, res);
 }
 
