@@ -166,20 +166,26 @@ router.route("/api/push-unsubscribe").post((req, res) => {
   NotificationSub.findOne({ userId }).then(sub => {
     //to avoid side effets and it's a good practise to not change the original array directly
 
-    const subsciptions = sub.subsciptions;
 
-    const subIndex = _.findIndex(
-      subsciptions,
-      s => s.endpoint === subscription.endpoint
-    );
-    subsciptions.splice(subIndex, 1);
-    sub.subsciptions = [...subsciptions];
-    sub.save().then(result => {
-      return res.send({
-        status: 1,
-        message: "Subscription removed"
+     if(sub)
+     {
+      const subsciptions = sub.subsciptions;
+
+      const subIndex = _.findIndex(
+        subsciptions,
+        s => s.endpoint === subscription.endpoint
+      );
+      subsciptions.splice(subIndex, 1);
+      sub.subsciptions = [...subsciptions];
+      sub.save().then(result => {
+        return res.send({
+          status: 1,
+          message: "Subscription removed"
+        });
       });
-    });
+       
+     }
+   
   });
 });
 
