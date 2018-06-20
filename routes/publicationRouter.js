@@ -8,8 +8,8 @@ var sharp = require("sharp");
 const fs = require("fs");
 const mv = require("mv");
 const client = require("scp2");
-const webPusher=require('../utils/web_push.js');
-const NotificationSub = require('../models/NotificationSubsciption.js');
+const webPusher = require("../utils/web_push.js");
+const NotificationSub = require("../models/NotificationSubsciption.js");
 
 var bodyParser = require("body-parser");
 var multer = require("multer");
@@ -161,15 +161,13 @@ router
             publication.nbFcbkShare = 0;
             publication.nbTwitterShare = 0;
 
-
             const response = {
-                status: 0,
-                message: "PUBLISHED_SUCCESSFULLY",
-                publication: publication
-              };
-            
-            saveImage(publication,req.files.publPicture, res,response,'pub');
-             
+              status: 0,
+              message: "PUBLISHED_SUCCESSFULLY",
+              publication: publication
+            };
+
+            saveImage(publication, req.files.publPicture, res, response, "pub");
 
             var publicationLikes = new PublicationLikes();
             publicationLikes.save();
@@ -322,27 +320,25 @@ router.route("/likePublication").post(function(req, res) {
           err,
           publicationLikes
         ) {
+          if (publicationLikes.likes.indexOf(req._id) == -1) {
+            var userInteractions = new Object();
+            userInteractions.userId = req.body.profileId;
+            userInteractions.profilefirstname = req.body.profilefirstname;
+            userInteractions.profilelastname = req.body.profilelastname;
+            userInteractions.profilepicture = req.body.profilepicture;
 
-          if(publicationLikes.likes.indexOf(req._id) == -1){
-          var userInteractions = new Object();
-          userInteractions.userId           = req.body.profileId;
-          userInteractions.profilefirstname = req.body.profilefirstname;
-          userInteractions.profilelastname  = req.body.profilelastname;
-          userInteractions.profilepicture   = req.body.profilepicture; 
+            //console.log('used pushed like'+userInteractions);
 
-          //console.log('used pushed like'+userInteractions);
+            publicationLikes.userlikes.unshift(userInteractions);
+            publicationLikes.likes.unshift(req._id);
 
-          publicationLikes.userlikes.unshift(userInteractions);
-          publicationLikes.likes.unshift(req._id);
+            publicationLikes.save();
 
-          publicationLikes.save();
-
-          publication.nbLikes++;
-          publication.save(); }
-
+            publication.nbLikes++;
+            publication.save();
+          }
         });
 
-       
         res.json({
           status: 0,
           message: "PUBLICATION_LIKED"
@@ -356,37 +352,33 @@ router.route("/likePublication").post(function(req, res) {
           ""
         );
 
-        if(publication.profileId != req._id)
-        {
-
-
-          Profile.findById(req._id).then(profile =>{
-            NotificationSub.findOne({userId:publication.profileId}).then((sub)=>{
-              let   subscriptions=[];
-              _.forEach(sub.subsciptions ,(sub)=>{
-               subscription = {
-                   endpoint: sub.endpoint,
-                   keys:{
-                       auth:sub.keys.auth,
-                       p256dh:sub.keys.p256dh
-                   }
+        if (publication.profileId != req._id) {
+          Profile.findById(req._id).then(profile => {
+            NotificationSub.findOne({ userId: publication.profileId }).then(
+              sub => {
+                let subscriptions = [];
+                _.forEach(sub.subsciptions, sub => {
+                  subscription = {
+                    endpoint: sub.endpoint,
+                    keys: {
+                      auth: sub.keys.auth,
+                      p256dh: sub.keys.p256dh
+                    }
+                  };
+                  subscriptions.push(subscription);
+                });
+                const payload = {
+                  title: "Speegar",
+                  icon: profile.profilePictureMin,
+                  body: `${profile.lastName} ${
+                    profile.firstName
+                  } a réagi a votre publication`
+                };
+                return webPusher(subscriptions, payload, res);
               }
-              subscriptions.push(subscription);
-
-              })
-              const payload=   
-              {title:"Speegar",
-              icon:profile.profilePictureMin
-              ,body:`${profile.lastName} ${profile.firstName} a réagi a votre publication`
-                }
-              return  webPusher(subscriptions,payload,res)
-          })
-
-
-
-          })
-       
-    }
+            );
+          });
+        }
         Profile.findById(publication.profileId, function(err, profile) {
           if (!err) {
             profile.nbLikes++;
@@ -435,15 +427,18 @@ router.route("/removeLikePublication").post(function(req, res) {
           err,
           publicationLikes
         ) {
-          if(publicationLikes.likes.indexOf(req._id) > -1 ){
-          publicationLikes.userlikes = publicationLikes.userlikes.filter(x => x.userId !== req._id);
+          if (publicationLikes.likes.indexOf(req._id) > -1) {
+            publicationLikes.userlikes = publicationLikes.userlikes.filter(
+              x => x.userId !== req._id
+            );
 
-          var index = publicationLikes.likes.indexOf(req._id);
-          publicationLikes.likes.splice(index, 1);
-          publicationLikes.save();
+            var index = publicationLikes.likes.indexOf(req._id);
+            publicationLikes.likes.splice(index, 1);
+            publicationLikes.save();
 
-          publication.nbLikes--;
-          publication.save();}
+            publication.nbLikes--;
+            publication.save();
+          }
         });
         /*Profile.findById(publication.profileId, function(err, profile) {
           if (!err) {
@@ -452,7 +447,6 @@ router.route("/removeLikePublication").post(function(req, res) {
           }
         });*/
 
-  
         notificationScript.removeNotification(
           publication.profileId,
           req.body.publId,
@@ -477,7 +471,7 @@ router.route("/removeLikePublication").post(function(req, res) {
 router.route("/dislikePublication").post(function(req, res) {
   try {
     var publication = new Publication();
-    
+
     Publication.findById(req.body.publId, function(err, publication) {
       if (err) {
         res.json({
@@ -498,69 +492,56 @@ router.route("/dislikePublication").post(function(req, res) {
         err,
         publicationLikes
       ) {
-        if(publicationLikes.dislikes.indexOf(req._id) == -1 ) {
+        if (publicationLikes.dislikes.indexOf(req._id) == -1) {
+          var userInteractions = new Object();
+          userInteractions.userId = req.body.profileId;
+          userInteractions.profilefirstname = req.body.profilefirstname;
+          userInteractions.profilelastname = req.body.profilelastname;
+          userInteractions.profilepicture = req.body.profilepicture;
 
-        var userInteractions = new Object();
-        userInteractions.userId           = req.body.profileId;
-        userInteractions.profilefirstname = req.body.profilefirstname;
-        userInteractions.profilelastname  = req.body.profilelastname;
-        userInteractions.profilepicture   = req.body.profilepicture; 
+          //console.log('user push dislike'+userInteractions);
 
-        //console.log('user push dislike'+userInteractions);
+          publicationLikes.userdislikes.unshift(userInteractions);
+          publicationLikes.dislikes.unshift(req._id);
+          publicationLikes.save();
 
-        publicationLikes.userdislikes.unshift(userInteractions);
-        publicationLikes.dislikes.unshift(req._id);
-        publicationLikes.save();
-
-        publication.nbDislikes++;
-        publication.save();
+          publication.nbDislikes++;
+          publication.save();
         }
       });
 
-      
       res.json({
         status: 0,
         message: "PUBLICATION_DISLIKED"
       });
 
-
-      
-    
-
-
-
-           if(publication.profileId != req._id)
-        {
-
-
-          Profile.findById(req._id).then(profile =>{
-            NotificationSub.findOne({userId:publication.profileId}).then((sub)=>{
-
-              let   subscriptions=[];
-                                   _.forEach(sub.subsciptions ,(sub)=>{
-                                    subscription = {
-                                        endpoint: sub.endpoint,
-                                        keys:{
-                                            auth:sub.keys.auth,
-                                            p256dh:sub.keys.p256dh
-                                        }
-                                   }
-                                   subscriptions.push(subscription);
-
-                                   })
-              const payload=   
-              {title:"Speegar",
-              icon:profile.profilePictureMin
-              ,body:`${profile.lastName} ${profile.firstName} a réagi a votre publication`
-                }
-              return  webPusher(subscriptions,payload,res)
-          })
-
-
-
-          })
-       
-    }
+      if (publication.profileId != req._id) {
+        Profile.findById(req._id).then(profile => {
+          NotificationSub.findOne({ userId: publication.profileId }).then(
+            sub => {
+              let subscriptions = [];
+              _.forEach(sub.subsciptions, sub => {
+                subscription = {
+                  endpoint: sub.endpoint,
+                  keys: {
+                    auth: sub.keys.auth,
+                    p256dh: sub.keys.p256dh
+                  }
+                };
+                subscriptions.push(subscription);
+              });
+              const payload = {
+                title: "Speegar",
+                icon: profile.profilePictureMin,
+                body: `${profile.lastName} ${
+                  profile.firstName
+                } a réagi a votre publication`
+              };
+              return webPusher(subscriptions, payload, res);
+            }
+          );
+        });
+      }
       notificationScript.notifier(
         publication.profileId,
         req.body.publId,
@@ -602,20 +583,20 @@ router.route("/removeDislikePublication").post(function(req, res) {
         err,
         publicationLikes
       ) {
+        if (publicationLikes.dislikes.indexOf(req._id) > -1) {
+          publicationLikes.userdislikes = publicationLikes.userdislikes.filter(
+            x => x.userId !== req._id
+          );
 
-        if(publicationLikes.dislikes.indexOf(req._id) > -1 ){
-        publicationLikes.userdislikes = publicationLikes.userdislikes.filter(x => x.userId !== req._id);
+          var index = publicationLikes.dislikes.indexOf(req._id);
+          publicationLikes.dislikes.splice(index, 1);
+          publicationLikes.save();
 
-        var index = publicationLikes.dislikes.indexOf(req._id);
-        publicationLikes.dislikes.splice(index, 1);
-        publicationLikes.save();
-
-        publication.nbDislikes--;
-        publication.save();
+          publication.nbDislikes--;
+          publication.save();
         }
       });
 
-      
       notificationScript.removeNotification(
         publication.profileId,
         req.body.publId,
@@ -661,26 +642,25 @@ router.route("/getInteractions").post(function(req, res) {
         err,
         publicationLikes
       ) {
-            if(publicationLikes && publicationLikes != undefined) {
-              console.log(req.body);
-              console.log(publicationLikes.userlikes.slice(page*3,(page+1)*3));
-              console.log( publicationLikes.userdislikes.slice(page*3,(page+1)*3));
-              
+        if (publicationLikes && publicationLikes != undefined) {
+          const likes = publicationLikes.userlikes.slice(
+            page * 3,
+            (page + 1) * 3
+          );
 
-              const likes = publicationLikes.userlikes.slice(page * 3, (page + 1) * 3);
-
-             const  dislikes = publicationLikes.userdislikes.slice(page * 3, (page + 1) * 3);
-             return res.json({
-              status: 0,
-              message: {
-                likes :likes,
-                dislikes :dislikes
-              }
-            });
+          const dislikes = publicationLikes.userdislikes.slice(
+            page * 3,
+            (page + 1) * 3
+          );
+          return res.json({
+            status: 0,
+            message: {
+              likes: likes,
+              dislikes: dislikes
             }
-        
+          });
+        }
       });
-    
     });
   } catch (error) {
     console.log("Error when getting interactions", error);
@@ -690,7 +670,6 @@ router.route("/getInteractions").post(function(req, res) {
     });
   }
 });
-
 
 router.route("/reportPublication").post(function(req, res) {
   try {
@@ -779,7 +758,10 @@ router.route("/removePublication").post(function(req, res) {
 
         profile.nbPublications--;
         profile.nbLikes -= publication.nbLikes;
-          profile.publications.splice(profile.publications.indexOf(req.body.publId),1);
+        profile.publications.splice(
+          profile.publications.indexOf(req.body.publId),
+          1
+        );
         profile.save();
       });
       publication.remove();
