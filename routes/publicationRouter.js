@@ -666,10 +666,10 @@ router.route("/getInteractions").post(function(req, res) {
             if(publicationLikes && publicationLikes != undefined) {
 
               likes = publicationLikes.userlikes
-                      .skip((page-1)*2).limit(2);
+                      .slice(page * 3, (page + 1) * 3);
 
               dislikes = publicationLikes.userdislikes
-                         .skip((page-1)*2).limit(2);
+                      .slice(page * 3, (page + 1) * 3);
             }
         
       });
