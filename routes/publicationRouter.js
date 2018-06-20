@@ -639,8 +639,6 @@ router.route("/removeDislikePublication").post(function(req, res) {
 router.route("/getInteractions").post(function(req, res) {
   try {
     var publication = new Publication();
-    var likes = [];
-    var dislikes = [];
     var page = parseInt(req.body.page);
 
     Publication.findById(req.body.publId, function(err, publication) {
@@ -664,22 +662,25 @@ router.route("/getInteractions").post(function(req, res) {
         publicationLikes
       ) {
             if(publicationLikes && publicationLikes != undefined) {
+              console.log(req.body);
+              console.log(publicationLikes.userlikes.slice(page*3,(page+1)*3));
+              console.log( publicationLikes.userdislikes.slice(page*3,(page+1)*3));
+              
 
-              likes = publicationLikes.userlikes
-                      .slice(page * 3, (page + 1) * 3);
+              const likes = publicationLikes.userlikes.slice(page * 3, (page + 1) * 3);
 
-              dislikes = publicationLikes.userdislikes
-                      .slice(page * 3, (page + 1) * 3);
+             const  dislikes = publicationLikes.userdislikes.slice(page * 3, (page + 1) * 3);
+             return res.json({
+              status: 0,
+              message: {
+                likes :likes,
+                dislikes :dislikes
+              }
+            });
             }
         
       });
-      return res.json({
-        status: 0,
-        message: {
-          likes :likes,
-          dislikes :dislikes
-        }
-      });
+    
     });
   } catch (error) {
     console.log("Error when getting interactions", error);
