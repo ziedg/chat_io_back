@@ -232,6 +232,15 @@ router.route("/unsubscribe").post(function(req, res) {
           profile.subscribers.splice(index, 1);
           profile.nbSubscribers--;
         }
+        notificationScript.removeNotification(
+          req.body.profileId,
+          "",
+          req._id,
+          "subscribe",
+    
+        );
+       
+
 
         profile.save();
 

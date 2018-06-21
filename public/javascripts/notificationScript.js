@@ -5,7 +5,7 @@ module.exports = {
   notifier: function(profileId, publId, userID, type, raisonDelete) {
     if (profileId == userID) return;
     if (type == "reagir") {
-      console.log("react type");
+      
       var critere = { profileId: profileId, publId: publId, type: type };
       Notification.findOne(critere, function(err, notification) {
         if (err) {
@@ -133,7 +133,7 @@ module.exports = {
         }
 
         if (!notification) {
-			console.log("not notification")
+         
           var notification = new Notification();
           notification.profileId = profileId;
           notification.date_notification = new Date();
@@ -157,16 +157,22 @@ module.exports = {
             });
           });
         }
+        
       });
     }
   },
 
   removeNotification: function(profileId, publId, userID, type) {
-    var critere = {
-      profileId: profileId,
-      publId: publId,
-      type: type
-    };
+    
+    let critere='';
+    if (type ==='subscribe'){
+       critere={profileId,type}
+      }
+      else
+      {
+         critere={profileId,type,publId}
+      }
+
     Notification.findOne(critere, function(err, notification) {
       if (err) {
         /*return res.json({
@@ -179,6 +185,7 @@ module.exports = {
 							message : "notification not found"
 					})*/;
       } else {
+        
         if (notification.profiles.length >= 1) {
           for (i = 0; i < notification.profiles.length; i++) {
             if (notification.profiles[i].id == userID) {
@@ -188,7 +195,8 @@ module.exports = {
             }
           }
         }
-        if (notification.profiles.length == 0) {
+        if (notification.profiles.length == 0 || type==="subscribe") {
+
           notification.remove();
         }
       }
