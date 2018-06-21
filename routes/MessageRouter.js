@@ -5,6 +5,10 @@ var Profile = require('../models/Profile')
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('./properties.file');
 var jwt = require('jsonwebtoken');
+var notificationScript = require("../public/javascripts/notificationScript");
+const NotificationSub = require("../models/NotificationSubsciption.js");
+var _ = require("lodash");
+const webPusher = require("../utils/web_push.js");
 
 var Messaging = require('../messaging/messaging');
 
@@ -102,6 +106,47 @@ router.route('/messages').post(function (req, res) {
                 
             }
             Messaging.sendMessage(message);
+
+              //Ahmed Svp teste mon ici 
+
+              //debut
+
+            notificationScript.notifier(
+                message.toUserId,
+                "",
+                message.fromUserId,
+                "message",
+                ""
+              );
+
+              
+              NotificationSub.findOne({ userId: message.toUserId }).then(sub => {
+                Profile.findById(message.fromUserId).then(profile => {
+                  let subscriptions = [];
+                  _.forEach(sub.subsciptions, sub => {
+                    subscription = {
+                      endpoint: sub.endpoint,
+                      keys: {
+                        auth: sub.keys.auth,
+                        p256dh: sub.keys.p256dh
+                      }
+                    };
+                    subscriptions.push(subscription);
+                  });
+    
+                  const payload = {
+                    title: "Speegar",
+                    icon: profile.profilePictureMin,
+    
+                    body: `${profile.lastName} ${
+                      profile.firstName
+                    } vous a envoyé on nouveau message`
+                  };
+                  return webPusher(subscriptions, payload, res);
+                });
+              });
+ 
+                //fin
             res.json(message);
         });
     });
