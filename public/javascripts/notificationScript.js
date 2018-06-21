@@ -1,5 +1,6 @@
 var Profile = require("./../../models/Profile");
 var Notification = require("./../../models/Notification");
+var FirebaseNotification = require("../../notifications/firebase_notification");
 
 module.exports = {
   notifier: function(profileId, publId, userID, type, raisonDelete) {
@@ -60,7 +61,18 @@ module.exports = {
             }
           });
         }
+
+        notifData = {
+          userID: notification.profileId,
+          notifId: notification._id
+        }
+        FirebaseNotification.sendNotif(notifData)
+
+
       });
+
+
+      
     } else if (type == "comment") {
       /* commenter sur un publication */
       var critere = { profileId: profileId, publId: publId, type: type };
@@ -118,6 +130,13 @@ module.exports = {
             }
           });
         }
+
+        notifData = {
+          userID: notification.profileId,
+          notifId: notification._id
+        }
+        FirebaseNotification.sendNotif(notifData)
+
       });
     }
 
@@ -157,8 +176,17 @@ module.exports = {
             });
           });
         }
+
+        notifData = {
+          userID: notification.profileId,
+          notifId: notification._id
+        }
+        FirebaseNotification.sendNotif(notifData)
+
+        
       });
     }
+    
   },
 
   removeNotification: function(profileId, publId, userID, type) {

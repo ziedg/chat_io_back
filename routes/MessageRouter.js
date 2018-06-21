@@ -6,7 +6,7 @@ var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('./properties.file');
 var jwt = require('jsonwebtoken');
 
-var Messaging = require('../messaging/messaging');
+var FirebaseNotification = require('../notifications/firebase_notification');
 
 // route middleware to verify a token
 router.use(function (req, res, next) {
@@ -101,7 +101,7 @@ router.route('/messages').post(function (req, res) {
                 });
                 
             }
-            Messaging.sendMessage(message);
+            FirebaseNotification.sendMessage(message);
             res.json(message);
         });
     });
