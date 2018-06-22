@@ -150,8 +150,11 @@ router
 
             Profile.findById(req._id)
             .then(p => {
+              if (p.nbNotificationsNotSeen > 0)
+              {
               p.nbNotificationsNotSeen--;
               p.save();
+              }
   
             })
           }
