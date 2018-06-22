@@ -168,6 +168,34 @@ module.exports = {
       });
     }
 
+    else if (type == "message") {
+      
+          var notification = new Notification();
+          notification.profileId = profileId;
+          notification.date_notification = new Date();
+          notification.type = type;
+
+          Profile.findById(userID, function(err, profile) {
+            if (err) {
+              /*  don't do anything...	res.send(err);*/
+            } else if (profile) {
+              notification.profiles.push(profile);
+              notification.date_notification = new Date();
+              notification.isSeen = "false";
+              notification.save();
+              profile.save();
+            }
+            Profile.findById(profileId, function(err, pr) {
+              if (pr) {
+                pr.nbNotificationsNotSeen++;
+                pr.save();
+              }
+            });
+          });
+        }
+    
+    
+
     //type subscribe
     else {
       var critere = { profileId: profileId, type: type };

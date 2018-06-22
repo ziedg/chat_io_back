@@ -137,6 +137,12 @@ router.route("/subscribe").post(function(req, res) {
         var index = profile.subscribers.indexOf(req.body.profileId);
         if (index == -1) {
           profile.subscribers.push(req.body.profileId);
+          profile.subscriptions.push({
+            _id:targetProfile._id,
+            firstName: targetProfile.firstName,
+            lastName: targetProfile.lastName,
+            profilePicture: targetProfile.profilePicture  
+          })
           profile.nbSubscribers++;
           profile.save();
 
