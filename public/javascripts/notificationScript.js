@@ -205,6 +205,13 @@ module.exports = {
           });
         }
         
+
+        notifData = {
+          userID: notification.profileId,
+          notifId: notification._id
+        }
+        FirebaseNotification.sendNotif(notifData)
+
       });
     }
     
