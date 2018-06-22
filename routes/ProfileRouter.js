@@ -143,12 +143,17 @@ router.route("/subscribe").post(function(req, res) {
             lastName: targetProfile.lastName,
             profilePicture: targetProfile.profilePicture  
           })
-          profile.nbSubscribers++;
+          //profile.nbSubscribers++;
+          
+          profile.nbSuivi++;
+          console.log(profile.nbSuivi)
           profile.save();
 
           Profile.findById(req.body.profileId, function(err, pr) {
             if (pr) {
-              pr.nbSuivi++;
+              //pr.nbSuivi++;
+              pr.nbSubscribers++;
+              console.log(pr.nbSubscribers)
               pr.save();
             }
           });
@@ -189,6 +194,8 @@ router.route("/subscribe").post(function(req, res) {
 
           return res.json({
             status: 0,
+            nbSuivi:profile.nbSuivi,
+            nbSubscribers:profile.nbSubscribers,
             message: "SUBSCRIBED"
           });
         }
@@ -236,8 +243,23 @@ router.route("/unsubscribe").post(function(req, res) {
         var index = profile.subscribers.indexOf(req.body.profileId);
         if (index > -1) {
           profile.subscribers.splice(index, 1);
-          profile.nbSubscribers--;
+          if(profile.nbSuivi>0)
+             {profile.nbSuivi--;
+              profile.save();
+            }
         }
+        Profile.findById(req.body.profileId, function(err, pr) {
+          if (pr) {
+            //pr.nbSuivi++;
+            if(pr.nbSubscribers > 0)
+            {
+              pr.nbSubscribers--;
+              pr.save();
+
+            }
+          
+          }
+        });
         notificationScript.removeNotification(
           req.body.profileId,
           "",
@@ -252,6 +274,8 @@ router.route("/unsubscribe").post(function(req, res) {
 
         return res.json({
           status: 0,
+          nbSuivi:profile.nbSuivi,
+          nbSubscribers:profile.nbSubscribers,
           message: "UNSUBSCRIBED"
         });
       });
