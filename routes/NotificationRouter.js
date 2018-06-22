@@ -68,7 +68,7 @@ router.route("/getNotifications").get(function(req, res) {
         res.json(notifications);
         Profile.findById(req._id, function(err, profile) {
           if (profile) {
-            profile.nbNotificationsNotSeen = 0;
+           // profile.nbNotificationsNotSeen = 0;
             profile.save();
           }
         });
@@ -85,6 +85,7 @@ router.route("/getNotifications").get(function(req, res) {
 
 router.route("/checkNewNotifications").get(function(req, res) {
   try {
+ 
     Profile.findById(req._id, function(err, profile) {
       if (err) {
         res.json({
@@ -101,9 +102,12 @@ router.route("/checkNewNotifications").get(function(req, res) {
         });
         return;
       } else {
+
+          const nbNotificationsNotSeen= profile.nbNotificationsNotSeen;
+         
         res.json({
           status: 0,
-          nbNewNotifications: profile.nbNotificationsNotSeen
+          nbNewNotifications:nbNotificationsNotSeen
         });
       }
     });
@@ -121,6 +125,8 @@ router
 
   .post(function(req, res) {
     try {
+
+    
       Notification.findById(req.body.notificationId, function(
         err,
         notification
@@ -139,6 +145,21 @@ router
             error: "SP_ER_NOTIFICATION_NOT_FOUND"
           });
         } else {
+          if(notification.isSeen==="false"){
+              console.log('entered here')
+
+            Profile.findById(req._id)
+            .then(p => {
+              p.nbNotificationsNotSeen--;
+              p.save();
+  
+            })
+          }
+
+         
+
+          
+
           notification.isSeen = true;
           notification.save();
 
@@ -191,7 +212,7 @@ router.route("/api/push-unsubscribe").post((req, res) => {
 
 router.route("/api/push-subscribe").post((req, res) => {
   const vapidKeys = keys.VAPIDKEYS;
-  console.log(req.body);
+
 
   webPush.setVapidDetails(
     "mailto:ziedsaidig@gmail.com",

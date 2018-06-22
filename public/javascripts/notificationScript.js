@@ -6,8 +6,7 @@ module.exports = {
   notifier: function(profileId, publId, userID, type, raisonDelete) {
     if (profileId == userID) return;
     if (type == "reagir") {
-      
-      var critere = { profileId: profileId, publId: publId, type: type };
+      var critere = { profileId, publId: publId, type };
       Notification.findOne(critere, function(err, notification) {
         if (err) {
           console.log(err);
@@ -17,19 +16,40 @@ module.exports = {
           notification.publId = publId;
           notification.date_notification = new Date();
           notification.type = type;
+          //profile of the owner of the pub
+          Profile.findById(profileId)
+          .then(p => {
+            
+            p.nbNotificationsNotSeen++;
+
+             p.save();
+
+
+          })
+
           Profile.findById(userID, function(err, profile) {
             if (err) {
               /*res.send(err);*/
               console.log(err);
             } else if (profile) {
+             
               notification.profiles.push(profile);
               notification.isSeen = "false";
+
               notification.date_notification = new Date();
               notification.save();
+             
               profile.save();
             }
           });
         } else {
+
+          Profile.findById(profileId)
+          .then(p => {
+            p.nbNotificationsNotSeen++;
+            p.save();
+
+          })
           Profile.findById(userID, function(err, profile) {
             if (err) {
               /*res.
@@ -39,6 +59,7 @@ module.exports = {
               users = notification.profiles.map(p => {
                 return p._id;
               });
+
 
               let isExist = false;
               for (let id of users) {
@@ -65,14 +86,9 @@ module.exports = {
         notifData = {
           userID: notification.profileId,
           notifId: notification._id
-        }
-        FirebaseNotification.sendNotif(notifData)
-
-
+        };
+        FirebaseNotification.sendNotif(notifData);
       });
-
-
-      
     } else if (type == "comment") {
       /* commenter sur un publication */
       var critere = { profileId: profileId, publId: publId, type: type };
@@ -88,10 +104,17 @@ module.exports = {
           notification.publId = publId;
           notification.date_notification = new Date();
           notification.type = type;
+          Profile.findById(profileId)
+          .then(p => {
+            p.nbNotificationsNotSeen++;
+            p.save();
+
+          })
           Profile.findById(userID, function(err, profile) {
             if (err) {
               /*res.send(err);*/
             } else if (profile) {
+             
               notification.profiles.push(profile);
               notification.isSeen = "false";
               notification.date_notification = new Date();
@@ -116,12 +139,18 @@ module.exports = {
                 }
               }
 
+              Profile.findById(profileId)
+              .then(p => {
+                p.nbNotificationsNotSeen++;
+                p.save();
+    
+              })
+
               if (!isExist) {
                 notification.profiles.push(profile);
                 notification.isSeen = "false";
                 notification.date_notification = new Date();
                 notification.save();
-                profile.save();
               } else {
                 notification.isSeen = "false";
                 notification.date_notification = new Date();
@@ -134,9 +163,8 @@ module.exports = {
         notifData = {
           userID: notification.profileId,
           notifId: notification._id
-        }
-        FirebaseNotification.sendNotif(notifData)
-
+        };
+        FirebaseNotification.sendNotif(notifData);
       });
     }
 
@@ -152,7 +180,6 @@ module.exports = {
         }
 
         if (!notification) {
-         
           var notification = new Notification();
           notification.profileId = profileId;
           notification.date_notification = new Date();
@@ -166,32 +193,28 @@ module.exports = {
               notification.date_notification = new Date();
               notification.isSeen = "false";
               notification.save();
-              profile.save();
+
+              Profile.findById(profileId)
+              .then(p => {
+                p.nbNotificationsNotSeen++;
+                p.save();
+    
+              })
             }
-            Profile.findById(profileId, function(err, pr) {
-              if (pr) {
-                pr.nbNotificationsNotSeen++;
-                pr.save();
-              }
-            });
+         
           });
         }
-        
       });
     }
-    
   },
 
   removeNotification: function(profileId, publId, userID, type) {
-    
-    let critere='';
-    if (type ==='subscribe'){
-       critere={profileId,type}
-      }
-      else
-      {
-         critere={profileId,type,publId}
-      }
+    let critere = "";
+    if (type === "subscribe") {
+      critere = { profileId, type };
+    } else {
+      critere = { profileId, type, publId };
+    }
 
     Notification.findOne(critere, function(err, notification) {
       if (err) {
@@ -205,7 +228,6 @@ module.exports = {
 							message : "notification not found"
 					})*/;
       } else {
-        
         if (notification.profiles.length >= 1) {
           for (i = 0; i < notification.profiles.length; i++) {
             if (notification.profiles[i].id == userID) {
@@ -215,8 +237,7 @@ module.exports = {
             }
           }
         }
-        if (notification.profiles.length == 0 || type==="subscribe") {
-
+        if (notification.profiles.length == 0 || type === "subscribe") {
           notification.remove();
         }
       }
