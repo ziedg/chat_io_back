@@ -10,7 +10,7 @@ const NotificationSub = require("../models/NotificationSubsciption.js");
 var _ = require("lodash");
 const webPusher = require("../utils/web_push.js");
 
-var Messaging = require('../messaging/messaging');
+var FirebaseNotification = require('../notifications/firebase_notification');
 
 // route middleware to verify a token
 router.use(function (req, res, next) {
@@ -105,7 +105,7 @@ router.route('/messages').post(function (req, res) {
                 });
                 
             }
-            Messaging.sendMessage(message);
+            FirebaseNotification.sendMessage(message);
 
               //Ahmed Svp teste mon ici 
 
