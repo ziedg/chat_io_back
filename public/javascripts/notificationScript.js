@@ -192,6 +192,14 @@ module.exports = {
               }
             });
           });
+
+          notifData = {
+            userID: notification.profileId,
+            notifId: notification._id
+          };
+          console.log(notifData)
+          FirebaseNotification.sendNotif(notifData);
+
         }
     
     
