@@ -134,29 +134,32 @@ router.route("/subscribe").post(function(req, res) {
           });
         }
 
-        var index = profile.subscribers.indexOf(req.body.profileId);
+        var index = profile.subscriptions.indexOf(req.body.profileId);
         if (index == -1) {
-          profile.subscribers.push(req.body.profileId);
-          profile.subscriptions.push({
+          profile.subscriptions.push(req.body.profileId);
+          profile.subscriptionsDetails.push({
             _id:targetProfile._id,
             firstName: targetProfile.firstName,
             lastName: targetProfile.lastName,
             profilePicture: targetProfile.profilePicture  
           })
-          //profile.nbSubscribers++;
-          
-          profile.nbSuivi++;
-          console.log(profile.nbSuivi)
+        }
+          profile.nbSubscribers++;
           profile.save();
 
-          Profile.findById(req.body.profileId, function(err, pr) {
-            if (pr) {
-              //pr.nbSuivi++;
-              pr.nbSubscribers++;
-              console.log(pr.nbSubscribers)
-              pr.save();
-            }
-          });
+          var index2 = targetProfile.subscribers.indexOf(req._id);
+        if (index2 == -1) {
+          targetProfile.subscribers.push(req._id);
+          targetProfile.subscribersDetails.push({
+            _id:profile._id,
+            firstName: profile.firstName,
+            lastName: profile.lastName,
+            profilePicture: profile.profilePicture  
+          })
+          
+              targetProfile.nbSubscribers++;
+              targetProfile.save();
+          
          
           notificationScript.notifier(
             req.body.profileId,
@@ -167,7 +170,6 @@ router.route("/subscribe").post(function(req, res) {
           );
 
           NotificationSub.findOne({ userId: req.body.profileId }).then(sub => {
-            Profile.findById(req._id).then(profile => {
               let subscriptions = [];
               _.forEach(sub.subsciptions, sub => {
                 subscription = {
@@ -189,13 +191,12 @@ router.route("/subscribe").post(function(req, res) {
                 } Commence a Vous suivre`
               };
               return webPusher(subscriptions, payload, res);
-            });
           });
 
           return res.json({
             status: 0,
-            nbSuivi:profile.nbSuivi,
             nbSubscribers:profile.nbSubscribers,
+            nbSubscriptions:profile.nbSubscriptions,
             message: "SUBSCRIBED"
           });
         }
@@ -240,26 +241,32 @@ router.route("/unsubscribe").post(function(req, res) {
           });
         }
 
-        var index = profile.subscribers.indexOf(req.body.profileId);
+        var index = profile.subscriptions.indexOf(req.body.profileId);
         if (index > -1) {
-          profile.subscribers.splice(index, 1);
-          if(profile.nbSuivi>0)
-             {profile.nbSuivi--;
-              profile.save();
-            }
-        }
-        Profile.findById(req.body.profileId, function(err, pr) {
-          if (pr) {
-            //pr.nbSuivi++;
-            if(pr.nbSubscribers > 0)
-            {
-              pr.nbSubscribers--;
-              pr.save();
+          profile.subscriptions.splice(index, 1);
 
+        //delete the object from subscriptionsDetails
+        profile.subscriptionsDetails=profile.subscriptionsDetails.filter((subscriptionDetail)=>{
+        return subscriptionDetail._id.toString() !== req.body.profileId.toString()
+        })
+          if(profile.nbSubscriptions>0) profile.nbSubscriptions--;
+            
+            profile.save();
+
+        }
+        
+
+        //delete subscribersDetails
+        targetProfile.subscribersDetails= targetProfile.subscribersDetails.filter(subscriberDetail=>{
+          return subscriberDetail._id.toString() !== req._id.toString()
+          }) 
+            if(targetProfile.nbSubscribers > 0)
+            {
+              targetProfile.nbSubscribers--;
             }
-          
-          }
-        });
+            targetProfile.save();
+
+       
         notificationScript.removeNotification(
           req.body.profileId,
           "",
@@ -274,8 +281,8 @@ router.route("/unsubscribe").post(function(req, res) {
 
         return res.json({
           status: 0,
-          nbSuivi:profile.nbSuivi,
           nbSubscribers:profile.nbSubscribers,
+          nbSubscriptions:profile.nbSubscriptions,
           message: "UNSUBSCRIBED"
         });
       });
