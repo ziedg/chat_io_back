@@ -129,8 +129,11 @@ router.route('/addComment')
 
 
                                     notificationScript.notifier(publication.profileId, comment.publId, req._id, "comment", "");
+                                    if(publication.profileId != req._id){
+                                    
                                     Profile.findById(req._id).then(profile =>{
                                         NotificationSub.findOne({userId:publication.profileId}).then((sub)=>{
+                                        if(!sub) return 
                             
                                           let   subscriptions=[];
                                                                _.forEach(sub.subsciptions ,(sub)=>{
@@ -154,7 +157,7 @@ router.route('/addComment')
                             
                             
                             
-                                      })
+                                      })}
                                    
                                 
                                   
