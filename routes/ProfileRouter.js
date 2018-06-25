@@ -120,9 +120,8 @@ router.route("/subscribe").post(function(req, res) {
             lastName: targetProfile.lastName,
             profilePicture: targetProfile.profilePicture  
           })
-<<<<<<< HEAD
         }
-          profile.nbSubscribers++;
+          profile.nbSubscriptions++;
           profile.save();
 
           var index2 = targetProfile.subscribers.indexOf(req._id);
@@ -138,22 +137,7 @@ router.route("/subscribe").post(function(req, res) {
               targetProfile.nbSubscribers++;
               targetProfile.save();
           
-=======
-          //profile.nbSubscribers++;
-          
-          profile.nbSuivi++;
-       
-          profile.save();
 
-          Profile.findById(req.body.profileId, function(err, pr) {
-            if (pr) {
-              //pr.nbSuivi++;
-              pr.nbSubscribers++;
-              
-              pr.save();
-            }
-          });
->>>>>>> e915e76ac9044ab3454c6b87fcb696c52a12a305
          
           notificationScript.notifier(
             req.body.profileId,
