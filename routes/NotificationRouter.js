@@ -13,35 +13,11 @@ const NotificationSub = require("../models/NotificationSubsciption.js");
 const keys = require("../utils/config/keys.js");
 
 // route middleware to verify a token
-router.use(function(req, res, next) {
-  if (req.method === "OPTIONS") {
-    next();
-  } else {
-    var token = req.headers["x-access-token"];
-    if (token) {
-      var jwtSecret = properties.get("security.jwt.secret").toString();
-      jwt.verify(token, jwtSecret, function(err, decoded) {
-        if (err) {
-          return res.status(403).send({
-            success: false,
-            error: "Failed to authenticate token."
-          });
-        } else {
-          req._id = decoded["_id"];
-          next();
-        }
-      });
-    } else {
-      return res.status(403).send({
-        success: false,
-        error: "No token provided."
-      });
-    }
-  }
-});
+require('../middlewars/auth')(router);
 
 router.route("/getNotifications").get(function(req, res) {
   try {
+    const start = Date.now();
     var criteria = {};
     if (!req.query.lastNotificationId) {
       criteria = { profileId: req._id };
@@ -65,13 +41,10 @@ router.route("/getNotifications").get(function(req, res) {
           error: "SP_ER_TECHNICAL_ERROR"
         });
       } else {
+     
+       
         res.json(notifications);
-        Profile.findById(req._id, function(err, profile) {
-          if (profile) {
-           // profile.nbNotificationsNotSeen = 0;
-            profile.save();
-          }
-        });
+     
       }
     });
   } catch (error) {
@@ -83,31 +56,35 @@ router.route("/getNotifications").get(function(req, res) {
   }
 });
 
+
+
+
 router.route("/checkNewNotifications").get(function(req, res) {
   try {
- 
+   
     Profile.findById(req._id, function(err, profile) {
       if (err) {
-        res.json({
+         return res.json({
           status: 3,
           error: "SP_ER_TECHNICAL_ERROR"
         });
-        return;
+      
       }
 
       if (!profile) {
-        res.json({
+         return res.json({
           status: 2,
           error: "SP_ER_PROFILE_NOT_FOUND"
         });
-        return;
+      
       } else {
 
-          const nbNotificationsNotSeen= profile.nbNotificationsNotSeen;
-         
+        
+     
+    
         res.json({
           status: 0,
-          nbNewNotifications:nbNotificationsNotSeen
+          nbNewNotifications:profile.nbNotificationsNotSeen
         });
       }
     });
@@ -125,28 +102,28 @@ router
 
   .post(function(req, res) {
     try {
-
+      
     
       Notification.findById(req.body.notificationId, function(
         err,
         notification
       ) {
         if (err) {
-          res.json({
+          return res.json({
             status: 3,
             error: "SP_ER_TECHNICAL_ERROR"
           });
-          return;
+         
         }
 
         if (!notification) {
-          res.json({
+          return  res.json({
             status: 1,
             error: "SP_ER_NOTIFICATION_NOT_FOUND"
           });
         } else {
           if(notification.isSeen==="false"){
-              console.log('entered here')
+              
 
             Profile.findById(req._id)
             .then(p => {
@@ -157,6 +134,7 @@ router
               }
   
             })
+          
           }
 
          
@@ -165,12 +143,14 @@ router
 
           notification.isSeen = true;
           notification.save();
+          
 
           res.json({
             status: 1,
             message: "NOTIFICATION_UPDATED"
           });
         }
+
       });
     } catch (error) {
       console.log("error when mark notification view", error);

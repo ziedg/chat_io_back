@@ -25,33 +25,10 @@ const webPusher = require("../utils/web_push.js");
 var path = require("path");
 const NotificationSub = require("../models/NotificationSubsciption.js");
 const    facebookFriendsPush = require('../helpers/facebookFriendsPush.js');
-router.use(function(req, res, next) {
-  if (req.method === "OPTIONS") {
-    next();
-  } else {
-    var token = req.headers["x-access-token"];
-    if (token) {
-      var jwtSecret = properties.get("security.jwt.secret").toString();
-      jwt.verify(token, jwtSecret, function(err, decoded) {
-        if (err) {
-          return res.status(403).send({
-            success: false,
-            error: "Failed to authenticate token."
-          });
-        } else {
-          req._id = decoded["_id"];
-          next();
-        }
-      });
-    } else {
-      return res.status(403).send({
-        success: false,
-        error: "No token provided."
-      });
-    }
-  }
-});
 
+
+require('../middlewars/auth')(router);
+  
 router.route("/getProfile").get(function(req, res) {
   try {
     Profile.findById(req.query.ProfileId, function(err, profile) {
@@ -143,6 +120,7 @@ router.route("/subscribe").post(function(req, res) {
             lastName: targetProfile.lastName,
             profilePicture: targetProfile.profilePicture  
           })
+<<<<<<< HEAD
         }
           profile.nbSubscribers++;
           profile.save();
@@ -160,6 +138,22 @@ router.route("/subscribe").post(function(req, res) {
               targetProfile.nbSubscribers++;
               targetProfile.save();
           
+=======
+          //profile.nbSubscribers++;
+          
+          profile.nbSuivi++;
+       
+          profile.save();
+
+          Profile.findById(req.body.profileId, function(err, pr) {
+            if (pr) {
+              //pr.nbSuivi++;
+              pr.nbSubscribers++;
+              
+              pr.save();
+            }
+          });
+>>>>>>> e915e76ac9044ab3454c6b87fcb696c52a12a305
          
           notificationScript.notifier(
             req.body.profileId,
@@ -389,7 +383,7 @@ router.route("/updateProfilePicture").post(function(req, res) {
           error: "SP_ER_TECHNICAL_ERROR"
         });
       } else {
-        console.log(req.files);
+       
 
         Profile.findById(req._id, function(err, profile) {
           if (err) {
@@ -813,7 +807,7 @@ router
 router.route("/getFacebookFriends/").get(async (req, res) => {
   try {
     const userId = req._id;
-    console.log(userId);
+  
     const facebookProfiles =  await facebookFriends.findfacebookFriends(userId);
     res.send({
       status: 1,

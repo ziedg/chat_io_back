@@ -13,33 +13,8 @@ const webPusher = require("../utils/web_push.js");
 var FirebaseNotification = require('../notifications/firebase_notification');
 
 // route middleware to verify a token
-router.use(function (req, res, next) {
-    if (req.method === 'OPTIONS') {
-        next();
-    } else {
-        var token = req.headers['x-access-token'];
-        if (token) {
-            var jwtSecret = properties.get('security.jwt.secret').toString();
-            jwt.verify(token, jwtSecret, function (err, decoded) {
-                if (err) {
-                    return res.status(403).send({
-                        success: false,
-                        error: 'Failed to authenticate token.'
-                    });
-                } else {
-                    req._id = decoded['_id'];
-                    next();
-                }
-            });
-        } else {
-            return res.status(403).send({
-                success: false,
-                error: 'No token provided.'
-            });
-        }
-    
-    }
-});
+require('../middlewars/auth')(router);
+ 
 
 router.route('/messages/:_id').get(function (req, res) {
     var _id = req.params._id;
