@@ -46,7 +46,7 @@ router.route('/messages').get(function (req, res) {
 );
 
 
-router.route('/messages/:fromUser/:toUser').get(function (req, res) {
+router.route('/messages/:fromUser/:toUser').get(async function (req, res) {
     var fromUser = req.params.fromUser;
     var toUser = req.params.toUser;
    
@@ -55,16 +55,9 @@ router.route('/messages/:fromUser/:toUser').get(function (req, res) {
     var limit = req.query.limit;
     var page = req.query.page ;
     */
-    Message.getMessages(fromUser, toUser, (err, messages) => {
-        if(err){
-            return res.json({
-                status: 3,
-                error: 'SP_ER_TECHNICAL_ERROR'
-            });
-        }
+    let messages =await Message.getMessages(fromUser, toUser) 
         res.json(messages); 
-    }
-);
+    
 });
 
 router.route('/messages').post(function (req, res) {
@@ -155,36 +148,37 @@ router.route('/messages/:_id').put( (req, res) => {
 	});
 });
 
-//Suggestion 
-router.route('/suggestions/:_id').get( (req, res) => {
+//Suggestions. Subscribers that dosen't have previous conversation with me
+router.route('/suggestions/:_id').get( async(req, res) => {
     var id = req.params._id;
-    Message.haveConversation(id,(err,messages)=>{
-        if(err){
-			return res.json({
-                status: 3,
-                error: 'SP_ER_TECHNICAL_ERROR'
-            });
-        }
+    const messages=await (Message.haveConversation(id))
         if(messages.length>0){
-
-        let suggestionsIds=[];
-
+         let HistoryIds=[];
         messages.forEach(message => {
-        if(message.fromUserId == id) suggestionsIds.push(message.toUserId)
-        else suggestionsIds.push(message.fromUserId)
+        if(message.fromUserId == id) HistoryIds.push(message.toUserId)
+        else HistoryIds.push(message.fromUserId)
         });
 
-       Profile.find({_id: { $in : suggestionsIds }},(err,profiles)=>{
-        if ( err ){
-            return res.json({
-                status: 3,
-                error: 'SP_ER_TECHNICAL_ERROR'
+        //enlever les redondances dans le tableau
+        _.uniqBy(HistoryIds,function(element){
+            element.toString()
+        })
+     Profile.findOne({_id: id}, (err,profile) => {
+                if ( err ){
+                    return res.json({
+                        status: 3,
+                        error: 'SP_ER_TECHNICAL_ERROR'
+                    });
+                }
+        var suggestions=profile.subscribersDetails.slice();
+                  
+        suggestions=suggestions.filter(suggestion=>
+         ! HistoryIds.some(histId =>  histId.toString()===   suggestion._id.toString())  
+         )
+              return res.json(suggestions)
+                
             });
-        }
-        res.json(profiles);
-       })
-        }
-        else {
+        }else {
             Profile.findOne({_id: id}, (err,profile) => {
                 if ( err ){
                     return res.json({
@@ -192,24 +186,59 @@ router.route('/suggestions/:_id').get( (req, res) => {
                         error: 'SP_ER_TECHNICAL_ERROR'
                     });
                 }
-                
-                suggestions = profile.subscribers.slice(profile.subscribers.length-3,profile.subscribers.length);
-                Profile.find({_id: { $in : suggestions }}, (err,profiles) => {
-                    if ( err ){
-                        return res.json({
-                            status: 3,
-                            error: 'SP_ER_TECHNICAL_ERROR'
-                        });
-                    }
-                    res.json(profiles);
-                });
-                
+
+                return res.json(profile.subscribersDetails)
+            })
+
+        }
+    
+    
+    
+    
+});
+
+//History 
+router.route('/messagingHistory/:_id').get( async(req, res) => {
+    var id = req.params._id;
+        const messages =await (Message.haveConversation(id))
+        if(messages.length>0)
+        {
+        console.log(messages)
+        let HistoryIds=[];
+        messages.forEach(message => {
+        if(message.fromUserId == id) HistoryIds.push(message.toUserId)
+        else HistoryIds.push(message.fromUserId)
+        });
+       //enlever les redondances dans le tableau
+        _.uniqBy(HistoryIds,function(element){
+        element.toString()
+        })
+
+       Profile.find({_id: { $in : HistoryIds }},async(err,profiles)=>{
+        if ( err ){
+            return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
             });
         }
-    })
-    
-    
-    
+
+        var results=profiles.map(async(profile)=>{
+         let conversation =await(Message.getMessages(id,profile._id));
+         let lastMessage=conversation[conversation.length-1];
+        return {
+            _id:profile._id,
+            firstName: profile.firstName,
+            lastName: profile.lastName,
+            profilePicture: profile.profilePicture ,
+            lastMessage:lastMessage 
+          }
+        })
+       let finalProfiles=await Promise.all(results);
+        return res.json(finalProfiles);
+       })
+        }
+        else return res.json([]);
+        
 });
 
 
