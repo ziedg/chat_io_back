@@ -82,8 +82,7 @@ router.route("/getProfile").get(function(req, res) {
 
 router.route("/subscribe").post(function(req, res) {
   try {
-    //webPusher()
-
+    
     Profile.findById(req.body.profileId, function(err, targetProfile) {
       if (err) {
         return res.json({
@@ -121,9 +120,14 @@ router.route("/subscribe").post(function(req, res) {
             profilePicture: targetProfile.profilePicture  
           })
         }
-          profile.nbSubscriptions++;
+          
+         
+          profile.nbSubscriptions++ ;
+         
+          
           profile.save();
 
+          
           var index2 = targetProfile.subscribers.indexOf(req._id);
         if (index2 == -1) {
           targetProfile.subscribers.push(req._id);
@@ -133,9 +137,12 @@ router.route("/subscribe").post(function(req, res) {
             lastName: profile.lastName,
             profilePicture: profile.profilePicture  
           })
-          
-              targetProfile.nbSubscribers++;
+        
+              targetProfile.nbSubscribers++ ||0;
               targetProfile.save();
+
+        }
+        
           
 
          
@@ -148,6 +155,7 @@ router.route("/subscribe").post(function(req, res) {
           );
 
           NotificationSub.findOne({ userId: req.body.profileId }).then(sub => {
+            if(!sub) return;
               let subscriptions = [];
               _.forEach(sub.subsciptions, sub => {
                 subscription = {
@@ -177,7 +185,7 @@ router.route("/subscribe").post(function(req, res) {
             nbSubscriptions:profile.nbSubscriptions,
             message: "SUBSCRIBED"
           });
-        }
+        
       });
     });
   } catch (error) {
