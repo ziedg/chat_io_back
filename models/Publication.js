@@ -4,6 +4,10 @@ var Schema       = mongoose.Schema;
 var commentSchema   = new Schema({
 	 publId : Schema.ObjectId,
 	 profileId : Schema.ObjectId,
+	 pubGid:String,
+	 pubFontFamily:String,
+	 pubColor:String,
+	 pubFontSize:String,
 	 dateComment: Date,
 	 profileFirstName : String,
 	 profileLastName : String,
