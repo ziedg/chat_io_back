@@ -412,18 +412,37 @@ var storage = multer.diskStorage({
               "/" +
               req.files.profilePicture[0].filename;
 
-            //Update du photo dans les publications anterieures
+             
+
+
+
+        
 
             profile.publications.forEach(publicationId => {
+
+              Comment.find({publId:publicationId,profileId:req._id}).then(comment =>{
+                comment.profilePicture =
+                properties.get("pictures.link") +
+                "/" +
+                req.files.profilePicture[0].filename;
+              comment.profilePictureMin =
+                properties.get("pictures.link") +
+                "/" +
+                req.files.profilePicture[0].filename;
+                
+              })
+
               Publication.findById(publicationId, function(err, pub) {
                 if (!err) {
                   if (pub) {
 
-                    //change the picture in the comments..
-                    pub.comments.forEach(commentId => {
-                     
-                 
-                            comment.profilePicture =
+           
+
+                     console.log(pub.profileFirstName)
+
+                  
+                    pub.comments.forEach(comment => {
+                        comment.profilePicture =
                               properties.get("pictures.link") +
                               "/" +
                               req.files.profilePicture[0].filename;
@@ -431,7 +450,8 @@ var storage = multer.diskStorage({
                               properties.get("pictures.link") +
                               "/" +
                               req.files.profilePicture[0].filename;
-                            comment.save();
+
+                          
                           
                         
                       });
@@ -453,30 +473,29 @@ var storage = multer.diskStorage({
                 }
               });
             });
-            //Update du photo dans les commentaires anterieures
-
+          
 
             //change 
 
             
 
-            // profile.comments.forEach(commentId => {
-            //   Comment.findById(commentId, function(err, comment) {
-            //     if (!err) {
-            //       if (comment) {
-            //         comment.profilePicture =
-            //           properties.get("pictures.link") +
-            //           "/" +
-            //           req.files.profilePicture[0].filename;
-            //         comment.profilePictureMin =
-            //           properties.get("pictures.link") +
-            //           "/" +
-            //           req.files.profilePicture[0].filename;
-            //         comment.save();
-            //       }
-            //     }
-            //   });
-            // });
+            profile.comments.forEach(commentId => {
+              Comment.findById(commentId, function(err, comment) {
+                if (!err) {
+                  if (comment) {
+                    comment.profilePicture =
+                      properties.get("pictures.link") +
+                      "/" +
+                      req.files.profilePicture[0].filename;
+                    comment.profilePictureMin =
+                      properties.get("pictures.link") +
+                      "/" +
+                      req.files.profilePicture[0].filename;
+                    comment.save();
+                  }
+                }
+              });
+            });
           }
           profile.save();
 
