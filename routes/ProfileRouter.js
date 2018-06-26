@@ -82,7 +82,7 @@ router.route("/getProfile").get(function(req, res) {
 
 router.route("/subscribe").post(function(req, res) {
   try {
-    
+
     Profile.findById(req.body.profileId, function(err, targetProfile) {
       if (err) {
         return res.json({
@@ -178,7 +178,7 @@ router.route("/subscribe").post(function(req, res) {
               };
               return webPusher(subscriptions, payload, res);
           });
-
+        
           return res.json({
             status: 0,
             nbSubscribers:profile.nbSubscribers,
@@ -264,7 +264,7 @@ router.route("/unsubscribe").post(function(req, res) {
 
 
         profile.save();
-
+    
         return res.json({
           status: 0,
           nbSubscribers:profile.nbSubscribers,
@@ -340,11 +340,15 @@ router.route("/ignore").post(function(req, res) {
   }
 });
 
+
+//update profile picture ....
 router.route("/updateProfilePicture").post(function(req, res) {
   try {
     var profile = new Profile();
-    var storage = multer.diskStorage({
+
+var storage = multer.diskStorage({
       destination: function(req, file, callback) {
+      
         callback(null, properties.get("pictures.storage.temp").toString());
       },
       filename: function(req, file, callback) {
@@ -414,6 +418,29 @@ router.route("/updateProfilePicture").post(function(req, res) {
               Publication.findById(publicationId, function(err, pub) {
                 if (!err) {
                   if (pub) {
+
+                    //change the picture in the comments..
+                    pub.comments.forEach(commentId => {
+                      Comment.findById(commentId, function(err, comment) {
+                        if (!err) {
+                          if (comment) {
+                            comment.profilePicture =
+                              properties.get("pictures.link") +
+                              "/" +
+                              req.files.profilePicture[0].filename;
+                            comment.profilePictureMin =
+                              properties.get("pictures.link") +
+                              "/" +
+                              req.files.profilePicture[0].filename;
+                            comment.save();
+                          }
+                        }
+                      });
+                    });
+                  
+
+
+
                     pub.profilePicture =
                       properties.get("pictures.link") +
                       "/" +
@@ -429,23 +456,28 @@ router.route("/updateProfilePicture").post(function(req, res) {
             });
             //Update du photo dans les commentaires anterieures
 
-            profile.comments.forEach(commentId => {
-              Comment.findById(commentId, function(err, comment) {
-                if (!err) {
-                  if (comment) {
-                    comment.profilePicture =
-                      properties.get("pictures.link") +
-                      "/" +
-                      req.files.profilePicture[0].filename;
-                    comment.profilePictureMin =
-                      properties.get("pictures.link") +
-                      "/" +
-                      req.files.profilePicture[0].filename;
-                    comment.save();
-                  }
-                }
-              });
-            });
+
+            //change 
+
+            
+
+            // profile.comments.forEach(commentId => {
+            //   Comment.findById(commentId, function(err, comment) {
+            //     if (!err) {
+            //       if (comment) {
+            //         comment.profilePicture =
+            //           properties.get("pictures.link") +
+            //           "/" +
+            //           req.files.profilePicture[0].filename;
+            //         comment.profilePictureMin =
+            //           properties.get("pictures.link") +
+            //           "/" +
+            //           req.files.profilePicture[0].filename;
+            //         comment.save();
+            //       }
+            //     }
+            //   });
+            // });
           }
           profile.save();
 
