@@ -441,7 +441,11 @@ var storage = multer.diskStorage({
                   
                     pub.comments.forEach(comment => {
 
-                      if(comment.profileId==req._id)
+                      
+
+                      if((comment.profileId)!=(req._id)){
+
+                    
                       comment.profilePicture =
                       properties.get("pictures.link") +
                       "/" +
@@ -450,12 +454,12 @@ var storage = multer.diskStorage({
                       properties.get("pictures.link") +
                       "/" +
                       req.files.profilePicture[0].filename;
-
-                  
-                  
-                      {
-
                       }
+                   
+
+                  
+                  
+                     
                        
                         
                       });
