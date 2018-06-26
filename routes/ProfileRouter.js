@@ -354,7 +354,7 @@ var storage = multer.diskStorage({
       filename: function(req, file, callback) {
         callback(
           null,
-          profile._id +
+          profile._id  +
             "_" +
             new Date()
               .toISOString()
@@ -420,17 +420,35 @@ var storage = multer.diskStorage({
 
             profile.publications.forEach(publicationId => {
 
-              // Comment.find({publId:publicationId,profileId:req._id}).then(comment =>{
-              //   comment.profilePicture =
-              //   properties.get("pictures.link") +
-              //   "/" +
-              //   req.files.profilePicture[0].filename;
-              // comment.profilePictureMin =
-              //   properties.get("pictures.link") +
-              //   "/" +
-              //   req.files.profilePicture[0].filename;
+
+              Comment.find({publId:publicationId,profileId:req._id},(err,comment)=>{
+                 
+
+
                 
-              // })
+                comment.forEach(c =>{
+
+              
+                  c.profilePicture=properties.get("pictures.link") +
+                  "/" +
+                  req.files.profilePicture[0].filename;
+                   c.profilePictureMin =
+                  properties.get("pictures.link") +
+                  "/" +
+                  req.files.profilePicture[0].filename;
+                  c.save();
+
+                })
+        
+                
+
+
+              })
+               
+
+               
+                
+              
 
               Publication.findById(publicationId, function(err, pub) {
                 if (!err) {
@@ -443,8 +461,11 @@ var storage = multer.diskStorage({
 
                       
 
-                      if((comment.profileId)!=(req._id)){
 
+                      if((comment.profileId)==(req._id)){
+
+                        
+                     
                     
                       comment.profilePicture =
                       properties.get("pictures.link") +
@@ -455,6 +476,8 @@ var storage = multer.diskStorage({
                       "/" +
                       req.files.profilePicture[0].filename;
                       }
+
+                      
                    
 
                   
@@ -487,23 +510,23 @@ var storage = multer.diskStorage({
 
             
 
-            profile.comments.forEach(commentId => {
-              Comment.findById(commentId, function(err, comment) {
-                if (!err) {
-                  if (comment) {
-                    comment.profilePicture =
-                      properties.get("pictures.link") +
-                      "/" +
-                      req.files.profilePicture[0].filename;
-                    comment.profilePictureMin =
-                      properties.get("pictures.link") +
-                      "/" +
-                      req.files.profilePicture[0].filename;
-                    comment.save();
-                  }
-                }
-              });
-            });
+            // profile.comments.forEach(commentId => {
+            //   Comment.findById(commentId, function(err, comment) {
+            //     if (!err) {
+            //       if (comment) {
+            //         comment.profilePicture =
+            //           properties.get("pictures.link") +
+            //           "/" +
+            //           req.files.profilePicture[0].filename;
+            //         comment.profilePictureMin =
+            //           properties.get("pictures.link") +
+            //           "/" +
+            //           req.files.profilePicture[0].filename;
+            //         comment.save();
+            //       }
+            //     }
+            //   });
+            // });
           }
           profile.save();
 
