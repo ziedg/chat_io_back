@@ -4,10 +4,7 @@ var Schema       = mongoose.Schema;
 var commentSchema   = new Schema({
 	 publId : Schema.ObjectId,
 	 profileId : Schema.ObjectId,
-	 pubGid:String,
-	 pubFontFamily:String,
-	 pubColor:String,
-	 pubFontSize:String,
+	
 	 dateComment: Date,
 	 profileFirstName : String,
 	 profileLastName : String,
@@ -45,6 +42,10 @@ var publicationSchema   = new Schema({
 	 profilePicture: String,
 	 profilePictureMin: String,
 	 confidentiality : String,
+	 pubGid:String,
+	 pubFontFamily:String,
+	 pubColor:String,
+	 pubFontSize:String,
 	 nbLikes : Number,
 	 nbDislikes : Number,
 	 nbComments : Number,
