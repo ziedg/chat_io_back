@@ -14,8 +14,7 @@ var properties = PropertiesReader("properties.file");
 
 const app = express();
 
-//includes the middlewars
-app.use(bodyParser.urlencoded());
+//includes the middlewares
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
