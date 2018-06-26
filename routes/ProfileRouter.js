@@ -421,9 +421,8 @@ var storage = multer.diskStorage({
 
                     //change the picture in the comments..
                     pub.comments.forEach(commentId => {
-                      Comment.findById(commentId, function(err, comment) {
-                        if (!err) {
-                          if (comment) {
+                     
+                 
                             comment.profilePicture =
                               properties.get("pictures.link") +
                               "/" +
@@ -433,10 +432,10 @@ var storage = multer.diskStorage({
                               "/" +
                               req.files.profilePicture[0].filename;
                             comment.save();
-                          }
-                        }
+                          
+                        
                       });
-                    });
+                    
                   
 
 
