@@ -420,17 +420,17 @@ var storage = multer.diskStorage({
 
             profile.publications.forEach(publicationId => {
 
-              Comment.find({publId:publicationId,profileId:req._id}).then(comment =>{
-                comment.profilePicture =
-                properties.get("pictures.link") +
-                "/" +
-                req.files.profilePicture[0].filename;
-              comment.profilePictureMin =
-                properties.get("pictures.link") +
-                "/" +
-                req.files.profilePicture[0].filename;
+              // Comment.find({publId:publicationId,profileId:req._id}).then(comment =>{
+              //   comment.profilePicture =
+              //   properties.get("pictures.link") +
+              //   "/" +
+              //   req.files.profilePicture[0].filename;
+              // comment.profilePictureMin =
+              //   properties.get("pictures.link") +
+              //   "/" +
+              //   req.files.profilePicture[0].filename;
                 
-              })
+              // })
 
               Publication.findById(publicationId, function(err, pub) {
                 if (!err) {
@@ -438,21 +438,25 @@ var storage = multer.diskStorage({
 
            
 
-                     console.log(pub.profileFirstName)
-
                   
                     pub.comments.forEach(comment => {
-                        comment.profilePicture =
-                              properties.get("pictures.link") +
-                              "/" +
-                              req.files.profilePicture[0].filename;
-                            comment.profilePictureMin =
-                              properties.get("pictures.link") +
-                              "/" +
-                              req.files.profilePicture[0].filename;
 
-                          
-                          
+                      if(comment.profileId==req._id)
+                      comment.profilePicture =
+                      properties.get("pictures.link") +
+                      "/" +
+                      req.files.profilePicture[0].filename;
+                    comment.profilePictureMin =
+                      properties.get("pictures.link") +
+                      "/" +
+                      req.files.profilePicture[0].filename;
+
+                  
+                  
+                      {
+
+                      }
+                       
                         
                       });
                     
