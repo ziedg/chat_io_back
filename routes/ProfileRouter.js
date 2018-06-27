@@ -354,13 +354,13 @@ var storage = multer.diskStorage({
       filename: function(req, file, callback) {
         callback(
           null,
-           profile._id  + "$!",
-          //   "_" +
-          //   new Date()
-          //     .toISOString()
-          //     .replace(/:/g, "-")
-          //     .replace(/\./g, "") +
-            //path.extname(file.originalname)
+           profile._id +
+            "_" +
+            new Date()
+              .toISOString()
+              .replace(/:/g, "-")
+              .replace(/\./g, "") +
+            path.extname(file.originalname)
         );
       }
     });
