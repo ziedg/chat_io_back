@@ -60,8 +60,7 @@ router.route("/getProfile").get(function(req, res) {
         }
 
         profile.isFollowed =
-          connectedProfile.subscribers.indexOf(req.query.ProfileId) > -1;
-
+          connectedProfile.subscriptions.indexOf(req.query.ProfileId) > -1;
         var user = profile.toObject();
         delete user["password"];
 
@@ -119,15 +118,11 @@ router.route("/subscribe").post(function(req, res) {
             lastName: targetProfile.lastName,
             profilePicture: targetProfile.profilePicture  
           })
-        }
-          
-         
           profile.nbSubscriptions++ ;
-         
-          
+
+        }
           profile.save();
 
-          
           var index2 = targetProfile.subscribers.indexOf(req._id);
         if (index2 == -1) {
           targetProfile.subscribers.push(req._id);
@@ -143,8 +138,6 @@ router.route("/subscribe").post(function(req, res) {
 
         }
         
-          
-
          
           notificationScript.notifier(
             req.body.profileId,
@@ -235,12 +228,16 @@ router.route("/unsubscribe").post(function(req, res) {
         profile.subscriptionsDetails=profile.subscriptionsDetails.filter((subscriptionDetail)=>{
         return subscriptionDetail._id.toString() !== req.body.profileId.toString()
         })
+        
           if(profile.nbSubscriptions>0) profile.nbSubscriptions--;
             
             profile.save();
 
         }
         
+        var index2 = targetProfile.subscribers.indexOf(req._id);
+        if (index2 > -1) {
+          targetProfile.subscribers.splice(index2, 1);
 
         //delete subscribersDetails
         targetProfile.subscribersDetails= targetProfile.subscribersDetails.filter(subscriberDetail=>{
@@ -250,6 +247,8 @@ router.route("/unsubscribe").post(function(req, res) {
             {
               targetProfile.nbSubscribers--;
             }
+
+          }
             targetProfile.save();
 
        
@@ -647,7 +646,7 @@ router.route("/getPopularProfiles/:id?").get(function(req, res) {
 
       var query = {
         $and: [
-          { _id: { $nin: profile.subscribers } },
+          { _id: { $nin: profile.subscriptions } },
           { _id: { $ne: profile._id } },
           { _id: { $nin: profile.ignoredProfiles } }
         ]
