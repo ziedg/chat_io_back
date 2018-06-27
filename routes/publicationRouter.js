@@ -617,15 +617,32 @@ router.route("/getInteractions").post(function(req, res) {
         publicationLikes
       ) {
         if (publicationLikes && publicationLikes != undefined) {
-          const likes = publicationLikes.userlikes.slice(
+          var likes = publicationLikes.userlikes.slice(
             page * 3,
             (page + 1) * 3
           );
 
-          const dislikes = publicationLikes.userdislikes.slice(
+          likes = likes.map(el => {  el.isubscribed = function(){
+            Profile.findById(req._id,function(err,userprofile){
+                if(userprofile.subscribers.indexOf(el.userId) != -1)
+                  return true;
+                else return false;
+            });
+           } ; return el;} );
+
+          var dislikes = publicationLikes.userdislikes.slice(
             page * 3,
             (page + 1) * 3
           );
+
+          dislikes = dislikes.map(el => {  el.isubscribed = function(){
+            Profile.findById(req._id,function(err,userprofile){
+                if(userprofile.subscribers.indexOf(el.userId) != -1)
+                  return true;
+                else return false;
+            });
+           } ; return el;} );
+
           return res.json({
             status: 0,
             message: {
