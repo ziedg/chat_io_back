@@ -618,8 +618,8 @@ router.route("/getInteractions").post(function(req, res) {
       ) {
         if (publicationLikes && publicationLikes != undefined) {
           var likes = publicationLikes.userlikes.slice(
-            page * 3,
-            (page + 1) * 3
+            page * 30,
+            (page + 1) * 30
           );
 
           likes = likes.map(el => {  el.isubscribed = function(){
@@ -631,8 +631,8 @@ router.route("/getInteractions").post(function(req, res) {
            } ; return el;} );
 
           var dislikes = publicationLikes.userdislikes.slice(
-            page * 3,
-            (page + 1) * 3
+            page * 30,
+            (page + 1) * 30
           );
 
           dislikes = dislikes.map(el => {  el.isubscribed = function(){
