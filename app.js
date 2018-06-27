@@ -14,8 +14,7 @@ var properties = PropertiesReader("properties.file");
 
 const app = express();
 
-//includes the middlewars
-app.use(bodyParser.urlencoded());
+//includes the middlewares
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
@@ -35,13 +34,11 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 var mongoose = require("mongoose");
 mongoose.connect(
   `mongodb://${properties.get("mongo.url")}/${properties.get("mongo.db.name")}`
-);
+).then(()=>{
+  console.log("connect TO DB...")
+})
+.catch(()=>{ console.log("Unable to connect to DB.")})
 
-var db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", function() {
-  console.log("connect to MongoDB Successfullllly!");
-});
 
 app.use(function(req, res, next) {
   var allowedOrigins = [
@@ -161,7 +158,8 @@ if ("local" == properties.get("server.environment").toString()) {
     credential: admin.credential.cert(serviceAccount),
     databaseURL: "https://speegar-6deca.firebaseio.com"
   });
-  var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE);
+  //var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE);
+  const httpport=3002;
   server.listen(httpport);
   console.log(
     "the server is launched on the port " +

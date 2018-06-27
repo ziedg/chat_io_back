@@ -81,7 +81,7 @@ router.route("/getProfile").get(function(req, res) {
 
 router.route("/subscribe").post(function(req, res) {
   try {
-    
+
     Profile.findById(req.body.profileId, function(err, targetProfile) {
       if (err) {
         return res.json({
@@ -171,7 +171,7 @@ router.route("/subscribe").post(function(req, res) {
               };
               return webPusher(subscriptions, payload, res);
           });
-
+        
           return res.json({
             status: 0,
             nbSubscribers:profile.nbSubscribers,
@@ -263,7 +263,7 @@ router.route("/unsubscribe").post(function(req, res) {
 
 
         profile.save();
-
+    
         return res.json({
           status: 0,
           nbSubscribers:profile.nbSubscribers,
@@ -339,17 +339,21 @@ router.route("/ignore").post(function(req, res) {
   }
 });
 
+
+//update profile picture ....
 router.route("/updateProfilePicture").post(function(req, res) {
   try {
     var profile = new Profile();
-    var storage = multer.diskStorage({
+
+var storage = multer.diskStorage({
       destination: function(req, file, callback) {
+      
         callback(null, properties.get("pictures.storage.temp").toString());
       },
       filename: function(req, file, callback) {
         callback(
           null,
-          profile._id +
+           profile._id +
             "_" +
             new Date()
               .toISOString()
@@ -407,12 +411,63 @@ router.route("/updateProfilePicture").post(function(req, res) {
               "/" +
               req.files.profilePicture[0].filename;
 
-            //Update du photo dans les publications anterieures
+             
 
+
+
+        
+
+
+          
             profile.publications.forEach(publicationId => {
+
+
+
+               
+                
+              
+
               Publication.findById(publicationId, function(err, pub) {
                 if (!err) {
                   if (pub) {
+
+           
+
+                  
+                    pub.comments.forEach(comment => {
+
+                      
+
+
+                      if((comment.profileId)==(req._id)){
+
+                        
+                     
+                    
+                      comment.profilePicture =
+                      properties.get("pictures.link") +
+                      "/" +
+                      req.files.profilePicture[0].filename;
+                    comment.profilePictureMin =
+                      properties.get("pictures.link") +
+                      "/" +
+                      req.files.profilePicture[0].filename;
+                      }
+
+                      
+                   
+
+                  
+                  
+                     
+                       
+                        
+                      });
+                    
+                  
+
+
+
                     pub.profilePicture =
                       properties.get("pictures.link") +
                       "/" +
@@ -426,25 +481,73 @@ router.route("/updateProfilePicture").post(function(req, res) {
                 }
               });
             });
-            //Update du photo dans les commentaires anterieures
+          
 
-            profile.comments.forEach(commentId => {
-              Comment.findById(commentId, function(err, comment) {
+            //change 
+
+            
+
+            //just for the test a change...
+
+
+            Comment.find({profileId:req._id},(err,comment)=>{
+                 
+
+
+                
+              comment.forEach(c =>{
+
+            
+                c.profilePicture=properties.get("pictures.link") +
+                "/" +
+                req.files.profilePicture[0].filename;
+                 c.profilePictureMin =
+                properties.get("pictures.link") +
+                "/" +
+                req.files.profilePicture[0].filename;
+                c.save();
+
+              })
+      
+              
+
+
+            })
+             
+          
+              Publication.find({}, function(err, pub) {
                 if (!err) {
-                  if (comment) {
-                    comment.profilePicture =
+                  if (pub) {
+                    pub.forEach(p =>{
+                    p.comments.forEach(c =>{
+                    if(c.profileId == req._id){
+
+                     
+
+
+
+                      c.profilePicture =
                       properties.get("pictures.link") +
                       "/" +
                       req.files.profilePicture[0].filename;
-                    comment.profilePictureMin =
+                    c.profilePictureMin =
                       properties.get("pictures.link") +
                       "/" +
                       req.files.profilePicture[0].filename;
-                    comment.save();
+
+                    console.log(c.profilePictureMin)
+                    c.save();
+
+                    }
+                    })
+                    p.save();
+
+                    })
+                   
                   }
                 }
               });
-            });
+            
           }
           profile.save();
 
