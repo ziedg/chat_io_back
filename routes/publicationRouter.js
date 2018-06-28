@@ -36,7 +36,7 @@ var _ = require("lodash");
 const saveImage = require("../utils/save_image");
 
 // route middleware to verify a token
-require('../middlewars/auth')(router);
+require("../middlewars/auth")(router);
 router.route("/getOpenGraphData").get(function(req, res) {
   try {
     ogs(
@@ -594,6 +594,7 @@ router.route("/removeDislikePublication").post(function(req, res) {
 
 router.route("/getInteractions").post(function(req, res) {
   try {
+    console.log(req.body);
     var publication = new Publication();
     var page = parseInt(req.body.page);
 
@@ -613,7 +614,7 @@ router.route("/getInteractions").post(function(req, res) {
         return;
       }
 
-      PublicationLikes.findById(req.body.publId, function(
+      PublicationLikes.findById(req.body.publId, async function(
         err,
         publicationLikes
       ) {
@@ -623,26 +624,31 @@ router.route("/getInteractions").post(function(req, res) {
             (page + 1) * 30
           );
 
-          likes = likes.map(el => {  el.isubscribed = function(){
-            Profile.findById(req._id,function(err,userprofile){
-                if(userprofile.subscribers.indexOf(el.userId) != -1)
-                  return true;
-                else return false;
-            });
-           } ; return el;} );
+        
+         
+        
+          const profile = await Profile.findById(req._id);
+      
+
+
+          likes.map(user => {
+            user.isSubscribed = false;
+            if (profile.subscriptions.indexOf(user.userId) == !-1) {
+              user.isSubscribed = true;
+            }
+          });
 
           var dislikes = publicationLikes.userdislikes.slice(
             page * 30,
             (page + 1) * 30
           );
-
-          dislikes = dislikes.map(el => {  el.isubscribed = function(){
-            Profile.findById(req._id,function(err,userprofile){
-                if(userprofile.subscribers.indexOf(el.userId) != -1)
-                  return true;
-                else return false;
-            });
-           } ; return el;} );
+     
+          dislikes.map(user => {
+            user.isSubscribed = false;
+            if (profile.subscriptions.indexOf(user.userId) == !-1) {
+              user.isSubscribed = true;
+            }
+          });
 
           return res.json({
             status: 0,
