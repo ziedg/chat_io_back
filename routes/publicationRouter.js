@@ -629,8 +629,8 @@ router.route("/getInteractions").post(function(req, res) {
 
         
          
-          const publication = await Publication.findById(req.body.publId);
-          const profile = await Profile.findOne(publication.profileId);
+        
+          const profile = await Profile.findOne(req._id);
       
 
 
