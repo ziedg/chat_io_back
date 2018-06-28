@@ -630,7 +630,7 @@ router.route("/getInteractions").post(function(req, res) {
         
          
         
-          const profile = await Profile.findOne(req._id);
+          const profile = await Profile.findById(req._id);
       
 
 
