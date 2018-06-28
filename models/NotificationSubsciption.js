@@ -12,7 +12,7 @@ var Subscription= new Schema({
 
 })
 var NotificationSubscription  = new Schema({
-	 userId : mongoose.Schema.Types.ObjectId,
+	 userId :{type: mongoose.Schema.Types.ObjectId,index:true},
 	 subsciptions : [Subscription],
 	
 }, { versionKey: false });
