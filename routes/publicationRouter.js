@@ -300,6 +300,7 @@ router.route("/likePublication").post(function(req, res) {
             userInteractions.profilefirstname = req.body.profilefirstname;
             userInteractions.profilelastname = req.body.profilelastname;
             userInteractions.profilepicture = req.body.profilepicture;
+            
 
             //console.log('used pushed like'+userInteractions);
 
@@ -472,6 +473,7 @@ router.route("/dislikePublication").post(function(req, res) {
           userInteractions.profilefirstname = req.body.profilefirstname;
           userInteractions.profilelastname = req.body.profilelastname;
           userInteractions.profilepicture = req.body.profilepicture;
+          
 
           //console.log('user push dislike'+userInteractions);
 
@@ -622,26 +624,25 @@ router.route("/getInteractions").post(function(req, res) {
             (page + 1) * 30
           );
 
-          likes = likes.map(el => {  el.isubscribed = function(){
-            Profile.findById(req._id,function(err,userprofile){
-                if(userprofile.subscribers.indexOf(el.userId) != -1)
-                  return true;
-                else return false;
-            });
-           } ; return el;} );
+          const userSubscribed = async function(id,userid) { await Profile.findById(id,function(err,userprofile){
+            if(!userprofile.subscriptions) 
+            {return false;}
+              
+           else if( userprofile.subscriptions.indexOf(userid) != -1)
+           {return true;}
+           else {return false;}
+           
+             });};
+
+          //Problem here is that function executes after the value assign : so the result is undefined
+          //likes = likes.map(async el =>  { el.isSubscribed = await userSubscribed(req._id,el.userId) ; return el;});
 
           var dislikes = publicationLikes.userdislikes.slice(
             page * 30,
             (page + 1) * 30
           );
 
-          dislikes = dislikes.map(el => {  el.isubscribed = function(){
-            Profile.findById(req._id,function(err,userprofile){
-                if(userprofile.subscribers.indexOf(el.userId) != -1)
-                  return true;
-                else return false;
-            });
-           } ; return el;} );
+          //dislikes = dislikes.map(el => {  el.isSubscribed = userSubscribed(req._id,el.userId) ; return el;});
 
           return res.json({
             status: 0,
