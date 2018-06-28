@@ -129,10 +129,7 @@ router
             publication.isShared = false;
             publication.publTitle = body.publTitle;
             publication.publText = body.publText;
-            publication.pubGid = body.pubGid;
-            publication.pubFontSize = body.pubFontSize;
-            publication.pubColor = body.pubColor;
-            publication.pubFontFamily = body.pubFontFamily;
+            publication.publClass = body.publClass;
             publication.publyoutubeLink = body.publyoutubeLink;
             publication.publfacebookLink = body.publfacebookLink;
             publication.publExternalLink = body.publExternalLink;
@@ -838,10 +835,7 @@ router.route("/sharePublication").post(function(req, res) {
         publication.confidentiality = pub.confidentiality;
         publication.publText = pub.publText;
         publication.publTitle = pub.publTitle;
-        publication.pubGid = pub.pubGid;
-        publication.pubFontSize = pub.pubFontSize;
-        publication.pubColor = pub.pubColor;
-        publication.pubFontFamily = pub.pubFontFamily;
+        publication.publClass = pub.publClass;
         publication.publExternalLink = pub.publExternalLink;
         publication.publPictureLink = pub.publPictureLink;
         publication.publyoutubeLink = pub.publyoutubeLink;
