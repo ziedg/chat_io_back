@@ -36,7 +36,7 @@ var _ = require("lodash");
 const saveImage = require("../utils/save_image");
 
 // route middleware to verify a token
-require('../middlewars/auth')(router);
+require("../middlewars/auth")(router);
 router.route("/getOpenGraphData").get(function(req, res) {
   try {
     ogs(
@@ -304,7 +304,6 @@ router.route("/likePublication").post(function(req, res) {
             userInteractions.profilefirstname = req.body.profilefirstname;
             userInteractions.profilelastname = req.body.profilelastname;
             userInteractions.profilepicture = req.body.profilepicture;
-            
 
             //console.log('used pushed like'+userInteractions);
 
@@ -477,7 +476,6 @@ router.route("/dislikePublication").post(function(req, res) {
           userInteractions.profilefirstname = req.body.profilefirstname;
           userInteractions.profilelastname = req.body.profilelastname;
           userInteractions.profilepicture = req.body.profilepicture;
-          
 
           //console.log('user push dislike'+userInteractions);
 
@@ -599,6 +597,7 @@ router.route("/removeDislikePublication").post(function(req, res) {
 
 router.route("/getInteractions").post(function(req, res) {
   try {
+    console.log(req.body);
     var publication = new Publication();
     var page = parseInt(req.body.page);
 
@@ -618,7 +617,7 @@ router.route("/getInteractions").post(function(req, res) {
         return;
       }
 
-      PublicationLikes.findById(req.body.publId, function(
+      PublicationLikes.findById(req.body.publId, async function(
         err,
         publicationLikes
       ) {
@@ -628,25 +627,28 @@ router.route("/getInteractions").post(function(req, res) {
             (page + 1) * 30
           );
 
-          const userSubscribed = async function(id,userid) { await Profile.findById(id,function(err,userprofile){
-            if(!userprofile.subscriptions) 
-            {return false;}
-              
-           else if( userprofile.subscriptions.indexOf(userid) != -1)
-           {return true;}
-           else {return false;}
-           
-             });};
+        
+         
 
-          //Problem here is that function executes after the value assign : so the result is undefined
-          //likes = likes.map(async el =>  { el.isSubscribed = await userSubscribed(req._id,el.userId) ; return el;});
+          const profile = await Profile.findById(req._id);
+          likes.map(user => {
+            user.isSubscribed = false;
+            if (profile.subscriptions.indexOf(user.userId) == !-1) {
+              user.isSubscribed = true;
+            }
+          });
 
           var dislikes = publicationLikes.userdislikes.slice(
             page * 30,
             (page + 1) * 30
           );
-
-          //dislikes = dislikes.map(el => {  el.isSubscribed = userSubscribed(req._id,el.userId) ; return el;});
+     
+          dislikes.map(user => {
+            user.isSubscribed = false;
+            if (profile.subscriptions.indexOf(user.userId) == !-1) {
+              user.isSubscribed = true;
+            }
+          });
 
           return res.json({
             status: 0,
