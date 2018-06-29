@@ -80,6 +80,7 @@ app.use(function(req, res, next) {
 
 // ROUTES FOR OUR API
 //============================================
+/*
 var router = require("./routes/signRouter");
 app.use("/", router);
 
@@ -91,12 +92,13 @@ app.use("/", router);
 
 var router = require("./routes/ProfileRouter");
 app.use("/", router);
-
+*/
 var router = require("./routes/NotificationRouter");
 app.use("/", router);
-
+/*
 var router = require("./routes/MessageRouter");
 app.use("/", router);
+*/
 
 // START SERVER
 //============================================

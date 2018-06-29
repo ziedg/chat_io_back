@@ -10,9 +10,11 @@ var jwt = require("jsonwebtoken");
 var PropertiesReader = require("properties-reader");
 var properties = PropertiesReader("./properties.file");
 const NotificationSub = require("../models/NotificationSubsciption.js");
+const IonicNotificationSub = require("../models/IonicNotificationSubscription.js");
 const keys = require("../utils/config/keys.js");
 
 // route middleware to verify a token
+/*
 router.use(function(req, res, next) {
   if (req.method === "OPTIONS") {
     next();
@@ -39,7 +41,7 @@ router.use(function(req, res, next) {
     }
   }
 });
-
+*/
 router.route("/getNotifications").get(function(req, res) {
   try {
     var criteria = {};
@@ -271,5 +273,51 @@ router.route("/api/push-subscribe").post((req, res) => {
     }
   });
 });
+
+router.route("/api/ionic-push-subscribe").post((req, res) => {
+  const vapidKeys = keys.VAPIDKEYS;
+
+  const data = req.body;
+  const userId = data._id;
+
+  console.log(userId)
+  IonicNotificationSub.findOne({ userId }).then(sub => {
+    if (sub) {
+
+      let tokensArray = sub.tokens;
+
+      let isExist =
+        _.filter(tokensArray, token => {
+          return token === data.token;
+        }).length > 0;
+
+      if (!isExist) {
+        sub.tokens = [...sub.tokens, data.token];
+        sub.save().then(result => {
+          return res.send({
+            status: 1,
+            message: "Subscription Stored."
+          });
+        });
+      } else {
+        return res.send({
+          status: 1,
+          message: "Subscription Stored."
+        });
+      }
+    } else {
+      const sub = new IonicNotificationSub();
+      sub.userId = userId;
+      sub.tokens = [...sub.tokens, data.token];
+      sub.save().then(result => {
+        return res.send({
+          status: 1,
+          message: "Subscription Stored."
+        });
+      });
+    }
+  });
+});
+
 
 module.exports = router;

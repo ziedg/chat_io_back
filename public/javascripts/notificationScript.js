@@ -1,6 +1,7 @@
 var Profile = require("./../../models/Profile");
 var Notification = require("./../../models/Notification");
 var FirebaseNotification = require("../../notifications/firebase_notification");
+var FirebasePushNotification = require("../../utils/firebase_notification.js")
 
 module.exports = {
   notifier: function(profileId, publId, userID, type, raisonDelete) {
@@ -85,9 +86,14 @@ module.exports = {
 
         notifData = {
           userID: notification.profileId,
-          notifId: notification._id
+          notifId: notification._id,
+          title: 'Speegar',
+          body: 'reagir'
         };
         FirebaseNotification.sendNotif(notifData);
+
+
+        FirebasePushNotification.sendNotif(notifData);
       });
     } else if (type == "comment") {
       /* commenter sur un publication */
@@ -162,9 +168,14 @@ module.exports = {
 
         notifData = {
           userID: notification.profileId,
-          notifId: notification._id
+          notifId: notification._id,
+          title: 'Speegar',
+          body: 'comment'
         };
         FirebaseNotification.sendNotif(notifData);
+
+
+        FirebasePushNotification.sendNotif(notifData);
       });
     }
 
@@ -195,10 +206,14 @@ module.exports = {
 
           notifData = {
             userID: notification.profileId,
-            notifId: notification._id
+            notifId: notification._id,
+            title: 'Speegar',
+            body: 'message'
           };
-          console.log(notifData)
           FirebaseNotification.sendNotif(notifData);
+  
+  
+          FirebasePushNotification.sendNotif(notifData);
 
         }
     
