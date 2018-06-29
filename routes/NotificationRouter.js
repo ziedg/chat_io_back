@@ -14,39 +14,8 @@ const IonicNotificationSub = require("../models/IonicNotificationSubscription.js
 const keys = require("../utils/config/keys.js");
 
 // route middleware to verify a token
-<<<<<<< HEAD
-/*
-router.use(function(req, res, next) {
-  if (req.method === "OPTIONS") {
-    next();
-  } else {
-    var token = req.headers["x-access-token"];
-    if (token) {
-      var jwtSecret = properties.get("security.jwt.secret").toString();
-      jwt.verify(token, jwtSecret, function(err, decoded) {
-        if (err) {
-          return res.status(403).send({
-            success: false,
-            error: "Failed to authenticate token."
-          });
-        } else {
-          req._id = decoded["_id"];
-          next();
-        }
-      });
-    } else {
-      return res.status(403).send({
-        success: false,
-        error: "No token provided."
-      });
-    }
-  }
-});
-*/
-=======
 require('../middlewars/auth')(router);
 
->>>>>>> 7269eaef709e6e378dce506514ca2c5969e0261a
 router.route("/getNotifications").get(function(req, res) {
   try {
     const start = Date.now();
