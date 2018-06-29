@@ -824,6 +824,7 @@ router.route("/sharePublication").post(function(req, res) {
         }
 
         profile.nbPublications++;
+        profile.publications.push(publication._id);
         profile.save();
         publication.profileId = req._id;
         publication.originalPublicationId = pub._id;
