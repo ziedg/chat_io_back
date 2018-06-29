@@ -457,7 +457,7 @@ router.route("/updateProfilePicture").post(function(req, res) {
       
                   body: `${profile.lastName} ${
                     profile.firstName
-                  } change `
+                  } update his profile picture `
                 };
                 return webPusher(subscriptions, payload, res);
               });
