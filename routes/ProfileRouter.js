@@ -346,13 +346,13 @@ router.route("/updateProfilePicture").post(function(req, res) {
       filename: function(req, file, callback) {
         callback(
           null,
-          profile._id + "Ik"
-          // "_" +
-          // new Date()
-          //   .toISOString()
-          //   .replace(/:/g, "-")
-          //   .replace(/\./g, "") +
-          // path.extname(file.originalname)
+          profile._id 
+          +
+          new Date()
+            .toISOString()
+            .replace(/:/g, "-")
+            .replace(/\./g, "") +
+          path.extname(file.originalname)
         );
       }
     });
