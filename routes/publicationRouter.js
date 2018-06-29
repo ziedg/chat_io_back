@@ -927,7 +927,8 @@ router.route("/getProfilePublications").get(function(req, res) {
         });
         return;
       }
-
+      var index = profile.subscribers.indexOf(req._id);
+      if (index>-1||profile._id==req._id){
       if (!req.query.last_publication_id) {
         var publicationQuery = Publication.find({
           profileId: profileId
@@ -953,6 +954,34 @@ router.route("/getProfilePublications").get(function(req, res) {
           .sort({
             _id: -1
           });
+      }}else {
+        if (!req.query.last_publication_id) {
+          var publicationQuery = Publication.find({
+            $and:[ {profileId: profileId}, { confidentiality:{ $eq: "PUBLIC"} }]
+          })
+            .limit(10)
+            .sort({
+              _id: -1
+            });
+        } else {
+          var publicationQuery = Publication.find({
+            $and: [
+              {
+                _id: {
+                  $lt: req.query.last_publication_id
+                }
+              },
+              {
+                profileId: profileId
+              },
+              { confidentiality:{ $eq: "PUBLIC"} }
+            ]
+          })
+            .limit(10)
+            .sort({
+              _id: -1
+            });
+        }
       }
 
       publicationQuery.exec(function(err, publications) {
