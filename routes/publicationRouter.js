@@ -624,16 +624,11 @@ router.route("/getInteractions").post(function(req, res) {
             (page + 1) * 30
           );
 
-        
-         
-        
           const profile = await Profile.findById(req._id);
-      
-
-
+    
           likes.map(user => {
             user.isSubscribed = false;
-            if (profile.subscriptions.indexOf(user.userId) == !-1) {
+            if (profile.subscriptions.indexOf(user.userId) > -1) {
               user.isSubscribed = true;
             }
           });
@@ -645,7 +640,7 @@ router.route("/getInteractions").post(function(req, res) {
      
           dislikes.map(user => {
             user.isSubscribed = false;
-            if (profile.subscriptions.indexOf(user.userId) == !-1) {
+            if (profile.subscriptions.indexOf(user.userId) >-1) {
               user.isSubscribed = true;
             }
           });

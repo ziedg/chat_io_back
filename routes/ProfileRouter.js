@@ -411,39 +411,14 @@ var storage = multer.diskStorage({
               "/" +
               req.files.profilePicture[0].filename;
 
-             
-
-
-
-        
-
-
-          
             profile.publications.forEach(publicationId => {
-
-
-
-               
-                
-              
 
               Publication.findById(publicationId, function(err, pub) {
                 if (!err) {
                   if (pub) {
-
-           
-
-                  
+ 
                     pub.comments.forEach(comment => {
-
-                      
-
-
                       if((comment.profileId)==(req._id)){
-
-                        
-                     
-                    
                       comment.profilePicture =
                       properties.get("pictures.link") +
                       "/" +
@@ -453,15 +428,7 @@ var storage = multer.diskStorage({
                       "/" +
                       req.files.profilePicture[0].filename;
                       }
-
-                      
-                   
-
-                  
-                  
-                     
-                       
-                        
+                    
                       });
                     
                   
@@ -508,24 +475,15 @@ var storage = multer.diskStorage({
                 c.save();
 
               })
-      
-              
-
 
             })
              
-          
               Publication.find({}, function(err, pub) {
                 if (!err) {
                   if (pub) {
                     pub.forEach(p =>{
                     p.comments.forEach(c =>{
                     if(c.profileId == req._id){
-
-                     
-
-
-
                       c.profilePicture =
                       properties.get("pictures.link") +
                       "/" +
