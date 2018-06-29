@@ -12,6 +12,7 @@ var router = express.Router();
 var Profile = require("../models/Profile");
 var Comment = require("../models/Comment");
 var Publication = require("../models/Publication");
+var Notification = require("../models/Notification");
 var ProfilesPasswords = require("../models/profilesPasswords");
 var notificationScript = require("../public/javascripts/notificationScript");
 var popularProfile = require("../models/PopularProfile");
@@ -24,11 +25,10 @@ const saveImage = require("../utils/save_user_image");
 const webPusher = require("../utils/web_push.js");
 var path = require("path");
 const NotificationSub = require("../models/NotificationSubsciption.js");
-const    facebookFriendsPush = require('../helpers/facebookFriendsPush.js');
+const facebookFriendsPush = require("../helpers/facebookFriendsPush.js");
 
+require("../middlewars/auth")(router);
 
-require('../middlewars/auth')(router);
-  
 router.route("/getProfile").get(function(req, res) {
   try {
     Profile.findById(req.query.ProfileId, function(err, profile) {
@@ -81,7 +81,6 @@ router.route("/getProfile").get(function(req, res) {
 
 router.route("/subscribe").post(function(req, res) {
   try {
-
     Profile.findById(req.body.profileId, function(err, targetProfile) {
       if (err) {
         return res.json({
@@ -113,72 +112,68 @@ router.route("/subscribe").post(function(req, res) {
         if (index == -1) {
           profile.subscriptions.push(req.body.profileId);
           profile.subscriptionsDetails.push({
-            _id:targetProfile._id,
+            _id: targetProfile._id,
             firstName: targetProfile.firstName,
             lastName: targetProfile.lastName,
-            profilePicture: targetProfile.profilePicture  
-          })
-          profile.nbSubscriptions++ ;
-
+            profilePicture: targetProfile.profilePicture
+          });
+          profile.nbSubscriptions++;
         }
-          profile.save();
+        profile.save();
 
-          var index2 = targetProfile.subscribers.indexOf(req._id);
+        var index2 = targetProfile.subscribers.indexOf(req._id);
         if (index2 == -1) {
           targetProfile.subscribers.push(req._id);
           targetProfile.subscribersDetails.push({
-            _id:profile._id,
+            _id: profile._id,
             firstName: profile.firstName,
             lastName: profile.lastName,
-            profilePicture: profile.profilePicture  
-          })
-        
-              targetProfile.nbSubscribers++ ||0;
-              targetProfile.save();
+            profilePicture: profile.profilePicture
+          });
 
+          targetProfile.nbSubscribers++ || 0;
+          targetProfile.save();
         }
-        
-         
-          notificationScript.notifier(
-            req.body.profileId,
-            "",
-            req._id,
-            "subscribe",
-            ""
-          );
 
-          NotificationSub.findOne({ userId: req.body.profileId }).then(sub => {
-            if(!sub) return;
-              let subscriptions = [];
-              _.forEach(sub.subsciptions, sub => {
-                subscription = {
-                  endpoint: sub.endpoint,
-                  keys: {
-                    auth: sub.keys.auth,
-                    p256dh: sub.keys.p256dh
-                  }
-                };
-                subscriptions.push(subscription);
-              });
+        notificationScript.notifier(
+          req.body.profileId,
+          "",
+          req._id,
+          "subscribe",
+          ""
+        );
 
-              const payload = {
-                title: "Speegar",
-                icon: profile.profilePictureMin,
-
-                body: `${profile.lastName} ${
-                  profile.firstName
-                } Commence a Vous suivre`
-              };
-              return webPusher(subscriptions, payload, res);
+        NotificationSub.findOne({ userId: req.body.profileId }).then(sub => {
+          if (!sub) return;
+          let subscriptions = [];
+          _.forEach(sub.subsciptions, sub => {
+            subscription = {
+              endpoint: sub.endpoint,
+              keys: {
+                auth: sub.keys.auth,
+                p256dh: sub.keys.p256dh
+              }
+            };
+            subscriptions.push(subscription);
           });
-        
-          return res.json({
-            status: 0,
-            nbSubscribers:profile.nbSubscribers,
-            nbSubscriptions:profile.nbSubscriptions,
-            message: "SUBSCRIBED"
-          });
-        
+
+          const payload = {
+            title: "Speegar",
+            icon: profile.profilePictureMin,
+
+            body: `${profile.lastName} ${
+              profile.firstName
+            } Commence a Vous suivre`
+          };
+          return webPusher(subscriptions, payload, res);
+        });
+
+        return res.json({
+          status: 0,
+          nbSubscribers: profile.nbSubscribers,
+          nbSubscriptions: profile.nbSubscriptions,
+          message: "SUBSCRIBED"
+        });
       });
     });
   } catch (error) {
@@ -224,50 +219,50 @@ router.route("/unsubscribe").post(function(req, res) {
         if (index > -1) {
           profile.subscriptions.splice(index, 1);
 
-        //delete the object from subscriptionsDetails
-        profile.subscriptionsDetails=profile.subscriptionsDetails.filter((subscriptionDetail)=>{
-        return subscriptionDetail._id.toString() !== req.body.profileId.toString()
-        })
-        
-          if(profile.nbSubscriptions>0) profile.nbSubscriptions--;
-            
-            profile.save();
+          //delete the object from subscriptionsDetails
+          profile.subscriptionsDetails = profile.subscriptionsDetails.filter(
+            subscriptionDetail => {
+              return (
+                subscriptionDetail._id.toString() !==
+                req.body.profileId.toString()
+              );
+            }
+          );
 
+          if (profile.nbSubscriptions > 0) profile.nbSubscriptions--;
+
+          profile.save();
         }
-        
+
         var index2 = targetProfile.subscribers.indexOf(req._id);
         if (index2 > -1) {
           targetProfile.subscribers.splice(index2, 1);
 
-        //delete subscribersDetails
-        targetProfile.subscribersDetails= targetProfile.subscribersDetails.filter(subscriberDetail=>{
-          return subscriberDetail._id.toString() !== req._id.toString()
-          }) 
-            if(targetProfile.nbSubscribers > 0)
-            {
-              targetProfile.nbSubscribers--;
+          //delete subscribersDetails
+          targetProfile.subscribersDetails = targetProfile.subscribersDetails.filter(
+            subscriberDetail => {
+              return subscriberDetail._id.toString() !== req._id.toString();
             }
-
+          );
+          if (targetProfile.nbSubscribers > 0) {
+            targetProfile.nbSubscribers--;
           }
-            targetProfile.save();
+        }
+        targetProfile.save();
 
-       
         notificationScript.removeNotification(
           req.body.profileId,
           "",
           req._id,
-          "subscribe",
-    
+          "subscribe"
         );
-       
-
 
         profile.save();
-    
+
         return res.json({
           status: 0,
-          nbSubscribers:profile.nbSubscribers,
-          nbSubscriptions:profile.nbSubscriptions,
+          nbSubscribers: profile.nbSubscribers,
+          nbSubscriptions: profile.nbSubscriptions,
           message: "UNSUBSCRIBED"
         });
       });
@@ -339,27 +334,25 @@ router.route("/ignore").post(function(req, res) {
   }
 });
 
-
 //update profile picture ....
 router.route("/updateProfilePicture").post(function(req, res) {
   try {
     var profile = new Profile();
 
-var storage = multer.diskStorage({
+    var storage = multer.diskStorage({
       destination: function(req, file, callback) {
-      
         callback(null, properties.get("pictures.storage.temp").toString());
       },
       filename: function(req, file, callback) {
         callback(
           null,
-           profile._id +
-            "_" +
-            new Date()
-              .toISOString()
-              .replace(/:/g, "-")
-              .replace(/\./g, "") +
-            path.extname(file.originalname)
+          profile._id + "Ik"
+          // "_" +
+          // new Date()
+          //   .toISOString()
+          //   .replace(/:/g, "-")
+          //   .replace(/\./g, "") +
+          // path.extname(file.originalname)
         );
       }
     });
@@ -378,8 +371,6 @@ var storage = multer.diskStorage({
           error: "SP_ER_TECHNICAL_ERROR"
         });
       } else {
-       
-
         Profile.findById(req._id, function(err, profile) {
           if (err) {
             return res.json({
@@ -412,28 +403,21 @@ var storage = multer.diskStorage({
               req.files.profilePicture[0].filename;
 
             profile.publications.forEach(publicationId => {
-
               Publication.findById(publicationId, function(err, pub) {
                 if (!err) {
                   if (pub) {
- 
                     pub.comments.forEach(comment => {
-                      if((comment.profileId)==(req._id)){
-                      comment.profilePicture =
-                      properties.get("pictures.link") +
-                      "/" +
-                      req.files.profilePicture[0].filename;
-                    comment.profilePictureMin =
-                      properties.get("pictures.link") +
-                      "/" +
-                      req.files.profilePicture[0].filename;
+                      if (comment.profileId == req._id) {
+                        comment.profilePicture =
+                          properties.get("pictures.link") +
+                          "/" +
+                          req.files.profilePicture[0].filename;
+                        comment.profilePictureMin =
+                          properties.get("pictures.link") +
+                          "/" +
+                          req.files.profilePicture[0].filename;
                       }
-                    
-                      });
-                    
-                  
-
-
+                    });
 
                     pub.profilePicture =
                       properties.get("pictures.link") +
@@ -448,64 +432,73 @@ var storage = multer.diskStorage({
                 }
               });
             });
-          
 
-            //change 
-
-            
+            //change
 
             //just for the test a change...
 
-
-            Comment.find({profileId:req._id},(err,comment)=>{
-                 
-
-
-                
-              comment.forEach(c =>{
-
-            
-                c.profilePicture=properties.get("pictures.link") +
-                "/" +
-                req.files.profilePicture[0].filename;
-                 c.profilePictureMin =
-                properties.get("pictures.link") +
-                "/" +
-                req.files.profilePicture[0].filename;
-                c.save();
-
-              })
-
-            })
-             
-              Publication.find({}, function(err, pub) {
-                if (!err) {
-                  if (pub) {
-                    pub.forEach(p =>{
-                    p.comments.forEach(c =>{
-                    if(c.profileId == req._id){
-                      c.profilePicture =
+            //update the picture inside the notification..
+            Notification.find({}).then(notifications => {
+              notifications.forEach(notification => {
+                notification.profiles.map(p => {
+                  if (
+                    p.firstName == profile.firstName &&
+                    p.lastName == profile.lastName
+                  ) {
+                    p.profilePicture =
                       properties.get("pictures.link") +
                       "/" +
                       req.files.profilePicture[0].filename;
-                    c.profilePictureMin =
+                    p.profilePictureMin =
                       properties.get("pictures.link") +
                       "/" +
                       req.files.profilePicture[0].filename;
-
-                    console.log(c.profilePictureMin)
-                    c.save();
-
-                    }
-                    })
-                    p.save();
-
-                    })
-                   
                   }
-                }
+                });
+                notification.save();
               });
-            
+            });
+
+            //update the picture in the comment...
+            Comment.find({ profileId: req._id }, (err, comment) => {
+              comment.forEach(c => {
+                c.profilePicture =
+                  properties.get("pictures.link") +
+                  "/" +
+                  req.files.profilePicture[0].filename;
+                c.profilePictureMin =
+                  properties.get("pictures.link") +
+                  "/" +
+                  req.files.profilePicture[0].filename;
+                c.save();
+              });
+            });
+
+            //update the picture in  the publications comments
+            Publication.find({}, function(err, pub) {
+              if (!err) {
+                if (pub) {
+                  pub.forEach(p => {
+                    p.comments.forEach(c => {
+                      if (c.profileId == req._id) {
+                        c.profilePicture =
+                          properties.get("pictures.link") +
+                          "/" +
+                          req.files.profilePicture[0].filename;
+                        c.profilePictureMin =
+                          properties.get("pictures.link") +
+                          "/" +
+                          req.files.profilePicture[0].filename;
+
+                        console.log(c.profilePictureMin);
+                        c.save();
+                      }
+                    });
+                    p.save();
+                  });
+                }
+              }
+            });
           }
           profile.save();
 
@@ -854,13 +847,12 @@ router
     });
   });
 
-
-  //api  to retrieve facebook friends...
+//api  to retrieve facebook friends...
 router.route("/getFacebookFriends/").get(async (req, res) => {
   try {
     const userId = req._id;
-  
-    const facebookProfiles =  await facebookFriends.findfacebookFriends(userId);
+
+    const facebookProfiles = await facebookFriends.findfacebookFriends(userId);
     res.send({
       status: 1,
       message: facebookProfiles
@@ -872,8 +864,6 @@ router.route("/getFacebookFriends/").get(async (req, res) => {
     });
   }
 });
-
-
 
 router
   .route("/updateProfilePictureSlimAPI") //profileId //base64Data
