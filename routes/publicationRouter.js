@@ -36,33 +36,7 @@ var _ = require("lodash");
 const saveImage = require("../utils/save_image");
 
 // route middleware to verify a token
-router.use(function(req, res, next) {
-  if (req.method === "OPTIONS") {
-    next();
-  } else {
-    var token = req.headers["x-access-token"];
-    if (token) {
-      var jwtSecret = properties.get("security.jwt.secret").toString();
-      jwt.verify(token, jwtSecret, function(err, decoded) {
-        if (err) {
-          return res.status(403).send({
-            success: false,
-            error: "Failed to authenticate token."
-          });
-        } else {
-          req._id = decoded["_id"];
-          next();
-        }
-      });
-    } else {
-      return res.status(403).send({
-        success: false,
-        error: "No token provided."
-      });
-    }
-  }
-});
-
+require("../middlewars/auth")(router);
 router.route("/getOpenGraphData").get(function(req, res) {
   try {
     ogs(
@@ -155,6 +129,7 @@ router
             publication.isShared = false;
             publication.publTitle = body.publTitle;
             publication.publText = body.publText;
+            publication.publClass = body.publClass;
             publication.publyoutubeLink = body.publyoutubeLink;
             publication.publfacebookLink = body.publfacebookLink;
             publication.publExternalLink = body.publExternalLink;
@@ -206,7 +181,7 @@ router.route("/getPublications").get(function(req, res) {
         });
         return;
       }
-      var subscribers = profile.subscribers;
+      var subscriptions = profile.subscriptions;
       if (!req.query.last_publication_id) {
         var publicationQuery = Publication.find({
           $or: [
@@ -215,7 +190,7 @@ router.route("/getPublications").get(function(req, res) {
             },
             {
               profileId: {
-                $in: subscribers
+                $in: subscriptions
               }
             }
           ]
@@ -239,7 +214,7 @@ router.route("/getPublications").get(function(req, res) {
                 },
                 {
                   profileId: {
-                    $in: subscribers
+                    $in: subscriptions
                   }
                 }
               ]
@@ -619,6 +594,7 @@ router.route("/removeDislikePublication").post(function(req, res) {
 
 router.route("/getInteractions").post(function(req, res) {
   try {
+    console.log(req.body);
     var publication = new Publication();
     var page = parseInt(req.body.page);
 
@@ -638,20 +614,37 @@ router.route("/getInteractions").post(function(req, res) {
         return;
       }
 
-      PublicationLikes.findById(req.body.publId, function(
+      PublicationLikes.findById(req.body.publId, async function(
         err,
         publicationLikes
       ) {
         if (publicationLikes && publicationLikes != undefined) {
-          const likes = publicationLikes.userlikes.slice(
-            page * 3,
-            (page + 1) * 3
+          var likes = publicationLikes.userlikes.slice(
+            page * 30,
+            (page + 1) * 30
           );
 
-          const dislikes = publicationLikes.userdislikes.slice(
-            page * 3,
-            (page + 1) * 3
+          const profile = await Profile.findById(req._id);
+    
+          likes.map(user => {
+            user.isSubscribed = false;
+            if (profile.subscriptions.indexOf(user.userId) > -1) {
+              user.isSubscribed = true;
+            }
+          });
+
+          var dislikes = publicationLikes.userdislikes.slice(
+            page * 30,
+            (page + 1) * 30
           );
+     
+          dislikes.map(user => {
+            user.isSubscribed = false;
+            if (profile.subscriptions.indexOf(user.userId) >-1) {
+              user.isSubscribed = true;
+            }
+          });
+
           return res.json({
             status: 0,
             message: {
@@ -826,8 +819,9 @@ router.route("/sharePublication").post(function(req, res) {
         }
 
         profile.nbPublications++;
+        profile.publications.push(publication._id);
         profile.save();
-        publication.profileId = req.body.profileId;
+        publication.profileId = req._id;
         publication.originalPublicationId = pub._id;
         publication.originalProfileId = pub.profileId;
         publication.datePublication = new Date();
@@ -843,6 +837,7 @@ router.route("/sharePublication").post(function(req, res) {
         publication.confidentiality = pub.confidentiality;
         publication.publText = pub.publText;
         publication.publTitle = pub.publTitle;
+        publication.publClass = pub.publClass;
         publication.publExternalLink = pub.publExternalLink;
         publication.publPictureLink = pub.publPictureLink;
         publication.publyoutubeLink = pub.publyoutubeLink;
@@ -927,7 +922,8 @@ router.route("/getProfilePublications").get(function(req, res) {
         });
         return;
       }
-
+      var index = profile.subscribers.indexOf(req._id);
+      if (index>-1||profile._id==req._id){
       if (!req.query.last_publication_id) {
         var publicationQuery = Publication.find({
           profileId: profileId
@@ -953,6 +949,34 @@ router.route("/getProfilePublications").get(function(req, res) {
           .sort({
             _id: -1
           });
+      }}else {
+        if (!req.query.last_publication_id) {
+          var publicationQuery = Publication.find({
+            $and:[ {profileId: profileId}, { confidentiality:{ $eq: "PUBLIC"} }]
+          })
+            .limit(10)
+            .sort({
+              _id: -1
+            });
+        } else {
+          var publicationQuery = Publication.find({
+            $and: [
+              {
+                _id: {
+                  $lt: req.query.last_publication_id
+                }
+              },
+              {
+                profileId: profileId
+              },
+              { confidentiality:{ $eq: "PUBLIC"} }
+            ]
+          })
+            .limit(10)
+            .sort({
+              _id: -1
+            });
+        }
       }
 
       publicationQuery.exec(function(err, publications) {

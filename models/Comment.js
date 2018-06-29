@@ -2,8 +2,8 @@ var mongoose     = require('mongoose');
 var Schema       = mongoose.Schema;
 
 var commentSchema   = new Schema({
-	 publId : Schema.ObjectId,
-	 profileId : Schema.ObjectId,
+	 publId : {type:Schema.ObjectId ,index:true},
+	 profileId :{type: Schema.ObjectId,index:true},
 	 dateComment: Date,
 	 profileFirstName : String,
 	 profileLastName : String,

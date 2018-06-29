@@ -2,8 +2,9 @@ var mongoose     = require('mongoose');
 var Schema       = mongoose.Schema;
 
 var commentSchema   = new Schema({
-	 publId : Schema.ObjectId,
-	 profileId : Schema.ObjectId,
+	 publId : {type:Schema.ObjectId,index:true},
+	 profileId : {type:Schema.ObjectId,index:true},
+	
 	 dateComment: Date,
 	 profileFirstName : String,
 	 profileLastName : String,
@@ -27,9 +28,9 @@ var commentSchema   = new Schema({
  
 
 var publicationSchema   = new Schema({
-	 profileId : Schema.ObjectId,
-	 originalProfileId : Schema.ObjectId,
-	 originalPublicationId: Schema.ObjectId,
+	 profileId :{type:Schema.ObjectId,index:true},
+	 originalProfileId :{type:Schema.ObjectId,index:true},
+	 originalPublicationId:{type:Schema.ObjectId,index:true},
 	 datePublication: Date,
 	 originalDatePublication: Date,
 	 profileFirstName : String,
@@ -41,6 +42,7 @@ var publicationSchema   = new Schema({
 	 profilePicture: String,
 	 profilePictureMin: String,
 	 confidentiality : String,
+	 publClass:String,
 	 nbLikes : Number,
 	 nbDislikes : Number,
 	 nbComments : Number,

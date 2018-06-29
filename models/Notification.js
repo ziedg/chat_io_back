@@ -14,8 +14,8 @@ var profileSchema   = new Schema({
 var NotificationSchema   = new Schema({
 	 date_notification : Date,
      type : String,
-     publId  : String,
-     profileId  : String,
+     publId  :{type: String,index:true},
+     profileId  : {type: String,index:true},
      raisonDelete  : String,
 	 profiles : [profileSchema],
      isSeen : String

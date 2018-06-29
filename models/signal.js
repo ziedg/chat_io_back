@@ -3,8 +3,8 @@ var Schema       = mongoose.Schema;
 
 
 var publicationSchema   = new Schema({
-	 profileId : Schema.ObjectId,
-	 publicationId: Schema.ObjectId,
+	 profileId : {type:Schema.ObjectId,index:true},
+	 publicationId: {type:Schema.ObjectId,index:true},
 	 dateSignal: Date,
 	 signalText : String
 }

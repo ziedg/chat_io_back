@@ -2,10 +2,11 @@ var mongoose     = require('mongoose');
 var Schema       = mongoose.Schema;
 
 var userInteractions = new Schema({
-	userId : String,
+	userId : {type:String,index:true},
 	profilefirstname : String,
 	profilelastname : String,
-	profilepicture : String
+	profilepicture : String,
+	isSubscribed : String
 }, { versionKey: false });
 
 

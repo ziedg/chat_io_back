@@ -25,32 +25,8 @@ var app = express();
 
 
 // route middleware to verify a token!
-router.use(function (req, res, next) {
-    if (req.method === 'OPTIONS') {
-        next();
-    } else {
-        var token = req.headers['x-access-token'];
-        if (token) {
-            var jwtSecret = properties.get('security.jwt.secret').toString();
-            jwt.verify(token, jwtSecret, function (err, decoded) {
-                if (err) {
-                    return res.status(403).send({
-                        success: false,
-                        error: 'Failed to authenticate token.'
-                    });
-                } else {
-                    req._id = decoded['_id'];
-                    next();
-                }
-            });
-        } else {
-            return res.status(403).send({
-                success: false,
-                error: 'No token provided.'
-            });
-        }
-    }
-});
+require('../middlewars/auth')(router);
+
 
 router.route('/addComment')
     .post(function (req, res) {
@@ -153,8 +129,11 @@ router.route('/addComment')
 
 
                                     notificationScript.notifier(publication.profileId, comment.publId, req._id, "comment", "");
+                                    if(publication.profileId != req._id){
+                                    
                                     Profile.findById(req._id).then(profile =>{
                                         NotificationSub.findOne({userId:publication.profileId}).then((sub)=>{
+                                        if(!sub) return 
                             
                                           let   subscriptions=[];
                                                                _.forEach(sub.subsciptions ,(sub)=>{
@@ -178,7 +157,7 @@ router.route('/addComment')
                             
                             
                             
-                                      })
+                                      })}
                                    
                                 
                                   

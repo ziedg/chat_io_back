@@ -17,15 +17,22 @@ var profileSchema = new Schema(
     pictures: [String],
     publications: [String],
     comments :[String],
+    subscriptions: [Schema.ObjectId],
+    subscriptionsDetails: Array,
+    nbSubscriptions:{
+    type:Number ,
+    default:0
+    } ,
     subscribers: [Schema.ObjectId],
-    subscriptions: Array,
+    subscribersDetails: Array,
+    nbSubscribers:{
+    type:Number ,
+    default:0
+    } ,
     likers: [Schema.ObjectId],
     friends:[String],
     ignoredProfiles: [Schema.ObjectId],
-    nbSubscriptions: Number,
-    nbSubscribers: Number,
     nbPublications: Number,
-    nbSuivi :Number,
     nbLikes: Number,
     nbNotificationsNotSeen: Number,
     facebookId: String,
