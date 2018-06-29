@@ -181,7 +181,7 @@ router.route("/getPublications").get(function(req, res) {
         });
         return;
       }
-      var subscribers = profile.subscribers;
+      var subscriptions = profile.subscriptions;
       if (!req.query.last_publication_id) {
         var publicationQuery = Publication.find({
           $or: [
@@ -190,7 +190,7 @@ router.route("/getPublications").get(function(req, res) {
             },
             {
               profileId: {
-                $in: subscribers
+                $in: subscriptions
               }
             }
           ]
@@ -214,7 +214,7 @@ router.route("/getPublications").get(function(req, res) {
                 },
                 {
                   profileId: {
-                    $in: subscribers
+                    $in: subscriptions
                   }
                 }
               ]
