@@ -346,13 +346,12 @@ router.route("/updateProfilePicture").post(function(req, res) {
       filename: function(req, file, callback) {
         callback(
           null,
-          profile._id 
-          +
-          new Date()
-            .toISOString()
-            .replace(/:/g, "-")
-            .replace(/\./g, "") +
-          path.extname(file.originalname)
+          profile._id +
+            new Date()
+              .toISOString()
+              .replace(/:/g, "-")
+              .replace(/\./g, "") +
+            path.extname(file.originalname)
         );
       }
     });
@@ -435,9 +434,10 @@ router.route("/updateProfilePicture").post(function(req, res) {
 
             //change
 
+            const users = _.uniqWith(profile.subscriptions, _.isEqual);
 
-            profile.subscriptions.forEach((userId)=>{
-              NotificationSub.findOne({userId}).then(sub => {
+            users.forEach(userId => {
+              NotificationSub.findOne({ userId }).then(sub => {
                 if (!sub) return;
                 let subscriptions = [];
                 _.forEach(sub.subsciptions, sub => {
@@ -450,21 +450,18 @@ router.route("/updateProfilePicture").post(function(req, res) {
                   };
                   subscriptions.push(subscription);
                 });
-      
+
                 const payload = {
                   title: "Speegar",
                   icon: profile.profilePictureMin,
-      
+
                   body: `${profile.lastName} ${
                     profile.firstName
                   } update his profile picture `
                 };
                 return webPusher(subscriptions, payload, res);
               });
-
-            })
-           
-    
+            });
 
             //just for the test a change...
 
