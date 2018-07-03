@@ -20,6 +20,7 @@ router.route("/getNotifications").get(function(req, res) {
   try {
     const start = Date.now();
     var criteria = {};
+
     if (!req.query.lastNotificationId) {
       criteria = { profileId: req._id };
     } else {
@@ -30,11 +31,11 @@ router.route("/getNotifications").get(function(req, res) {
         ]
       };
     }
-
+var indexx =parseInt(req.query.index);
     var query = Notification.find(criteria)
       .sort({ date_notification: -1 })
       .sort({ _id: -1 })
-      .limit(5);
+      .limit(indexx);
     query.exec(function(err, notifications) {
       if (err) {
         res.json({
