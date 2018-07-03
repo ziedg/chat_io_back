@@ -26,6 +26,7 @@ router.route("/getNotifications").get(function(req, res) {
     } else {
       criteria = {
         $and: [
+
           { profileId: req._id },
           { _id: { $lt: req.query.lastNotificationId } }
         ]
@@ -44,7 +45,7 @@ var indexx =parseInt(req.query.index);
         });
       } else {
      
-       
+         const notifications= notifications.filter((notif => notif.type !='message'))
         res.json(notifications);
      
       }
