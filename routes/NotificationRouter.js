@@ -276,13 +276,13 @@ router.route("/api/ionic-push-subscribe").post((req, res) => {
         sub.save().then(result => {
           return res.send({
             status: 1,
-            message: "Subscription Stored."
+            message: "Subscription Stored. "+sub
           });
         });
       } else {
         return res.send({
           status: 1,
-          message: "Subscription Stored."
+          message: "Subscription Stored. "+sub
         });
       }
     } else {
@@ -292,7 +292,7 @@ router.route("/api/ionic-push-subscribe").post((req, res) => {
       sub.save().then(result => {
         return res.send({
           status: 1,
-          message: "Subscription Stored."
+          message: "Subscription Stored. "+sub
         });
       });
     }
