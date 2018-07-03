@@ -33,7 +33,7 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 // connection to mongoose database
 var mongoose = require("mongoose");
 mongoose.connect(
-  `mongodb://${properties.get("mongo.url")}/${properties.get("mongo.db.name")}:27017`
+  `mongodb://${properties.get("mongo.url")}/${properties.get("mongo.db.name")}`
 ).then(()=>{
   console.log("connect TO DB...")
 })
