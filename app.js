@@ -37,7 +37,7 @@ mongoose.connect(
 ).then(()=>{
   console.log("connect TO DB...")
 })
-.catch(()=>{ console.log("Unable to connect to DB.")})
+.catch((e)=>{ console.log("Unable to connect to DB.",e)})
 
 
 app.use(function(req, res, next) {
