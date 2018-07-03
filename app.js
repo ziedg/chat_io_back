@@ -160,7 +160,7 @@ if ("local" == properties.get("server.environment").toString()) {
     databaseURL: "https://speegar-6deca.firebaseio.com"
   });
   //var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE);
-  const httpport=3002;
+  const httpport=3008;
   server.listen(httpport);
   console.log(
     "the server is launched on the port " +
