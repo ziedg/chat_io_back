@@ -1,5 +1,5 @@
 var admin = require("firebase-admin");
-
+const   IonicNotificationSub = require('../models/IonicNotificationSubscription');
 
 
 const FirebasePushNotification = module.exports = {};
