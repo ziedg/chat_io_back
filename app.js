@@ -37,7 +37,7 @@ mongoose.connect(
 ).then(()=>{
   console.log("connect TO DB...")
 })
-.catch(()=>{ console.log("Unable to connect to DB.")})
+.catch((e)=>{ console.log("Unable to connect to DB.",e)})
 
 
 app.use(function(req, res, next) {
@@ -159,8 +159,8 @@ if ("local" == properties.get("server.environment").toString()) {
     credential: admin.credential.cert(serviceAccount),
     databaseURL: "https://speegar-6deca.firebaseio.com"
   });
-  //var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE);
-  const httpport=3002;
+  var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE);
+  // httpport=3002;
   server.listen(httpport);
   console.log(
     "the server is launched on the port " +
