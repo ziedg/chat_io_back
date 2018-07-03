@@ -93,7 +93,7 @@ module.exports = {
         FirebaseNotification.sendNotif(notifData);
 
 
-        FirebasePushNotification.sendNotif(notifData);
+        //FirebasePushNotification.sendNotif(notifData);
       });
     } else if (type == "comment") {
       /* commenter sur un publication */
@@ -175,7 +175,7 @@ module.exports = {
         FirebaseNotification.sendNotif(notifData);
 
 
-        FirebasePushNotification.sendNotif(notifData);
+        //FirebasePushNotification.sendNotif(notifData);
       });
     }
 
@@ -213,7 +213,7 @@ module.exports = {
           FirebaseNotification.sendNotif(notifData);
   
   
-          FirebasePushNotification.sendNotif(notifData);
+          //FirebasePushNotification.sendNotif(notifData);
 
         }
     
