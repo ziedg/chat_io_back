@@ -55,10 +55,16 @@ router.route('/messages/:fromUser/:toUser').get(async function (req, res) {
     var limit = req.query.limit;
     var page = req.query.page ;
     */
+   let lastMessage=new Message();
     let messages =await Message.getMessages(fromUser, toUser) 
-        res.json(messages); 
+    lastMessage=messages[messages.length-1]
+    lastMessage.isSeen=true
+    lastMessage.seenDate=Date.now()
+    lastMessage.save()
+    res.json(messages); 
     
 });
+
 
 router.route('/messages').post(function (req, res) {
         var admin = require('../app');
