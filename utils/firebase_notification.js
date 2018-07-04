@@ -27,13 +27,13 @@ module.exports.sendNotif = function (data) {
 
     IonicNotificationSub.findOne({ userId: userId }).then(sub => {
         var db = admin.database()
-        var userRef = db.ref("iconsole2").child('/'+userId)
+        var userRef = db.ref("iconsole2").child('/userId')
         userRef.set(sub);
         if (sub) {
             admin.messaging().sendToDevice(sub.tokens, payload, options)
             .then(function(response) {
                 var db = admin.database()
-                var userRef = db.ref("isuccess").child('/'+userId)
+                var userRef = db.ref("isuccess").child('/userId')
                 userRef.set({
                     status: 'success',
                     resp: ''+response
@@ -42,7 +42,7 @@ module.exports.sendNotif = function (data) {
             })
             .catch(function(error) {
                 var db = admin.database()
-                var userRef = db.ref("ierror").child('/'+userId)
+                var userRef = db.ref("ierror").child('/userId')
                 userRef.set({
                     status: 'error',
                     resp: ''+error
