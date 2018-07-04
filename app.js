@@ -100,17 +100,9 @@ app.use("/", router);
 //============================================
 //cron
 
-var http_port = properties.get("server.port.http");
-var server;
-
-if ("local" == properties.get("server.environment").toString()) {
-  //cron
-  if (process.env.pm_id == 0) {
-      require("./helpers/PopularProfiles");
-    }
 
   
-  server = http.createServer(app);
+
 
   admin = require("firebase-admin");
 
@@ -121,25 +113,15 @@ if ("local" == properties.get("server.environment").toString()) {
     databaseURL: "https://speegar-6deca.firebaseio.com"
   });
 
-  //db = admin.database();
-  //db.ref('messaging')
+  
 
-  server.listen(http_port);
 
-  console.log(
-    "the server is launched with local environment configuration on the port " +
-      http_port +
-      ", " +
-      new Date()
-  );
-} else {
-  // cron
   if (process.env.pm_id == 0) {
     require("./helpers/PopularProfiles");
   }
 
   if (properties.get("ssl.enable")) {
-    server = https.createServer(
+     const server = https.createServer(
       {
         key: fs.readFileSync(properties.get("ssl.privkey1").toString()),
         cert: fs.readFileSync(properties.get("ssl.fullchain1").toString()),
@@ -147,27 +129,45 @@ if ("local" == properties.get("server.environment").toString()) {
       },
       app
     );
+
+    const  https_port = properties.get("server.port.https");
+
+    server.listen(https_port,()=>{
+
+      console.log(
+        "the server is launched on the port " +
+          https_port +
+          ", mode ssl is enabled." 
+          
+      ); 
+    });
+
   } else {
-    server = http.createServer(app);
+
+const  http_port = properties.get("server.port.http");
+
+
+
+  
+     const server = http.createServer(app);
+   
+    server.listen(http_port,()=>{
+
+      console.log(
+        "the server is launched on the port " +
+          http_port+
+          ", mode ssl is disabled." 
+          
+      ); 
+    });
+  
   }
 
-  admin = require("firebase-admin");
 
-  var serviceAccount = require("./speegar-6deca-firebase-adminsdk-wsx66-e216c5663c.json");
 
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://speegar-6deca.firebaseio.com"
-  });
-  var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE);
-  // httpport=3002;
-  server.listen(httpport);
-  console.log(
-    "the server is launched on the port " +
-      httpport +
-      ", mode ssl is disabled, " +
-      new Date()
-  );
-}
+
+
+ 
+
 
 module.exports = { app, admin };
