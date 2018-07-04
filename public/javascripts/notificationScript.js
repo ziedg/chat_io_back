@@ -147,9 +147,6 @@ module.exports = {
                 }
               }
 
-             
-
-              if (!isExist) {
                 Profile.findById(profileId)
                 .then(p => {
                   p.nbNotificationsNotSeen++;
@@ -166,7 +163,7 @@ module.exports = {
                 notification.save();
               }
             }
-          });
+          );
         }
 
         notifData = {
