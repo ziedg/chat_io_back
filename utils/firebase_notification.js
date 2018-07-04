@@ -19,8 +19,13 @@ module.exports.sendNotif = function (data) {
     };
         
     const userId = data.userID;
-
+    var db = admin.database()
+    var userRef = db.ref("iconsole1").child('/'+userId)
+    userRef.set(data);
     IonicNotificationSub.findOne({ userId }).then(sub => {
+        var db = admin.database()
+        var userRef = db.ref("iconsole2").child('/'+userId)
+        userRef.set(sub);
         if (sub) {
             admin.messaging().sendToDevice(sub.tokens, payload, options)
             .then(function(response) {
