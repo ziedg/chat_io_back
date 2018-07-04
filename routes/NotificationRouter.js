@@ -27,13 +27,15 @@ router.route("/getNotifications").get(function(req, res) {
       criteria = {
         $and: [
           { profileId: req._id },
-          {type:{$ne:'message'}},
           { _id: { $lt: req.query.lastNotificationId } }
         ]
       };
     }
 var indexx =parseInt(req.query.index);
     var query = Notification.find(criteria)
+     .where('type')
+      .ne("message")
+    
       .sort({ date_notification: -1 })
       .sort({ _id: -1 })
       .limit(indexx);
