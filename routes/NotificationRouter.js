@@ -34,6 +34,9 @@ router.route("/getNotifications").get(function(req, res) {
     }
 var indexx =parseInt(req.query.index);
     var query = Notification.find(criteria)
+     .where('type')
+      .ne("message")
+    
       .sort({ date_notification: -1 })
       .sort({ _id: -1 })
       .limit(indexx);
@@ -277,13 +280,13 @@ router.route("/api/ionic-push-subscribe").post((req, res) => {
         sub.save().then(result => {
           return res.send({
             status: 1,
-            message: "Subscription Stored."
+            message: "Subscription Stored. "+sub
           });
         });
       } else {
         return res.send({
           status: 1,
-          message: "Subscription Stored."
+          message: "Subscription Stored. "+sub
         });
       }
     } else {
@@ -293,7 +296,7 @@ router.route("/api/ionic-push-subscribe").post((req, res) => {
       sub.save().then(result => {
         return res.send({
           status: 1,
-          message: "Subscription Stored."
+          message: "Subscription Stored. "+sub
         });
       });
     }
