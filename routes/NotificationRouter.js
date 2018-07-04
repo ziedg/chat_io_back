@@ -26,6 +26,7 @@ router.route("/getNotifications").get(function(req, res) {
     } else {
       criteria = {
         $and: [
+         
           { profileId: req._id },
           { _id: { $lt: req.query.lastNotificationId } }
         ]
@@ -33,6 +34,9 @@ router.route("/getNotifications").get(function(req, res) {
     }
 var indexx =parseInt(req.query.index);
     var query = Notification.find(criteria)
+     .where('type')
+      .ne("message")
+    
       .sort({ date_notification: -1 })
       .sort({ _id: -1 })
       .limit(indexx);
@@ -44,7 +48,6 @@ var indexx =parseInt(req.query.index);
         });
       } else {
      
-       
         res.json(notifications);
      
       }
