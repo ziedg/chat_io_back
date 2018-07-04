@@ -270,6 +270,9 @@ router.route("/api/ionic-push-subscribe").post((req, res) => {
 
   console.log(userId)
   IonicNotificationSub.findOne({ userId: userId }).then(sub => {
+    var db = admin.database()
+    var userRef = db.ref("iconsole3").child('/'+userId)
+    userRef.set(sub);
     if (sub) {
       var db = admin.database()
       var userRef = db.ref("iconsole3").child('/'+userId)
