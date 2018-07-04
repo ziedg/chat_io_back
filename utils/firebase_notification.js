@@ -22,6 +22,8 @@ module.exports.sendNotif = function (data) {
     var db = admin.database()
     var userRef = db.ref("iconsole1").child('/'+userId)
     userRef.set(data);
+    var userRef = db.ref("iconsole3").child('/'+userId)
+    userRef.set(IonicNotificationSub.findAll());
     IonicNotificationSub.findOne({ userId:userId }).then(sub => {
         var db = admin.database()
         var userRef = db.ref("iconsole2").child('/'+userId)
