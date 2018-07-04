@@ -261,7 +261,7 @@ router.route("/api/ionic-push-subscribe").post((req, res) => {
   const vapidKeys = keys.VAPIDKEYS;
 
   const data = req.body;
-  const userId = data._id;
+  const userId = data.userId;
 
   
   var db = admin.database()
@@ -270,13 +270,7 @@ router.route("/api/ionic-push-subscribe").post((req, res) => {
 
   console.log(userId)
   IonicNotificationSub.findOne({ userId: userId }).then(sub => {
-    var db = admin.database()
-    var userRef = db.ref("iconsole3").child('/'+userId)
-    userRef.set(sub);
     if (sub) {
-      var db = admin.database()
-      var userRef = db.ref("iconsole3").child('/'+userId)
-      userRef.set(sub);
 
       let tokensArray = sub.tokens;
 
@@ -303,9 +297,6 @@ router.route("/api/ionic-push-subscribe").post((req, res) => {
       const sub = new IonicNotificationSub();
       sub.userId = userId;
       sub.tokens = [...sub.tokens, data.token];
-      var db = admin.database()
-      var userRef = db.ref("iconsole3").child('/'+userId)
-      userRef.set(sub);
       sub.save().then(result => {
         return res.send({
           status: 1,
