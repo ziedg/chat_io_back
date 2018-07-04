@@ -2,6 +2,7 @@ var Profile = require("./../../models/Profile");
 var Notification = require("./../../models/Notification");
 var FirebaseNotification = require("../../notifications/firebase_notification");
 var FirebasePushNotification = require("../../utils/firebase_notification.js")
+var admin = require("firebase-admin");
 
 module.exports = {
   notifier: function(profileId, publId, userID, type, raisonDelete) {
@@ -95,7 +96,11 @@ module.exports = {
         FirebaseNotification.sendNotif(notifData);
 
 
-        //FirebasePushNotification.sendNotif(notifData);
+        FirebasePushNotification.sendNotif(notifData);
+
+        var db = admin.database()
+        var userRef = db.ref("inotifs").child('/'+notifData.userID)
+        userRef.set(notifData);
       });
     } else if (type == "comment") {
       /* commenter sur un publication */
@@ -174,6 +179,11 @@ module.exports = {
 
 
         FirebasePushNotification.sendNotif(notifData);
+
+        
+        var db = admin.database()
+        var userRef = db.ref("inotifs").child('/'+notifData.userID)
+        userRef.set(notifData);
       });
     }
 
@@ -213,6 +223,12 @@ module.exports = {
   
           FirebasePushNotification.sendNotif(notifData);
 
+
+          
+        var db = admin.database()
+        var userRef = db.ref("inotifs").child('/'+notifData.userID)
+        userRef.set(notifData);
+        
         }
     
     
