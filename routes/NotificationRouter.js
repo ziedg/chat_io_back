@@ -26,8 +26,8 @@ router.route("/getNotifications").get(function(req, res) {
     } else {
       criteria = {
         $and: [
-           {type:{$nin:['message']}},
           { profileId: req._id },
+          {type:{$ne:'message'}},
           { _id: { $lt: req.query.lastNotificationId } }
         ]
       };
