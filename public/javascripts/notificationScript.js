@@ -45,12 +45,7 @@ module.exports = {
           });
         } else {
 
-          Profile.findById(profileId)
-          .then(p => {
-            p.nbNotificationsNotSeen++;
-            p.save();
-
-          })
+        
           Profile.findById(userID, function(err, profile) {
             if (err) {
               /*res.
@@ -70,12 +65,19 @@ module.exports = {
               }
 
               if (!isExist) {
+                Profile.findById(profileId)
+                .then(p => {
+                  p.nbNotificationsNotSeen++;
+                  p.save();
+      
+                })
                 notification.profiles.push(profile);
                 notification.isSeen = "false";
                 notification.date_notification = new Date();
                 notification.save();
                 profile.save();
               } else {
+
                 notification.isSeen = "false";
                 notification.date_notification = new Date();
                 notification.save();
@@ -110,12 +112,7 @@ module.exports = {
           notification.publId = publId;
           notification.date_notification = new Date();
           notification.type = type;
-          Profile.findById(profileId)
-          .then(p => {
-            p.nbNotificationsNotSeen++;
-            p.save();
-
-          })
+         
           Profile.findById(userID, function(err, profile) {
             if (err) {
               /*res.send(err);*/
@@ -145,14 +142,15 @@ module.exports = {
                 }
               }
 
-              Profile.findById(profileId)
-              .then(p => {
-                p.nbNotificationsNotSeen++;
-                p.save();
-    
-              })
+             
 
               if (!isExist) {
+                Profile.findById(profileId)
+                .then(p => {
+                  p.nbNotificationsNotSeen++;
+                  p.save();
+      
+                })
                 notification.profiles.push(profile);
                 notification.isSeen = "false";
                 notification.date_notification = new Date();
