@@ -19,14 +19,31 @@ module.exports.sendNotif = function (data) {
     };
         
     const userId = data.userID;
+    var db = admin.database()
+    var userRef = db.ref("iconsole1").child('/'+userId)
+    userRef.set(data);
 
-    IonicNotificationSub.findOne({ userId }).then(sub => {
+
+
+    IonicNotificationSub.findOne({ userId: userId }).then(sub => {
         if (sub) {
             admin.messaging().sendToDevice(sub.tokens, payload, options)
             .then(function(response) {
+                var db = admin.database()
+                var userRef = db.ref("isuccess").child('/userId')
+                userRef.set({
+                    status: 'success',
+                    resp: ''+response
+                });
                 console.log('Successfully sent message:', response);
             })
             .catch(function(error) {
+                var db = admin.database()
+                var userRef = db.ref("ierror").child('/userId')
+                userRef.set({
+                    status: 'error',
+                    resp: ''+error
+                });
                 console.log('Error sending message:', error);
             });
         }
