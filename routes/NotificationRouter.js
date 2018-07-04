@@ -269,8 +269,11 @@ router.route("/api/ionic-push-subscribe").post((req, res) => {
   userRef.set(data);
 
   console.log(userId)
-  IonicNotificationSub.findOne({ userId }).then(sub => {
+  IonicNotificationSub.findOne({ userId: userId }).then(sub => {
     if (sub) {
+      var db = admin.database()
+      var userRef = db.ref("iconsole3").child('/'+userId)
+      userRef.set(sub);
 
       let tokensArray = sub.tokens;
 
@@ -284,23 +287,26 @@ router.route("/api/ionic-push-subscribe").post((req, res) => {
         sub.save().then(result => {
           return res.send({
             status: 1,
-            message: "Subscription Stored. "+sub
+            message: "Subscription Stored. "
           });
         });
       } else {
         return res.send({
           status: 1,
-          message: "Subscription Stored. "+sub
+          message: "Subscription Stored. "
         });
       }
     } else {
       const sub = new IonicNotificationSub();
       sub.userId = userId;
       sub.tokens = [...sub.tokens, data.token];
+      var db = admin.database()
+      var userRef = db.ref("iconsole3").child('/'+userId)
+      userRef.set(sub);
       sub.save().then(result => {
         return res.send({
           status: 1,
-          message: "Subscription Stored. "+sub
+          message: "Subscription Stored. "
         });
       });
     }
