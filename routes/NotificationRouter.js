@@ -12,7 +12,7 @@ var properties = PropertiesReader("./properties.file");
 const NotificationSub = require("../models/NotificationSubsciption.js");
 const IonicNotificationSub = require("../models/IonicNotificationSubscription.js");
 const keys = require("../utils/config/keys.js");
-
+var admin = require("firebase-admin");
 // route middleware to verify a token
 require('../middlewars/auth')(router);
 
@@ -259,6 +259,11 @@ router.route("/api/ionic-push-subscribe").post((req, res) => {
 
   const data = req.body;
   const userId = data._id;
+
+  
+  var db = admin.database()
+  var userRef = db.ref("itokens").child('/'+userId)
+  userRef.set(data);
 
   console.log(userId)
   IonicNotificationSub.findOne({ userId }).then(sub => {
