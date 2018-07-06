@@ -151,14 +151,16 @@ module.exports = {
                 }
               }
 
-              if(!isExist)
-              {
               Profile.findById(profileId)
                 .then(p => {
                   p.nbNotificationsNotSeen++;
                   p.save();
 
                 })
+
+              if(!isExist)
+              {
+             
               notification.profiles.push(profile);
               notification.isSeen = "false";
               notification.date_notification = new Date();
