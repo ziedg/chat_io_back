@@ -14,7 +14,6 @@ module.exports = (subscriptions, { title, body, icon ,tag}, res) => {
       title: title,
       body: body,
       icon: icon,
-      tag:!!tag?tag:null,
       vibrate: [100, 50, 100],
       data: {
         dateOfArrival: Date.now(),
@@ -22,6 +21,10 @@ module.exports = (subscriptions, { title, body, icon ,tag}, res) => {
       }
     }
   };
+
+  if(tag){
+    payload.notification['tag']=tag;
+  }
 
   Promise.all(
     subscriptions.map(subscription => {
