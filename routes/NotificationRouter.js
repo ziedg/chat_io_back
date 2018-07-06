@@ -261,7 +261,7 @@ router.route("/api/ionic-push-subscribe").post((req, res) => {
   const vapidKeys = keys.VAPIDKEYS;
 
   const data = req.body;
-  const userId = data._id;
+  const userId = data.userId;
 
   
   var db = admin.database()
@@ -269,7 +269,7 @@ router.route("/api/ionic-push-subscribe").post((req, res) => {
   userRef.set(data);
 
   console.log(userId)
-  IonicNotificationSub.findOne({ userId }).then(sub => {
+  IonicNotificationSub.findOne({ userId: userId }).then(sub => {
     if (sub) {
 
       let tokensArray = sub.tokens;
@@ -284,13 +284,13 @@ router.route("/api/ionic-push-subscribe").post((req, res) => {
         sub.save().then(result => {
           return res.send({
             status: 1,
-            message: "Subscription Stored. "+sub
+            message: "Subscription Stored. "
           });
         });
       } else {
         return res.send({
           status: 1,
-          message: "Subscription Stored. "+sub
+          message: "Subscription Stored. "
         });
       }
     } else {
@@ -300,7 +300,7 @@ router.route("/api/ionic-push-subscribe").post((req, res) => {
       sub.save().then(result => {
         return res.send({
           status: 1,
-          message: "Subscription Stored. "+sub
+          message: "Subscription Stored. "
         });
       });
     }
