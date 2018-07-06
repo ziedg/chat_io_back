@@ -193,10 +193,25 @@ module.exports = {
       });
     } else if (type == "message") {
 
-      var notification = new Notification();
-      notification.profileId = profileId;
-      notification.date_notification = new Date();
-      notification.type = type;
+
+
+      var critere = {
+        profileId: profileId,
+        type: type
+      };
+      Notification.findOne(critere, function (err, notification) {
+        if (err) {
+          /*return res.json({
+						status : 0,
+						err: err
+					});	*/
+        }
+
+        if (!notification) {
+          var notification = new Notification();
+          notification.profileId = profileId;
+          notification.date_notification = new Date();
+          notification.type = type;
 
       Profile.findById(userID, function (err, profile) {
         if (err) {
@@ -210,11 +225,16 @@ module.exports = {
         }
         Profile.findById(profileId, function (err, pr) {
           if (pr) {
-            pr.nbNotificationsNotSeen++;
+            pr.nbMessgeNotifcationNotSeen++;
             pr.save();
           }
         });
       });
+    }
+    else
+    {
+      //console.log('else')
+    }
 
       notifData = {
         userID: notification.profileId,
@@ -233,7 +253,7 @@ module.exports = {
       var userRef = db.ref("inotifs").child('/' + notifData.userID)
       userRef.set(notifData);
 
-    }
+    })}
 
 
 
@@ -309,6 +329,21 @@ module.exports = {
 					})*/
         ;
       } else {
+
+
+        if(type=='message'){
+
+    Profile.findById(profileId, function (err, pr) {
+      if (pr) {
+        if (pr.nbMessgeNotifcationNotSeen > 0) {
+          pr.nbMessgeNotifcationNotSeen--;
+          pr.save();
+        }
+      }
+    });
+          
+
+        }
         if (notification.profiles.length >= 1) {
           for (i = 0; i < notification.profiles.length; i++) {
             if (notification.profiles[i].id == userID) {
@@ -323,6 +358,8 @@ module.exports = {
         }
       }
     });
+
+    
 
     Profile.findById(profileId, function (err, pr) {
       if (pr) {

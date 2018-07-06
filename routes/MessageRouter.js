@@ -56,12 +56,28 @@ router.route('/messages/:fromUser/:toUser').get(async function (req, res) {
     var page = req.query.page ;
     */
    let lastMessage=new Message();
+   try 
+   {
+
     let messages =await Message.getMessages(fromUser, toUser) 
+    
     lastMessage=messages[messages.length-1]
+    if(!lastMessage){
+        return res.json(messages);
+    }
     lastMessage.isSeen=true
     lastMessage.seenDate=Date.now()
     lastMessage.save()
     res.json(messages); 
+
+
+
+   }
+
+   catch(e){
+       throw new Error("message errror");
+   }
+
     
 });
 
@@ -69,7 +85,7 @@ router.route('/messages/:fromUser/:toUser').get(async function (req, res) {
 router.route('/messages').post(function (req, res) {
         var admin = require('../app');
         var message = req.body;
-        console.log('new message   ' + message)
+
         Message.addMessage(message, (err, message) => {
             if(err){
                 console.log(err)
@@ -107,14 +123,17 @@ router.route('/messages').post(function (req, res) {
                     };
                     subscriptions.push(subscription);
                   });
+
+                
     
                   const payload = {
                     title: "Speegar",
                     icon: profile.profilePictureMin,
+                    tag:'msg',
     
                     body: `${profile.lastName} ${
                       profile.firstName
-                    } vous a envoyé on nouveau message`
+                    }   ${message.message.length<50?message.message:message.message.substring(0, 100)+'...'}`
                   };
                   return webPusher(subscriptions, payload, res);
                 });

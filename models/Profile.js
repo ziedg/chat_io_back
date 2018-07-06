@@ -35,6 +35,7 @@ var profileSchema = new Schema(
     nbPublications: Number,
     nbLikes: Number,
     nbNotificationsNotSeen: Number,
+    nbMessgeNotifcationNotSeen:{type:Number,default:0},
     facebookId: String,
     facebookLink: String,
     youtubeLink: String,

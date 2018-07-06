@@ -1,6 +1,6 @@
 const keys = require("./config/keys.js");
 const webPush = require("web-push");
-module.exports = (subscriptions, { title, body, icon }, res) => {
+module.exports = (subscriptions, { title, body, icon ,tag}, res) => {
   const vapidKeys = keys.VAPIDKEYS;
 
   webPush.setVapidDetails(
@@ -14,6 +14,7 @@ module.exports = (subscriptions, { title, body, icon }, res) => {
       title: title,
       body: body,
       icon: icon,
+      tag:!!tag?tag:null,
       vibrate: [100, 50, 100],
       data: {
         dateOfArrival: Date.now(),

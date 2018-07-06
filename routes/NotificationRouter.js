@@ -102,6 +102,52 @@ router.route("/checkNewNotifications").get(function(req, res) {
   }
 });
 
+
+
+router.route("/checkNewMessageNotifications").get(function(req, res) {
+  try {
+   
+    Profile.findById(req._id, function(err, profile) {
+      if (err) {
+         return res.json({
+          status: 3,
+          error: "SP_ER_TECHNICAL_ERROR"
+        });
+      
+      }
+
+      if (!profile) {
+         return res.json({
+          status: 2,
+          error: "SP_ER_PROFILE_NOT_FOUND"
+        });
+      
+      } else {
+
+        
+     
+    
+        res.json({
+          status: 1,
+          nbNewMessageNotifications:profile.nbMessgeNotifcationNotSeen
+        });
+      }
+    });
+  } catch (error) {
+    console.log("error when getNbNotificationsNotSeen", error);
+    return res.json({
+      status: 3,
+      error: "SP_ER_TECHNICAL_ERROR"
+    });
+  }
+});
+
+
+
+
+
+
+
 router
   .route("/markView")
 
