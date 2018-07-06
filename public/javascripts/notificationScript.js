@@ -197,7 +197,8 @@ module.exports = {
 
       var critere = {
         profileId: profileId,
-        type: type
+        type:type,
+        toProfileId:userID
       };
       Notification.findOne(critere, function (err, notification) {
         if (err) {
@@ -210,6 +211,7 @@ module.exports = {
         if (!notification) {
           var notification = new Notification();
           notification.profileId = profileId;
+          notification.toProfileId=userID;
           notification.date_notification = new Date();
           notification.type = type;
 
