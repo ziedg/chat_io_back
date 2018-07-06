@@ -463,9 +463,10 @@ router.route('/removeDislikeComment')
         }
     });
 router.route('/removeComment')
-    .post(function (req, res) {
+    .post(  function (req, res) {
         try {
-            Comment.findById(req.body.commentId, function (err, comment) {
+            const {publId,commentId}= req.body;
+            Comment.findById(commentId,  async  function (err, comment) {
                 if (err) {
                     return res.json({
                         status: 3,
@@ -479,7 +480,11 @@ router.route('/removeComment')
                 }
                 else {
 
-                    if (!comment.profileId.equals(req._id)) {
+
+
+                  const publication= await Publication.findById(publId);
+                    
+                    if (!comment.profileId.equals(req._id) && ! publication.profileId.equals(req._id) ) {
                         return res.json({
                             status: 2,
                             error: 'SP_ER_USER_NOT_HAVE_PERMISSION'
@@ -505,7 +510,9 @@ router.route('/removeComment')
                         profile.comments.splice(profile.comments.indexOf(req.body.commentId), 1);
                         profile.save();
                     })
-                    Publication.findById(req.body.publId, function (err, publication) {
+
+
+                    Publication.findById(publId, function (err, publication) {
                         if (err) {
                             return res.json({
                                 status: 3,
@@ -513,7 +520,7 @@ router.route('/removeComment')
                             });
                         } else if (publication) {
                             for (i = 0; i < publication.comments.length; i++) {
-                                if (publication.comments[i].id == req.body.commentId) {
+                                if (publication.comments[i].id == commentId ) {
                                     publication.comments.splice(i, 1);
                                     break;
                                 }
