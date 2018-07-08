@@ -235,8 +235,23 @@ module.exports = {
     }
     else
     {
-      //console.log('else')
+      if (notification.isSeen=='true'){
+        notification.date_notification = new Date();
+        notification.isSeen = "false";
+        notification.save();
+
+
+        Profile.findById(profileId, function (err, pr) {
+          if (pr) {
+            pr.nbMessgeNotifcationNotSeen++;
+            pr.save();
+          }
+        });
+          
+      }
+
     }
+    
 
       notifData = {
         userID: notification.profileId,
