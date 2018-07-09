@@ -36,17 +36,24 @@ var indexx =parseInt(req.query.index);
     var query = Notification.find(criteria)
      .where('type')
       .ne("message")
+      
     
       .sort({ date_notification: -1 })
       .sort({ _id: -1 })
       .limit(indexx);
     query.exec(function(err, notifications) {
       if (err) {
-        res.json({
+         return res.json({
           status: 3,
           error: "SP_ER_TECHNICAL_ERROR"
         });
       } else {
+
+        var notifications = notifications.filter((notif)=>{
+          return notif.profiles.length > 0 || notif.type=='subscribe'
+
+        })
+
      
         res.json(notifications);
      

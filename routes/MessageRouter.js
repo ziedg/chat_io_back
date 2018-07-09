@@ -78,7 +78,7 @@ router.route('/messages/:fromUser/:toUser').get(async function (req, res) {
 
          //search for the user 
      const profile = await Profile.findById(fromUser);
-     console.log(profile.firstName);
+   
      
 
     // await profile.save()

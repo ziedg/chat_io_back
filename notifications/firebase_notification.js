@@ -16,6 +16,6 @@ module.exports.sendNotif = function (data) {
   var db = admin.database()
   var userRef = db.ref("notifications").child('/'+data.userID).child("notification")
   userRef.set({
-    notifId: ''+data.notifId
+     data
   });
 }
