@@ -19,11 +19,24 @@ module.exports = {
         } else if (!notification) {
 
 
+    
+
+
+
+
           var notification = new Notification();
           notification.profileId = profileId;
           notification.publId = publId;
           notification.date_notification = new Date();
           notification.type = type;
+
+          notifData = {
+            userID: notification.profileId,
+            notifId: notification._id,
+            title: 'Speegar',
+            body: 'reagir'
+          };
+          FirebaseNotification.sendNotif(notifData);
           //profile of the owner of the pub
           Profile.findById(profileId)
             .then(p => {
@@ -52,6 +65,9 @@ module.exports = {
           });
         } else {
 
+
+        
+
         
 
           Profile.findById(userID, function (err, profile) {
@@ -65,6 +81,23 @@ module.exports = {
 
 
               let isExist = false;
+
+             
+
+              notifData = {
+                userID: notification.profileId,
+                notifId: notification._id,
+                title: 'Speegar',
+                body: 'reagir'
+              };
+              FirebaseNotification.sendNotif(notifData);
+              FirebasePushNotification.sendNotif(notifData);
+    
+              var db = admin.database()
+              var userRef = db.ref("inotifs").child('/' + notifData.userID)
+              userRef.set(notifData);
+    
+                   
            
 
               
@@ -78,6 +111,7 @@ module.exports = {
 
               
               if (!isExist) {
+        
                 Profile.findById(profileId)
                   .then(p => {
                     p.nbNotificationsNotSeen++;
@@ -91,28 +125,26 @@ module.exports = {
                 profile.save();
               } else {
 
+                
+
+              
+
+
                 notification.isSeen = "false";
                 notification.date_notification = new Date();
                 notification.save();
               }
             }
           });
+
+         
+
         }
 
-        notifData = {
-          userID: notification.profileId,
-          notifId: notification._id,
-          title: 'Speegar',
-          body: 'reagir'
-        };
-        FirebaseNotification.sendNotif(notifData);
+      
 
 
-        FirebasePushNotification.sendNotif(notifData);
-
-        var db = admin.database()
-        var userRef = db.ref("inotifs").child('/' + notifData.userID)
-        userRef.set(notifData);
+       
       });
     } else if (type == "comment") {
       /* commenter sur un publication */
@@ -130,6 +162,18 @@ module.exports = {
           notification.publId = publId;
           notification.date_notification = new Date();
           notification.type = type;
+          notifData = {
+            userID: notification.profileId,
+            notifId: notification._id,
+            title: 'Speegar',
+            body: 'comment'
+          };
+          FirebaseNotification.sendNotif(notifData);
+          FirebasePushNotification.sendNotif(notifData);
+
+          var db = admin.database()
+          var userRef = db.ref("inotifs").child('/' + notifData.userID)
+          userRef.set(notifData);
 
           Profile.findById(userID, function (err, profile) {
             if (err) {
@@ -144,6 +188,19 @@ module.exports = {
             }
           });
         } else {
+
+          notifData = {
+            userID: notification.profileId,
+            notifId: notification._id,
+            title: 'Speegar',
+            body: 'comment'
+          };
+          FirebaseNotification.sendNotif(notifData);
+          FirebasePushNotification.sendNotif(notifData);
+
+          var db = admin.database()
+          var userRef = db.ref("inotifs").child('/' + notifData.userID)
+          userRef.set(notifData);
           Profile.findById(userID, function (err, profile) {
             if (err) {
               /*res.send(err);*/
@@ -169,6 +226,8 @@ module.exports = {
 
               if (!isExist) {
 
+              
+
                 notification.profiles.push(profile);
                 notification.isSeen = "false";
                 notification.date_notification = new Date();
@@ -182,23 +241,15 @@ module.exports = {
           });
 
 
+
+
         }
 
-        notifData = {
-          userID: notification.profileId,
-          notifId: notification._id,
-          title: 'Speegar',
-          body: 'comment'
-        };
-        FirebaseNotification.sendNotif(notifData);
 
 
-        FirebasePushNotification.sendNotif(notifData);
+      
 
-
-        var db = admin.database()
-        var userRef = db.ref("inotifs").child('/' + notifData.userID)
-        userRef.set(notifData);
+     
       });
     } else if (type == "message") {
 
@@ -334,6 +385,18 @@ module.exports = {
             else
             {
 
+              notifData = {
+                userID: notification.profileId,
+                notifId: notification._id,
+                title: 'Speegar',
+                body: 'subscribe'
+              };
+              FirebaseNotification.sendNotif(notifData);
+              FirebasePushNotification.sendNotif(notifData);
+    
+              var db = admin.database()
+              var userRef = db.ref("inotifs").child('/' + notifData.userID)
+              userRef.set(notifData);
               Profile.findById(userID).then((p)=>{
                 if(notification.profiles.length==0)
                 notification.profiles.push(p);
@@ -412,15 +475,15 @@ module.exports = {
 
         }
         //notifcation length >=1;
-        if (notification.profiles.length >= 1) {
-          for (i = 0; i < notification.profiles.length; i++) {
-            if (notification.profiles[i].id == userID) {
-              notification.profiles.splice(i, 1);
-              notification.save();
-              return;
-            }
-          }
-        }
+        // if (notification.profiles.length >= 1) {
+        //   for (i = 0; i < notification.profiles.length; i++) {
+        //     if (notification.profiles[i].id == userID) {
+        //       notification.profiles.splice(i, 1);
+        //       notification.save();
+        //       return;
+        //     }
+        //   }
+        // }
        
       }
     });
