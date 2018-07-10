@@ -50,7 +50,7 @@ var indexx =parseInt(req.query.index);
       } else {
 
         var notifications = notifications.filter((notif)=>{
-          return notif.profiles.length > 0 || notif.type=='subscribe'
+          return notif.profiles.length > 0
 
         })
 
