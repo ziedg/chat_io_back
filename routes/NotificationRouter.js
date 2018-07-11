@@ -18,9 +18,30 @@ require('../middlewars/auth')(router);
 
 router.route("/getNotifications").get(function(req, res) {
   try {
+
     const start = Date.now();
     var criteria = {};
 
+
+    Profile.findById(req._id, function(err, profile) {
+      if (err) {
+         return res.json({
+          status: 3,
+          error: "SP_ER_TECHNICAL_ERROR"
+        });
+      
+      }
+
+      if (!profile) {
+         return res.json({
+          status: 2,
+          error: "SP_ER_PROFILE_NOT_FOUND"
+        });
+      
+      } else {
+        profile.nbNotificationsNotSeen=0;
+        profile.save();
+      }});
     if (!req.query.lastNotificationId) {
       criteria = { profileId: req._id };
     } else {
@@ -92,7 +113,7 @@ router.route("/checkNewNotifications").get(function(req, res) {
       } else {
 
         
-     
+     console.log(profile.nbNotificationsNotSeen);
     
         res.json({
           status: 0,
