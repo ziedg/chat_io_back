@@ -45,42 +45,16 @@ router.route('/messages').get(function (req, res) {
 });
 
 
-router.route('/messages/:fromUser/:toUser').get(async function (req, res) {
+router.route('/messages/:fromUser/:toUser/:id?').get(async function (req, res) {
     var fromUser = req.params.fromUser;
     var toUser = req.params.toUser;
-
-    /*
-    A revenir apres dans des versions ultérieures
-    var limit = req.query.limit;
-    var page = req.query.page ;
-    */
-    let lastMessage = new Message();
+    var firstMessageSentId=req.params.id;
+   
     try {
-       
-       
-   
-     
-    
-     
-
-
-   
-
-        
-       
-         
-        let messages = await Message.getMessages(fromUser, toUser)
-
-        lastMessage = messages[messages.length - 1]
-        if (!lastMessage) {
-            return res.json(messages);
-        }
 
          //search for the user 
      const profile = await Profile.findById(fromUser);
    
-     
-
     // await profile.save()
 
 
@@ -95,15 +69,44 @@ router.route('/messages/:fromUser/:toUser').get(async function (req, res) {
         await notifcation.save();
 
      }
-  
-        lastMessage.isSeen = true
-        lastMessage.seenDate = Date.now()
-        lastMessage.save()
-        res.json(messages);
+        //new logic to just return the 20 last messages and then the 20 before ...
+       Message.
+       getMessagesIds(fromUser,toUser,async function(err, docs) {
+         if (err) {
+           console.log(err);
+         } else {
+            Message.getMessage(docs[docs.length-1], (err, lastMessage) => {
+                if (err) {
+                }
+                lastMessage.isSeen = true
+                lastMessage.seenDate = Date.now()
+                lastMessage.save()
+            });
+           docs = docs.map(function(doc) {
+             return String(doc._id);
+           });
 
-
+           index = _.indexOf(docs, String(firstMessageSentId)) ;
+           console.log(index)
+               if (index === -1){
+                let index2= docs.length-20 >= 0 ? docs.length-20 : 0;
+                let results = await Message.getMessages(fromUser,toUser,index2)
+                return res.json(results)
+                }else {
+                    console.log('! index ==-1')
+            
+                let index2= index-20 > 0 ? index-20 : 0;
+                let results = 
+                index2 !== 0 ? 
+                await Message.getMessages(fromUser,toUser,index2) :
+                await Message.getMessages(fromUser,toUser,index2,index)
+                return res.json(results)
+                }
+        }
+    }) 
 
     } catch (e) {
+        console.log(e)
         throw new Error("message errror");
     }
 
@@ -286,7 +289,7 @@ router.route('/messagingHistory/:_id').get(async (req, res) => {
             }
 
             var results = profiles.map(async (profile) => {
-                let conversation = await (Message.getMessages(id, profile._id));
+                let conversation = await (Message.getAllMessagesBetween(id, profile._id));
                 let lastMessage = conversation[conversation.length - 1];
                 return {
                     _id: profile._id,

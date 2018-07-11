@@ -43,7 +43,40 @@ module.exports.getMessage = (_id, callback) => {
 }
 
 
-module.exports.getMessages = (fromUser, toUser) => {
+//Get All messages between two users
+module.exports.getAllMessagesBetween = (fromUser, toUser) => {
+    const queryData = {
+        $or : [
+            { $and: [{'toUserId': toUser},{ 'fromUserId': fromUser }] },
+            { $and: [{'toUserId': fromUser},{ 'fromUserId': toUser}] }
+        ]
+};
+
+ return Message
+.find(queryData)
+}
+
+//Get All messagesIds between two users
+
+module.exports.getMessagesIds = (fromUser, toUser,callback) => {
+    const queryData = {
+        $or : [
+            { $and: [{'toUserId': toUser},{ 'fromUserId': fromUser }] },
+            { $and: [{'toUserId': fromUser},{ 'fromUserId': toUser}] }
+        ]
+};
+// Message.find(queryData, callback).skip(page).limit(limit).sort({date: -1});
+
+ Message
+.find(queryData,callback)
+.select("_id")
+}
+
+//Get All messages between two users with parameters : begin index and limit
+
+module.exports.getMessages = (fromUser, toUser,beginIndex=0,limit=20) => {
+    console.log(beginIndex)
+    console.log(limit)
         const queryData = {
             $or : [
                 { $and: [{'toUserId': toUser},{ 'fromUserId': fromUser }] },
@@ -52,8 +85,11 @@ module.exports.getMessages = (fromUser, toUser) => {
     };
    // Message.find(queryData, callback).skip(page).limit(limit).sort({date: -1});
 
-	return Message.find(queryData);
+    return Message.find(queryData)
+    .skip(beginIndex)
+    .limit(limit)
 }
+
 
 // Add Message
 module.exports.addMessage = (message, callback) => {
