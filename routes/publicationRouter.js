@@ -1,4 +1,4 @@
-var express = require("express");
+﻿var express = require("express");
 var router = express.Router();
 var async = require("async");
 var ogs = require("open-graph-scraper");
@@ -300,7 +300,7 @@ router.route("/likePublication").post(function(req, res) {
             userInteractions.userId = req.body.profileId;
             userInteractions.profilefirstname = req.body.profilefirstname;
             userInteractions.profilelastname = req.body.profilelastname;
-            userInteractions.profilepicture = req.body.profilepicture;
+            userInteractions.profilePicture = req.body.profilePicture;
 
             //console.log('used pushed like'+userInteractions);
 
@@ -472,7 +472,7 @@ router.route("/dislikePublication").post(function(req, res) {
           userInteractions.userId = req.body.profileId;
           userInteractions.profilefirstname = req.body.profilefirstname;
           userInteractions.profilelastname = req.body.profilelastname;
-          userInteractions.profilepicture = req.body.profilepicture;
+          userInteractions.profilePicture = req.body.profilePicture;
 
           //console.log('user push dislike'+userInteractions);
 

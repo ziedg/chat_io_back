@@ -5,7 +5,7 @@ var userInteractions = new Schema({
 	userId : {type:String,index:true},
 	profilefirstname : String,
 	profilelastname : String,
-	profilepicture : String,
+	profilePicture : String,
 	isSubscribed : String
 }, { versionKey: false });
 
