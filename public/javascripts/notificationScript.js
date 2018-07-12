@@ -1,19 +1,56 @@
 var Profile = require("./../../models/Profile");
+var Publication = require('./../../models/Publication');
 var Notification = require("./../../models/Notification");
 var FirebaseNotification = require("../../notifications/firebase_notification");
 var FirebasePushNotification = require("../../utils/firebase_notification.js")
 var admin = require("firebase-admin");
 
 module.exports = {
-  notifier: function (profileId, publId, userID, type, raisonDelete) {
+  notifier:  async function (profileId, publId, userID, type, raisonDelete) {
     if (profileId == userID) return;
+
+      //always do this..
+      const publication = await Publication.findById(publId);
+      var content={};
+      if (publication.publText){
+          content.text=publication.publText.slice(0,20);
+          content.type='text'
+        
+      }
+
+      else if(publication.publExternalLink){
+        content.link=publication.publExternalLink
+        content.type="link"
+      }
+    
+      else
+      {
+       
+          content.link=publication.publPictureLink
+          content.type="pictureLink"
+
+      }
+
+
+      console.log(content)
     if (type == "reagir") {
       var critere = {
         profileId,
         publId: publId,
         type
       };
-      Notification.findOne(critere, function (err, notification) {
+
+      
+
+
+        console.log(content);
+      Notification.findOne(critere,  async function (err, notification) {
+
+
+      
+
+
+
         if (err) {
           console.log('there is an error');
         } else if (!notification) {
@@ -29,6 +66,9 @@ module.exports = {
           notification.publId = publId;
           notification.date_notification = new Date();
           notification.type = type;
+          notification.publText=content.text;
+          notification.publType=content.type;
+
 
           notifData = {
             userID: notification.profileId,
@@ -120,6 +160,9 @@ module.exports = {
                   })
                 notification.profiles.push(profile);
                 notification.isSeen = "false";
+                notification.publText=content.text,
+                notification.publType=content.type,
+
                 notification.date_notification = new Date();
                 notification.save();
                 profile.save();
@@ -161,6 +204,8 @@ module.exports = {
           notification.profileId = profileId;
           notification.publId = publId;
           notification.date_notification = new Date();
+          notification.publText=content.text;
+          notification.publType=content.type;
           notification.type = type;
           notifData = {
             userID: notification.profileId,
@@ -182,6 +227,8 @@ module.exports = {
 
               notification.profiles.push(profile);
               notification.isSeen = "false";
+              notification.publText=content.text;
+              notification.publType=content.type;
               notification.date_notification = new Date();
               notification.save();
               profile.save();
@@ -231,6 +278,8 @@ module.exports = {
                 notification.profiles.push(profile);
                 notification.isSeen = "false";
                 notification.date_notification = new Date();
+                notification.publText=content.text;
+                notification.publType=content.type;
                 notification.save();
               } else {
                 notification.isSeen = "false";
