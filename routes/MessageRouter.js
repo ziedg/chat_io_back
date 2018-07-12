@@ -78,9 +78,11 @@ router.route('/messages/:fromUser/:toUser/:id?').get(async function (req, res) {
             Message.getMessage(docs[docs.length-1], (err, lastMessage) => {
                 if (err) {
                 }
-                lastMessage.isSeen = true
-                lastMessage.seenDate = Date.now()
-                lastMessage.save()
+                if(lastMessage){
+                    lastMessage.isSeen = true
+                    lastMessage.seenDate = Date.now()
+                    lastMessage.save()
+                }
             });
            docs = docs.map(function(doc) {
              return String(doc._id);
