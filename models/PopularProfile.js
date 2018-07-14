@@ -15,6 +15,7 @@ var popularProfileSchema   = new Schema({
         nbSuivi : Number,
         nbPublications : Number,
         nbLikes : Number,
+        nbReactions:Number,
         nbNotificationsNotSeen : Number,
         isNewInscri  : String,
         isSubscribe  : String,

@@ -38,6 +38,10 @@ var profileSchema = new Schema(
       type:Number,
       default:0
     },
+    nbReactions:{
+      type:Number,
+      default:0
+    },
 
     nbNotificationsNotSeen: Number,
     nbMessgeNotifcationNotSeen:{type:Number,default:0},
