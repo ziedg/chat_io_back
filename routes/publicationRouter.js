@@ -320,6 +320,7 @@ router.route("/likePublication").post(function(req, res) {
         });
 
         notificationScript.notifier(
+    
           publication.profileId,
           req.body.publId,
           req._id,
@@ -443,11 +444,14 @@ router.route("/removeLikePublication").post(function(req, res) {
   }
 });
 
-router.route("/dislikePublication").post(function(req, res) {
+router.route("/dislikePublication").post( async function(req, res) {
   try {
+
+
+   
     var publication = new Publication();
 
-    Publication.findById(req.body.publId, function(err, publication) {
+    Publication.findById(req.body.publId,  async function(err, publication) {
       if (err) {
         res.json({
           status: 3,
@@ -463,7 +467,7 @@ router.route("/dislikePublication").post(function(req, res) {
         return;
       }
 
-      PublicationLikes.findById(req.body.publId, function(
+      PublicationLikes.findById(req.body.publId,  async   function(
         err,
         publicationLikes
       ) {
@@ -481,6 +485,7 @@ router.route("/dislikePublication").post(function(req, res) {
           publicationLikes.save();
 
           publication.nbDislikes++;
+
           publication.save();
         }
       });
@@ -491,6 +496,13 @@ router.route("/dislikePublication").post(function(req, res) {
       });
 
       if (publication.profileId != req._id) {
+
+        const profile = await Profile.findById(publication.profileId);
+        profile.nbLoves++;
+        await profile.save();
+
+
+     
         Profile.findById(req._id).then(profile => {
           NotificationSub.findOne({ userId: publication.profileId }).then(
             sub => {
@@ -554,7 +566,7 @@ router.route("/removeDislikePublication").post(function(req, res) {
         return;
       }
 
-      PublicationLikes.findById(req.body.publId, function(
+      PublicationLikes.findById(req.body.publId, async  function(
         err,
         publicationLikes
       ) {
@@ -568,6 +580,9 @@ router.route("/removeDislikePublication").post(function(req, res) {
           publicationLikes.save();
 
           publication.nbDislikes--;
+          const profile = await Profile.findById(publication.profileId);
+          profile.nbLoves--;
+          await profile.save();
           publication.save();
         }
       });

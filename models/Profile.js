@@ -34,6 +34,11 @@ var profileSchema = new Schema(
     ignoredProfiles: [Schema.ObjectId],
     nbPublications: Number,
     nbLikes: Number,
+    nbLoves:{
+      type:Number,
+      default:0
+    },
+
     nbNotificationsNotSeen: Number,
     nbMessgeNotifcationNotSeen:{type:Number,default:0},
     facebookId: String,
