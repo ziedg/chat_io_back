@@ -8,14 +8,6 @@ const mongoose = require('mongoose');
 
 
 
-mongoose.connect(
-    `mongodb://${properties.get("mongo.url")}/${properties.get("mongo.db.name")}`
-  ).then(() => {
-    console.log("connect TO DB...")
-  })
-  .catch((e) => {
-    console.log("Unable to connect to DB.", e)
-  })
 
 var query = [{
     "$project": {
@@ -34,32 +26,48 @@ var query = [{
 
 ];
 
+
+
+
+
 var job = new CronJob(
   "* 00 * * * *",
   async function () {
-    try {
+try {
       const limit = Number(properties.get('config.limit'))
-      await popularProfile.remove({});
       const popularProfiles = await Profile.aggregate(query)
-        .limit(limit);
+
+
 
       _.map(popularProfiles, async profile => {
-        var popularProf = await new popularProfile(
-          JSON.parse(JSON.stringify(profile))
-        );
+        const p = await Profile.findById(profile._id);
+        if (!profile.nbReactions) {
+          p.nbReactions = 0;
+          await p.save();
+        } else {
+          p.nbReactions = profile.nbReactions;
+
+          await p.save();
+
+        }
+
+
+      });
+const PopularProfiless = await Profile.find()
+        .sort({
+          nbReactions: -1
+        })
+        .limit(limit)
+await popularProfile.remove({})
+_.map(PopularProfiless, async profile => {
+    const popularProf = new popularProfile(JSON.parse(JSON.stringify(profile)));
         await popularProf.save();
       });
-
-
-
-
-
-
-
     } catch (e) {
-      console.log("err");
+      console.log(e);
 
     }
+
   },
   true,
   "Tunisia"
