@@ -113,61 +113,26 @@ app.use("/", router);
     databaseURL: "https://speegar-6deca.firebaseio.com"
   });
 
-  
-
-
+  // cron
   if (process.env.pm_id == 0) {
     require("./helpers/PopularProfiles");
   }
 
-  if (properties.get("ssl.enable")) {
-     const server = https.createServer(
-      {
-        key: fs.readFileSync(properties.get("ssl.privkey1").toString()),
-        cert: fs.readFileSync(properties.get("ssl.fullchain1").toString()),
-        ca: fs.readFileSync(properties.get("ssl.chain1").toString())
-      },
-      app
-    );
 
-    const  https_port = properties.get("server.port.https");
+var http_port = properties.get('server.port.http');
+var server;
 
-    server.listen(https_port,()=>{
-
-      console.log(
-        "the server is launched on the port " +
-          https_port +
-          ", mode ssl is enabled." 
-          
-      ); 
-    });
-
-  } else {
-
-const  http_port = properties.get("server.port.http");
-
-
-
-  
-     const server = http.createServer(app);
-   
-    server.listen(http_port,()=>{
-
-      console.log(
-        "the server is launched on the port " +
-          http_port+
-          ", mode ssl is disabled." 
-          
-      ); 
-    });
-  
-  }
-
-
-
-
-
- 
+if('local' == properties.get('server.environment').toString()){
+    
+    server = http.createServer(app);
+    server.listen(http_port);
+    console.log('the server is launched with local environment configuration on the port ' + http_port+ ', '+new Date());
+}  else {
+    
+    var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE) ;
+    server.listen(httpport);
+    console.log('the server is launched on the port ' + httpport +', mode ssl is disabled, '+new Date());
+}
 
 
 module.exports = { app, admin };
