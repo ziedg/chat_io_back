@@ -434,34 +434,7 @@ router.route("/updateProfilePicture").post(function(req, res) {
 
             //change
 
-            const users = _.uniqWith(profile.subscriptions, _.isEqual);
-
-            users.forEach(userId => {
-              NotificationSub.findOne({ userId }).then(sub => {
-                if (!sub) return;
-                let subscriptions = [];
-                _.forEach(sub.subsciptions, sub => {
-                  subscription = {
-                    endpoint: sub.endpoint,
-                    keys: {
-                      auth: sub.keys.auth,
-                      p256dh: sub.keys.p256dh
-                    }
-                  };
-                  subscriptions.push(subscription);
-                });
-
-                const payload = {
-                  title: "Speegar",
-                  icon: profile.profilePictureMin,
-
-                  body: `${profile.lastName} ${
-                    profile.firstName
-                  } update his profile picture `
-                };
-                return webPusher(subscriptions, payload, res);
-              });
-            });
+          
 
             //just for the test a change...
 
