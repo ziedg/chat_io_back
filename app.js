@@ -120,11 +120,10 @@ app.use("/", router);
 
 
 var http_port = properties.get('server.port.http');
-var server;
+var server = http.createServer(app);
 
 if('local' == properties.get('server.environment').toString()){
     
-    server = http.createServer(app);
     server.listen(http_port);
     console.log('the server is launched with local environment configuration on the port ' + http_port+ ', '+new Date());
 }  else {
