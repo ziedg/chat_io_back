@@ -6,37 +6,32 @@ var FirebasePushNotification = require("../../utils/firebase_notification.js")
 var admin = require("firebase-admin");
 
 module.exports = {
-  notifier:  async function (profileId, publId, userID, type, raisonDelete) {
+  notifier: async function (profileId, publId, userID, type, raisonDelete) {
     if (profileId == userID) return;
 
-      //always do this..
-      if(publId){
-        const publication = await Publication.findById(publId);
-        var content={};
-        if (publication.publText){
-            content.text=publication.publText.slice(0,20);
-            content.type='text'
-          
-        }
-  
-        else if(publication.publExternalLink){
-          content.link=publication.publExternalLink
-          content.type="link"
-        }
-      
-        else
-        {
-         
-            content.link=publication.publPictureLink
-            content.type="pictureLink"
-  
-        }
-  
-  
-        console.log(content)
+    //always do this..
+    if (publId) {
+      const publication = await Publication.findById(publId);
+      var content = {};
+      if (publication.publText) {
+        content.text = publication.publText.slice(0, 20);
+        content.type = 'text'
+
+      } else if (publication.publExternalLink) {
+        content.link = publication.publExternalLink
+        content.type = "link"
+      } else {
+
+        content.link = publication.publPictureLink
+        content.type = "pictureLink"
 
       }
-     
+
+
+      console.log(content)
+
+    }
+
     if (type == "reagir") {
       var critere = {
         profileId,
@@ -44,14 +39,14 @@ module.exports = {
         type
       };
 
-      
 
 
-    
-      Notification.findOne(critere,  async function (err, notification) {
 
 
-      
+      Notification.findOne(critere, async function (err, notification) {
+
+
+
 
 
 
@@ -60,7 +55,7 @@ module.exports = {
         } else if (!notification) {
 
 
-    
+
 
 
 
@@ -70,8 +65,8 @@ module.exports = {
           notification.publId = publId;
           notification.date_notification = new Date();
           notification.type = type;
-          notification.publText=content.text;
-          notification.publType=content.type;
+          notification.publText = content.text;
+          notification.publType = content.type;
 
 
           notifData = {
@@ -84,6 +79,7 @@ module.exports = {
           //profile of the owner of the pub
           Profile.findById(profileId)
             .then(p => {
+              if(!p) return;
 
               p.nbNotificationsNotSeen++;
 
@@ -110,9 +106,9 @@ module.exports = {
         } else {
 
 
-        
 
-        
+
+
 
           Profile.findById(userID, function (err, profile) {
             if (err) {
@@ -126,7 +122,7 @@ module.exports = {
 
               let isExist = false;
 
-             
+
 
               notifData = {
                 userID: notification.profileId,
@@ -136,45 +132,46 @@ module.exports = {
               };
               FirebaseNotification.sendNotif(notifData);
               FirebasePushNotification.sendNotif(notifData);
-    
+
               var db = admin.database()
               var userRef = db.ref("inotifs").child('/' + notifData.userID)
               userRef.set(notifData);
-    
-                   
-           
 
-              
+
+
+
+
               for (let id of users) {
                 if (String(id) == String(profile._id)) {
                   isExist = true;
                 }
               }
 
-            
 
-              
+
+
               if (!isExist) {
-        
+
                 Profile.findById(profileId)
                   .then(p => {
+                    if(!p) return;
                     p.nbNotificationsNotSeen++;
                     p.save();
 
                   })
                 notification.profiles.push(profile);
                 notification.isSeen = "false";
-                notification.publText=content.text,
-                notification.publType=content.type,
+                notification.publText = content.text,
+                  notification.publType = content.type,
 
-                notification.date_notification = new Date();
+                  notification.date_notification = new Date();
                 notification.save();
                 profile.save();
               } else {
 
-                
 
-              
+
+
 
 
                 notification.isSeen = "false";
@@ -184,14 +181,14 @@ module.exports = {
             }
           });
 
-         
+
 
         }
 
-      
 
 
-       
+
+
       });
     } else if (type == "comment") {
       /* commenter sur un publication */
@@ -208,8 +205,8 @@ module.exports = {
           notification.profileId = profileId;
           notification.publId = publId;
           notification.date_notification = new Date();
-          notification.publText=content.text;
-          notification.publType=content.type;
+          notification.publText = content.text;
+          notification.publType = content.type;
           notification.type = type;
           notifData = {
             userID: notification.profileId,
@@ -231,8 +228,8 @@ module.exports = {
 
               notification.profiles.push(profile);
               notification.isSeen = "false";
-              notification.publText=content.text;
-              notification.publType=content.type;
+              notification.publText = content.text;
+              notification.publType = content.type;
               notification.date_notification = new Date();
               notification.save();
               profile.save();
@@ -270,6 +267,7 @@ module.exports = {
 
               Profile.findById(profileId)
                 .then(p => {
+                  if(!p) return;
                   p.nbNotificationsNotSeen++;
                   p.save();
 
@@ -277,13 +275,13 @@ module.exports = {
 
               if (!isExist) {
 
-              
+
 
                 notification.profiles.push(profile);
                 notification.isSeen = "false";
                 notification.date_notification = new Date();
-                notification.publText=content.text;
-                notification.publType=content.type;
+                notification.publText = content.text;
+                notification.publType = content.type;
                 notification.save();
               } else {
                 notification.isSeen = "false";
@@ -300,9 +298,9 @@ module.exports = {
 
 
 
-      
 
-     
+
+
       });
     } else if (type == "message") {
 
@@ -391,7 +389,7 @@ module.exports = {
       var critere = {
         profileId: profileId,
         type: type,
-        toProfileId:userID,
+        toProfileId: userID,
 
       };
       Notification.findOne(critere, function (err, notification) {
@@ -405,7 +403,7 @@ module.exports = {
         if (!notification) {
           var notification = new Notification();
           notification.profileId = profileId;
-          notification.toProfileId=userID
+          notification.toProfileId = userID
           notification.date_notification = new Date();
           notification.type = type;
 
@@ -437,52 +435,50 @@ module.exports = {
 
 
           });
+        } else {
+
+          notifData = {
+            userID: notification.profileId,
+            notifId: notification._id,
+            title: 'Speegar',
+            body: 'subscribe'
+          };
+          FirebaseNotification.sendNotif(notifData);
+          FirebasePushNotification.sendNotif(notifData);
+
+          var db = admin.database()
+          var userRef = db.ref("inotifs").child('/' + notifData.userID)
+          userRef.set(notifData);
+          Profile.findById(userID).then((p) => {
+            if (notification.profiles.length == 0)
+              notification.profiles.push(p);
+            notification.isSeen = "false";
+            notification.date_notification = new Date();
+
+            notification.save();
+
+          })
+
+
+
+
+
+          Profile.findById(profileId)
+            .then(p => {
+
+              p.nbNotificationsNotSeen++;
+              p.save();
+
+            })
         }
-            else
-            {
-
-              notifData = {
-                userID: notification.profileId,
-                notifId: notification._id,
-                title: 'Speegar',
-                body: 'subscribe'
-              };
-              FirebaseNotification.sendNotif(notifData);
-              FirebasePushNotification.sendNotif(notifData);
-    
-              var db = admin.database()
-              var userRef = db.ref("inotifs").child('/' + notifData.userID)
-              userRef.set(notifData);
-              Profile.findById(userID).then((p)=>{
-                if(notification.profiles.length==0)
-                notification.profiles.push(p);
-                notification.isSeen = "false";
-                notification.date_notification = new Date();
-              
-                notification.save();
-
-              })
-
-            
-             
-             
-            
-              Profile.findById(profileId)
-              .then(p => {
-                
-                p.nbNotificationsNotSeen++;
-                p.save();
-
-              })
-          }
 
 
-            
 
-              
-            
 
-       
+
+
+
+
 
       });
     }
@@ -511,10 +507,10 @@ module.exports = {
 					});*/
       } else if (!notification) {
         return;
-     
+
       } else {
 
-   
+
 
 
         if (type == 'message') {
@@ -540,7 +536,7 @@ module.exports = {
             }
           }
         }
-       
+
       }
     });
 
