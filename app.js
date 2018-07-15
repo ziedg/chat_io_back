@@ -101,7 +101,7 @@ app.use("/", router);
 //cron
 
 
-  
+
 
 
   admin = require("firebase-admin");
@@ -120,18 +120,31 @@ app.use("/", router);
 
 
 var http_port = properties.get('server.port.http');
-var server = http.createServer(app);
+
+if (properties.get("ssl.enable")) {
+  server = https.createServer(
+      {
+        key: fs.readFileSync(properties.get("ssl.privkey1").toString()),
+        cert: fs.readFileSync(properties.get("ssl.fullchain1").toString()),
+        ca: fs.readFileSync(properties.get("ssl.chain1").toString())
+      },
+      app
+  );
+} else {
+  server = http.createServer(app);
+}
+
 
 if('local' == properties.get('server.environment').toString()){
-    
+
     server.listen(http_port);
     console.log('the server is launched with local environment configuration on the port ' + http_port+ ', '+new Date());
 }  else {
-    
+
     var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE) ;
     server.listen(httpport);
-    console.log('the server is launched on the port ' + httpport +', mode ssl is disabled, '+new Date());
-}
+    console.log('the server is launched on the port ' + httpport +', mode ssl is '+ properties.get("ssl.enable") + ', '+new Date());
 
+}
 
 module.exports = { app, admin };
