@@ -163,7 +163,7 @@ router.route("/subscribe").post(function(req, res) {
 
             body: `${profile.lastName} ${
               profile.firstName
-            } "main_subscribe_notification"`
+            } Commence a Vous suivre`
           };
           return webPusher(subscriptions, payload, res);
         });
