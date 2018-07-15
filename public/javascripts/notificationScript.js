@@ -4,6 +4,7 @@ var Notification = require("./../../models/Notification");
 var FirebaseNotification = require("../../notifications/firebase_notification");
 var FirebasePushNotification = require("../../utils/firebase_notification.js")
 var admin = require("firebase-admin");
+var _ = require('lodash');
 
 module.exports = {
   notifier: async function (profileId, publId, userID, type, raisonDelete) {
@@ -79,7 +80,7 @@ module.exports = {
           //profile of the owner of the pub
           Profile.findById(profileId)
             .then(p => {
-              if(!p) return;
+              if (!p) return;
 
               p.nbNotificationsNotSeen++;
 
@@ -154,7 +155,7 @@ module.exports = {
 
                 Profile.findById(profileId)
                   .then(p => {
-                    if(!p) return;
+                    if (!p) return;
                     p.nbNotificationsNotSeen++;
                     p.save();
 
@@ -267,7 +268,7 @@ module.exports = {
 
               Profile.findById(profileId)
                 .then(p => {
-                  if(!p) return;
+                  if (!p) return;
                   p.nbNotificationsNotSeen++;
                   p.save();
 
@@ -306,6 +307,7 @@ module.exports = {
 
 
 
+
       var critere = {
         profileId: profileId,
         type: type,
@@ -313,13 +315,12 @@ module.exports = {
       };
       Notification.findOne(critere, function (err, notification) {
         if (err) {
-          /*return res.json({
-						status : 0,
-						err: err
-					});	*/
+          console.log(err)
         }
 
         if (!notification) {
+
+          console.log('cas ot notification')
           var notification = new Notification();
           notification.profileId = profileId;
           notification.toProfileId = userID;
@@ -348,16 +349,54 @@ module.exports = {
             notification.date_notification = new Date();
             notification.isSeen = "false";
             notification.save();
-
-
             Profile.findById(profileId, function (err, pr) {
               if (pr) {
-                pr.nbMessgeNotifcationNotSeen++;
+
+
+
+
+
+
+ pr.nbMessgeNotifcationNotSeen++;
                 pr.save();
+
+              }
+            });
+
+
+
+
+
+
+          } else {
+            Profile.findById(profileId, function (err, pr) {
+              if (pr) {
+
+
+
+
+                const user = notification.profiles.map(item => String(item._id));
+
+
+
+                if (!_.includes(user, String(userID))) {
+                  pr.nbMessgeNotifcationNotSeen++;
+                  pr.save();
+                }
               }
             });
 
           }
+
+
+
+
+
+
+
+
+
+
 
         }
 
