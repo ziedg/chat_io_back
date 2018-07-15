@@ -10,29 +10,33 @@ module.exports = {
     if (profileId == userID) return;
 
       //always do this..
-      const publication = await Publication.findById(publId);
-      var content={};
-      if (publication.publText){
-          content.text=publication.publText.slice(0,20);
-          content.type='text'
-        
+      if(publId){
+        const publication = await Publication.findById(publId);
+        var content={};
+        if (publication.publText){
+            content.text=publication.publText.slice(0,20);
+            content.type='text'
+          
+        }
+  
+        else if(publication.publExternalLink){
+          content.link=publication.publExternalLink
+          content.type="link"
+        }
+      
+        else
+        {
+         
+            content.link=publication.publPictureLink
+            content.type="pictureLink"
+  
+        }
+  
+  
+        console.log(content)
+
       }
-
-      else if(publication.publExternalLink){
-        content.link=publication.publExternalLink
-        content.type="link"
-      }
-    
-      else
-      {
-       
-          content.link=publication.publPictureLink
-          content.type="pictureLink"
-
-      }
-
-
-      console.log(content)
+     
     if (type == "reagir") {
       var critere = {
         profileId,
@@ -43,7 +47,7 @@ module.exports = {
       
 
 
-        console.log(content);
+    
       Notification.findOne(critere,  async function (err, notification) {
 
 
@@ -387,7 +391,8 @@ module.exports = {
       var critere = {
         profileId: profileId,
         type: type,
-        toProfileId:userID
+        toProfileId:userID,
+
       };
       Notification.findOne(critere, function (err, notification) {
         if (err) {
