@@ -149,6 +149,7 @@ router.route('/addComment')
                                                                })
                                           const payload=   
                                           {title:"Speegar",
+                                          tag:publication._id,
                                           icon:profile.profilePictureMin
                                           ,body:`${profile.lastName} ${profile.firstName} commenté votre publication`
                                             }

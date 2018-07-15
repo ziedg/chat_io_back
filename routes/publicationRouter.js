@@ -346,6 +346,7 @@ router.route("/likePublication").post(function(req, res) {
                 const payload = {
                   title: "Speegar",
                   icon: profile.profilePictureMin,
+                  tag:publication._id,
                   body: `${profile.lastName} ${
                     profile.firstName
                   } a réagi a votre publication`
@@ -520,6 +521,7 @@ router.route("/dislikePublication").post( async function(req, res) {
               const payload = {
                 title: "Speegar",
                 icon: profile.profilePictureMin,
+                tag:publication._id,
                 body: `${profile.lastName} ${
                   profile.firstName
                 } a réagi a votre publication`
