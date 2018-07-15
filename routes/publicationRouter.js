@@ -295,7 +295,7 @@ router.route("/likePublication").post(function(req, res) {
           err,
           publicationLikes
         ) {
-          if (publicationLikes.likes.indexOf(req._id) == -1) {
+          if (  publicationLikes.dislikes.indexOf(req._id) == -1  && publicationLikes.likes.indexOf(req._id) == -1) {
             var userInteractions = new Object();
             userInteractions.userId = req.body.profileId;
             userInteractions.profilefirstname = req.body.profilefirstname;
@@ -471,7 +471,7 @@ router.route("/dislikePublication").post( async function(req, res) {
         err,
         publicationLikes
       ) {
-        if (publicationLikes.dislikes.indexOf(req._id) == -1) {
+        if (  publicationLikes.dislikes.indexOf(req._id) == -1 && publicationLikes.likes.indexOf(req._id)==-1 ) {
           var userInteractions = new Object();
           userInteractions.userId = req.body.profileId;
           userInteractions.profilefirstname = req.body.profilefirstname;
