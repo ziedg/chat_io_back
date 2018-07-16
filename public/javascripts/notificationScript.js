@@ -3,7 +3,6 @@ var Publication = require('./../../models/Publication');
 var Notification = require("./../../models/Notification");
 var FirebaseNotification = require("../../notifications/firebase_notification");
 var FirebasePushNotification = require("../../utils/firebase_notification.js")
-var admin = require("firebase-admin");
 var _ = require('lodash');
 
 module.exports = {
@@ -407,16 +406,12 @@ module.exports = {
           title: 'Speegar',
           body: 'message'
         };
+
         FirebaseNotification.sendNotif(notifData);
 
 
         FirebasePushNotification.sendNotif(notifData);
 
-
-
-        var db = admin.database()
-        var userRef = db.ref("inotifs").child('/' + notifData.userID)
-        userRef.set(notifData);
 
       })
     }
