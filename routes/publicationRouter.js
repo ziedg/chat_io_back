@@ -132,6 +132,8 @@ router
             publication.publClass = body.publClass;
             publication.publyoutubeLink = body.publyoutubeLink;
             publication.publfacebookLink = body.publfacebookLink;
+            publication.publfacebookLinkWidth = body.publfacebookLinkWidth;
+            publication.publfacebookLinkHeight = body.publfacebookLinkHeight;
             publication.publExternalLink = body.publExternalLink;
             publication.nbFcbkShare = 0;
             publication.nbTwitterShare = 0;
@@ -859,6 +861,8 @@ router.route("/sharePublication").post(function(req, res) {
         publication.publPictureLink = pub.publPictureLink;
         publication.publyoutubeLink = pub.publyoutubeLink;
         publication.publfacebookLink = pub.publfacebookLink;
+        publication.publfacebookLinkWidth = body.publfacebookLinkWidth;
+        publication.publfacebookLinkHeight = body.publfacebookLinkHeight;
         publication.isShared = true;
         publication.nbLikes = 0;
         publication.nbDislikes = 0;
