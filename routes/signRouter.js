@@ -179,7 +179,7 @@ router
                     var avatars = [
                       'cat.jpg',
                       'chicken.jpg',
-                      'cow.jpg' +
+                      'cow.jpg',
                       'deer.jpg',
                       'chicken.jpg',
                       'dog.jpg',
@@ -191,7 +191,7 @@ router
                     var avatars_min = [
                       'cat-min.jpg',
                       'chicken-min.jpg',
-                      'cow-min.jpg' +
+                      'cow-min.jpg',
                       'deer-min.jpg',
                       'chicken-min.jpg',
                       'dog-min.jpg',
