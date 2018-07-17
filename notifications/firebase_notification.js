@@ -15,6 +15,7 @@ module.exports.sendMessage = function (data) {
 module.exports.sendNotif = function (data) {
   var db = admin.database()
   var userRef = db.ref("notifications").child('/'+data.userID).child("notification")
+  data.cappaPride = Math.random()
   userRef.set({
      data
   });
