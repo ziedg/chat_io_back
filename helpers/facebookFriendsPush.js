@@ -18,7 +18,7 @@ async function sendPushNotification(user, id, res) {
   };
 
 
-  if  (  userProfile && userProfile.friends && !_.includes(userProfile.friends, user.facebookId) ) {
+  if  (  userProfile && userProfile.friends ) {
       userProfile.friends.push(user.facebookId);
       await userProfile.save()
     return webPusher(userSub.subsciptions, payload, res);
