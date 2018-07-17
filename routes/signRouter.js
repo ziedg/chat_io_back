@@ -27,7 +27,7 @@ var properties = PropertiesReader("./properties.file");
 
 var app = express();
 
-require("./passport")(passport); // pass passport for 
+require("./passport")(passport); // pass passport for
 const facebookFriendsPush= require('../helpers/facebookFriendsPush.js');
 
 
@@ -159,8 +159,8 @@ router
                     });
                   } else {
 
-                 
-                   
+
+
                     profile.friends=req.body.friends;
                     profile.firstName = req.body.firstName;
                     profile.lastName = req.body.lastName;
@@ -175,26 +175,37 @@ router
                     profile.dateInscription = new Date().toJSON().slice(0, 10);
                     var d = new Date();
                     var n = d.getTime();
-                    if (n % 3 == 0) {
-                      profile.profilePicture =
-                        properties.get("pictures.avatars.link") + "alien.png";
-                      profile.profilePictureMin =
-                        properties.get("pictures.avatars.link") +
-                        "alien_min.png";
-                    } else if (n % 3 == 1) {
-                      profile.profilePicture =
-                        properties.get("pictures.avatars.link") + "clown1.png";
-                      profile.profilePictureMin =
-                        properties.get("pictures.avatars.link") +
-                        "clown1_min.png";
-                    } else {
-                      profile.profilePicture =
-                        properties.get("pictures.avatars.link") + "clown2.png";
 
-                      profile.profilePictureMin =
-                        properties.get("pictures.avatars.link") +
-                        "clown2_min.png";
-                    }
+                    var avatars = [
+                      'cat.jpg',
+                      'chicken.jpg',
+                      'cow.jpg' +
+                      'deer.jpg',
+                      'chicken.jpg',
+                      'dog.jpg',
+                      'fox.jpg',
+                      'monkey.jpg',
+                      'panda.jpg',
+                      'pig.jpg'
+                    ];
+                    var avatars_min = [
+                      'cat-min.jpg',
+                      'chicken-min.jpg',
+                      'cow-min.jpg' +
+                      'deer-min.jpg',
+                      'chicken-min.jpg',
+                      'dog-min.jpg',
+                      'fox-min.jpg',
+                      'monkey-min.jpg',
+                      'panda-min.jpg',
+                      'pig-min.jpg'
+                    ];
+                    var randomNumber = Math.floor(Math.random()*avatars.length);
+
+                    profile.profilePicture =
+                        properties.get("pictures.avatars.link") + avatars[randomNumber];
+                    profile.profilePictureMin =
+                        properties.get("pictures.avatars.link") + avatars_min[randomNumber];
 
                     profile.save(function(err) {
                       if (err) {
@@ -254,11 +265,11 @@ router
     // find the user with facebookId
 
     const friends = _.map(req.body.friends,(el)=> el.id);
-      
-      
-    
-     
-    
+
+
+
+
+
     var tempProfilePicturePath = `${properties.get("pictures.storage.temp")}/${
       req.body.facebookId
     }.jpeg`;
@@ -320,10 +331,10 @@ router
             });
 
           var profile = new Profile();
-          
-          
 
-         
+
+
+
           profile.friends= friends;
           profile.facebookId = req.body.facebookId;
           profile.firstName = req.body.firstName;
@@ -348,7 +359,7 @@ router
             facebookFriendsPush.pushToFriend(profile._id,res);
 
           })
-         
+
 
           var jwtSecret = properties.get("security.jwt.secret").toString();
           var token = jwt.sign(profile.toObject(), jwtSecret, {});
@@ -360,23 +371,23 @@ router
           });
         } else if (user) {
 
-         
-             
 
-        
-    
+
+
+
+
           user.isNewInscri = "false";
           user.friends=friends;
-          
-          
-        
-          
-            
-        
-          
+
+
+
+
+
+
+
           user.save();
 
-        
+
 
           var jwtSecret = properties.get("security.jwt.secret").toString();
           var token = jwt.sign(user.toObject(), jwtSecret, {});
