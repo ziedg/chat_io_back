@@ -44,15 +44,11 @@ module.exports = {
 
 
       Notification.findOne(critere, async function (err, notification) {
-
-
-
-
-
-
-        if (err) {
+ if (err) {
           console.log('there is an error');
         } else if (!notification) {
+
+          console.log("! notif")
 
 
 
@@ -150,15 +146,23 @@ module.exports = {
 
 
 
-              if (!isExist) {
 
-                Profile.findById(profileId)
-                  .then(p => {
-                    if (!p) return;
-                    p.nbNotificationsNotSeen++;
-                    p.save();
+               
+              Profile.findById(profileId)
+              .then(p => {
+                if (!p) return;
+                
+                p.nbNotificationsNotSeen++;
+                p.save();
 
-                  })
+              })
+              if (!isExist ) {
+
+              
+
+
+              
+             
                 notification.profiles.push(profile);
                 notification.isSeen = "false";
                 notification.publText = content.text,
@@ -168,13 +172,10 @@ module.exports = {
                 notification.save();
                 profile.save();
               } else {
+              
 
 
-
-
-
-
-                notification.isSeen = "false";
+               notification.isSeen = "false";
                 notification.date_notification = new Date();
                 notification.save();
               }
@@ -265,15 +266,24 @@ module.exports = {
                 }
               }
 
-              Profile.findById(profileId)
+
+             
+            
+              
+             
+
+              if (!isExist) {
+                Profile.findById(profileId)
                 .then(p => {
                   if (!p) return;
+
+                  
+               
                   p.nbNotificationsNotSeen++;
                   p.save();
 
                 })
 
-              if (!isExist) {
 
 
 
@@ -284,6 +294,19 @@ module.exports = {
                 notification.publType = content.type;
                 notification.save();
               } else {
+                
+                  Profile.findById(profileId)
+                .then(p => {
+                  if (!p) return;
+
+                  if(p.nbNotificationsNotSeen ==0)
+                  { p.nbNotificationsNotSeen++;
+                  p.save();
+                  }
+
+                })
+
+                
                 notification.isSeen = "false";
                 notification.date_notification = new Date();
                 notification.save();
@@ -477,6 +500,16 @@ module.exports = {
             title: 'Speegar',
             body: 'subscribe'
           };
+
+          Profile.findById(profileId)
+          .then(p => {
+
+          
+
+            p.nbNotificationsNotSeen++;
+            p.save();
+
+          })
           FirebaseNotification.sendNotif(notifData);
           FirebasePushNotification.sendNotif(notifData);
 
@@ -497,13 +530,7 @@ module.exports = {
 
 
 
-          Profile.findById(profileId)
-            .then(p => {
-
-              p.nbNotificationsNotSeen++;
-              p.save();
-
-            })
+       
         }
 
 
@@ -561,15 +588,15 @@ module.exports = {
 
         }
         //notifcation length >=1;
-        if (notification.profiles.length >= 1) {
-          for (i = 0; i < notification.profiles.length; i++) {
-            if (notification.profiles[i].id == userID) {
-              notification.profiles.splice(i, 1);
-              notification.save();
-              return;
-            }
-          }
-        }
+        // if (notification.profiles.length >= 1) {
+        //   for (i = 0; i < notification.profiles.length; i++) {
+        //     if (notification.profiles[i].id == userID) {
+        //       notification.profiles.splice(i, 1);
+        //       notification.save();
+        //       return;
+        //     }
+        //   }
+        // }
 
       }
     });
@@ -578,7 +605,12 @@ module.exports = {
 
     Profile.findById(profileId, function (err, pr) {
       if (pr) {
+
+        console.log("remove")
+        console.log(pr.firstName)
         if (pr.nbNotificationsNotSeen > 0) {
+
+          console.log(pr.nbNotificationsNotSeen);
           pr.nbNotificationsNotSeen--;
           pr.save();
         }
