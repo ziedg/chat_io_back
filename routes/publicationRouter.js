@@ -333,7 +333,9 @@ router.route("/likePublication").post(function(req, res) {
         if (publication.profileId != req._id) {
           Profile.findById(req._id).then(profile => {
             NotificationSub.findOne({ userId: publication.profileId }).then(
+             
               sub => {
+                if(!sub ) return;
                 let subscriptions = [];
                 _.forEach(sub.subsciptions, sub => {
                   subscription = {
@@ -509,6 +511,7 @@ router.route("/dislikePublication").post( async function(req, res) {
         Profile.findById(req._id).then(profile => {
           NotificationSub.findOne({ userId: publication.profileId }).then(
             sub => {
+              if(! sub) return;
               let subscriptions = [];
               _.forEach(sub.subsciptions, sub => {
                 subscription = {
