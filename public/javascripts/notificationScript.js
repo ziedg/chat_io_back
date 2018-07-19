@@ -7,6 +7,8 @@ var _ = require('lodash');
 
 module.exports = {
   notifier: async function (profileId, publId, userID, type, raisonDelete) {
+
+    var globalRemove = false;
     if (profileId == userID) return;
 
     //always do this..
@@ -27,9 +29,6 @@ module.exports = {
 
       }
 
-
-      console.log(content)
-
     }
 
     if (type == "reagir") {
@@ -48,7 +47,7 @@ module.exports = {
           console.log('there is an error');
         } else if (!notification) {
 
-          console.log("! notif")
+        
 
 
 
@@ -76,8 +75,10 @@ module.exports = {
           Profile.findById(profileId)
             .then(p => {
               if (!p) return;
+           
 
               p.nbNotificationsNotSeen++;
+      
 
               p.save();
 
@@ -151,9 +152,11 @@ module.exports = {
               Profile.findById(profileId)
               .then(p => {
                 if (!p) return;
-                
-                p.nbNotificationsNotSeen++;
+                p.nbNotificationsNotSeen+=1;
                 p.save();
+                
+
+              
 
               })
               if (!isExist ) {
@@ -191,7 +194,56 @@ module.exports = {
 
 
       });
-    } else if (type == "comment") {
+
+     
+    } 
+    
+    else if(type=='joindre'){
+      Notification.findOne(critere, function (err, notification) {
+        if (err) {
+          console.log(err);
+        } else {
+          var notification = new Notification();
+          notification.profileId = profileId;
+          notification.date_notification = new Date();
+          notification.type = type;
+         
+
+          Profile.findById(userID, function (err, profile) {
+            if (err) {
+              console.log(err);
+            } else if (profile) {
+
+              notification.profiles.push(profile);
+              notification.isSeen = "false";
+              notification.save();
+              profile.save();
+            }
+          });
+          Profile.findById(profileId)
+          .then(p => {
+            if (!p) return;
+
+            
+             p.nbNotificationsNotSeen++;
+            p.save();
+            
+
+          })
+          notifData = {
+            userID: notification.profileId,
+            notifId: notification._id,
+            title: 'Speegar',
+            body: 'facebook rejoindre'
+          };
+          FirebaseNotification.sendNotif(notifData);
+          FirebasePushNotification.sendNotif(notifData);
+
+
+
+        
+    }})}
+    else if (type == "comment") {
       /* commenter sur un publication */
       var critere = {
         profileId: profileId,
@@ -299,10 +351,10 @@ module.exports = {
                 .then(p => {
                   if (!p) return;
 
-                  if(p.nbNotificationsNotSeen ==0)
-                  { p.nbNotificationsNotSeen++;
+                  
+                   p.nbNotificationsNotSeen++;
                   p.save();
-                  }
+                  
 
                 })
 
@@ -342,7 +394,7 @@ module.exports = {
 
         if (!notification) {
 
-          console.log('cas ot notification')
+         
           var notification = new Notification();
           notification.profileId = profileId;
           notification.toProfileId = userID;
@@ -458,6 +510,8 @@ module.exports = {
         }
 
         if (!notification) {
+
+     
           var notification = new Notification();
           notification.profileId = profileId;
           notification.toProfileId = userID
@@ -493,6 +547,7 @@ module.exports = {
 
           });
         } else {
+      
 
           notifData = {
             userID: notification.profileId,
@@ -506,9 +561,15 @@ module.exports = {
 
           
 
-            p.nbNotificationsNotSeen++;
-            p.save();
+            
+            
+              p.nbNotificationsNotSeen+=1;
+              p.save();
+            
 
+            
+            
+         
           })
           FirebaseNotification.sendNotif(notifData);
           FirebasePushNotification.sendNotif(notifData);
@@ -606,14 +667,13 @@ module.exports = {
     Profile.findById(profileId, function (err, pr) {
       if (pr) {
 
-        console.log("remove")
-        console.log(pr.firstName)
-        if (pr.nbNotificationsNotSeen > 0) {
+        
 
-          console.log(pr.nbNotificationsNotSeen);
+
+          console.log(pr.nbNotificationsNotSeen >=0);
           pr.nbNotificationsNotSeen--;
           pr.save();
-        }
+        
       }
     });
   }

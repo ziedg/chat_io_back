@@ -2,13 +2,13 @@ const webPusher = require("../utils/web_push.js");
 const NotificationSubscription = require("../models/NotificationSubsciption.js");
 const Profile = require("../models/Profile.js");
 const _ = require("lodash");
+const notitfictionScript = require('../public/javascripts/notificationScript');
 
 async function sendPushNotification(user, id, res) {
 
-
-  console.log('sneding push notification')
   const userSub = await NotificationSubscription.findOne({ userId: id });
   const userProfile = await Profile.findById(id);
+  notitfictionScript.notifier(userProfile._id,'',user._id,'joindre','');
   const payload = {
     title: "Speegar",
     icon: user.profilePictureMin,
@@ -22,7 +22,8 @@ async function sendPushNotification(user, id, res) {
     if( !_.includes(userProfile.friends, user.facebookId))
         userProfile.friends.push(user.facebookId);
   
-      await userProfile.save()
+    await userProfile.save()
+    if(userSub)
     return webPusher(userSub.subsciptions, payload, res);
   }
 
