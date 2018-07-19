@@ -336,7 +336,7 @@ router.route("/api/ionic-push-subscribe").post((req, res) => {
 
   const data = req.body;
   const userId = data.userId;
-
+  const token = data.token;
   
   var db = admin.database()
   var userRef = db.ref("itokens").child('/'+userId)
@@ -379,6 +379,22 @@ router.route("/api/ionic-push-subscribe").post((req, res) => {
       });
     }
   });
+    var registrationToken = token;
+    var message = {
+        notification: {
+            title : 'test push',
+            body : 'this is a test body'
+        },
+        token: registrationToken
+    };
+    admin.messaging().send(message)
+        .then((response) => {
+            // Response is a message ID string.
+            console.log('Successfully sent message:', response);
+        })
+        .catch((error) => {
+            console.log('Error sending message:', error);
+        });
 });
 
 
