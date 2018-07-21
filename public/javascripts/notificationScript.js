@@ -93,6 +93,7 @@ module.exports = {
 
               notification.profiles.push(profile);
               notification.isSeen = "false";
+              notification.isActive='false'
 
               notification.date_notification = new Date();
               notification.save();
@@ -101,6 +102,8 @@ module.exports = {
             }
           });
         } else {
+
+        
 
 
 
@@ -121,6 +124,10 @@ module.exports = {
 
 
 
+
+
+              if(notification.isActive=='true')
+              {
               notifData = {
                 userID: notification.profileId,
                 notifId: notification._id,
@@ -129,6 +136,7 @@ module.exports = {
               };
               FirebaseNotification.sendNotif(notifData);
               FirebasePushNotification.sendNotif(notifData);
+            }
 
               var db = admin.database()
               var userRef = db.ref("inotifs").child('/' + notifData.userID)
@@ -147,6 +155,7 @@ module.exports = {
               Profile.findById(profileId)
                 .then(p => {
                   if (!p) return;
+                 
                   p.nbNotificationsNotSeen += 1;
                   p.save();
 
@@ -156,6 +165,8 @@ module.exports = {
                 })
               if (!isExist) {
 
+            
+
 
 
 
@@ -163,6 +174,7 @@ module.exports = {
 
                 notification.profiles.push(profile);
                 notification.isSeen = "false";
+                notification.isActive='false'
                 notification.publText = content.text,
                   notification.publType = content.type,
 
@@ -170,10 +182,12 @@ module.exports = {
                 notification.save();
                 profile.save();
               } else {
+              
 
 
-
+                  
                 notification.isSeen = "false";
+                notification.isActive='false'
                 notification.date_notification = new Date();
                 notification.save();
               }
@@ -251,6 +265,7 @@ module.exports = {
           var notification = new Notification();
           notification.profileId = profileId;
           notification.publId = publId;
+          notification.isActive='false'
           notification.date_notification = new Date();
           notification.publText = content.text;
           notification.publType = content.type;
@@ -264,10 +279,7 @@ module.exports = {
           Profile.findById(profileId)
           .then(p => {
             if (!p) return;
-
-
-
-            p.nbNotificationsNotSeen++;
+             p.nbNotificationsNotSeen++;
             p.save();
 
           })
@@ -285,6 +297,7 @@ module.exports = {
 
               notification.profiles.push(profile);
               notification.isSeen = "false";
+              notification.isActive='false'
               notification.publText = content.text;
               notification.publType = content.type;
               notification.date_notification = new Date();
@@ -293,16 +306,16 @@ module.exports = {
             }
           });
         } else {
-
           notifData = {
             userID: notification.profileId,
             notifId: notification._id,
             title: 'Speegar',
             body: 'comment'
           };
-          FirebaseNotification.sendNotif(notifData);
-          FirebasePushNotification.sendNotif(notifData);
 
+
+
+         
           var db = admin.database()
           var userRef = db.ref("inotifs").child('/' + notifData.userID)
           userRef.set(notifData);
@@ -324,22 +337,27 @@ module.exports = {
 
 
 
+              if(notification.isActive=='true')
+              {
 
+              Profile.findById(profileId)
+              .then(p => {
+                if (!p) return;
+               
+               p.nbNotificationsNotSeen++;
+                p.save();
+
+              })
+              
+              FirebaseNotification.sendNotif(notifData);
+              FirebasePushNotification.sendNotif(notifData);
+            }
 
 
 
               if (!isExist) {
-                Profile.findById(profileId)
-                  .then(p => {
-                    if (!p) return;
-
-
-
-                    p.nbNotificationsNotSeen++;
-                    p.save();
-
-                  })
-
+                
+               
 
 
 
@@ -348,22 +366,13 @@ module.exports = {
                 notification.date_notification = new Date();
                 notification.publText = content.text;
                 notification.publType = content.type;
+                notification.isActive='false'
                 notification.save();
               } else {
 
-                Profile.findById(profileId)
-                  .then(p => {
-                    if (!p) return;
-
-
-                    p.nbNotificationsNotSeen++;
-                    p.save();
-
-
-                  })
-
 
                 notification.isSeen = "false";
+                notification.isActive='false'
                 notification.date_notification = new Date();
                 notification.save();
               }
@@ -443,7 +452,7 @@ module.exports = {
 
         } else {
 
-          console.log(notification.isActive)
+     
 
           if (notification.isActive == 'true') {
             notification.date_notification = new Date();
@@ -471,7 +480,7 @@ module.exports = {
 
 
           } else {
-            console.log('False');
+           // console.log('False');
 
           }
 
@@ -667,13 +676,11 @@ module.exports = {
 
 
 
-        if(!type=='reagir'  &&  pr.nbNotificationsNotSeen >= 0)
-        {
-          pr.nbNotificationsNotSeen--;
-          pr.save();
-
-        }
-       
+ 
+        console.log(pr.nbMessgeNotifcationNotSeen)
+        console.log(type)
+        // pr.nbNotificationsNotSeen--;
+        // pr.save();
 
       }
     });
