@@ -47,7 +47,9 @@ app.use(function(req, res, next) {
   ];
 
   var origin = req.headers.origin;
-  res.setHeader("Access-Control-Allow-Origin", origin);
+  if(origin) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
   
 
   res.header(
