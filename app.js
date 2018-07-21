@@ -45,11 +45,9 @@ app.use(function(req, res, next) {
     "https://integration.speegar.com",
     "http://localhost:4200"
   ];
-  var origin = req.headers.origin;
-  if (allowedOrigins.indexOf(origin) > -1) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  }
-  //res.header('Access-Control-Allow-Origin', "https://integration.speegar.com/");
+
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  
   res.header(
     "Access-Control-Allow-Methods",
     "GET, POST, OPTIONS, PUT, PATCH, DELETE"
