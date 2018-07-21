@@ -45,9 +45,12 @@ app.use(function(req, res, next) {
     "https://integration.speegar.com",
     "http://localhost:4200"
   ];
+/*
+  var origin = req.headers.origin;
+  if (allowedOrigins.indexOf(origin) > -1) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
 
-  res.setHeader("Access-Control-Allow-Origin", "*, https://integration.speegar.com");
-  
   res.header(
     "Access-Control-Allow-Methods",
     "GET, POST, OPTIONS, PUT, PATCH, DELETE"
@@ -57,7 +60,7 @@ app.use(function(req, res, next) {
   res.setHeader(
     "Access-Control-Allow-Headers",
     "content-type,x-access-token,X-Requested-With"
-  );
+  );*/
 
   // Set to true if you need the website to include cookies in the requests sent
   // to the API (e.g. in case you use sessions)
