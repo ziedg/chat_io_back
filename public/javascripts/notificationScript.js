@@ -43,11 +43,11 @@ module.exports = {
 
 
       Notification.findOne(critere, async function (err, notification) {
- if (err) {
+        if (err) {
           console.log('there is an error');
         } else if (!notification) {
 
-        
+
 
 
 
@@ -75,10 +75,10 @@ module.exports = {
           Profile.findById(profileId)
             .then(p => {
               if (!p) return;
-           
+
 
               p.nbNotificationsNotSeen++;
-      
+
 
               p.save();
 
@@ -144,28 +144,23 @@ module.exports = {
                 }
               }
 
-
-
-
-
-               
               Profile.findById(profileId)
-              .then(p => {
-                if (!p) return;
-                p.nbNotificationsNotSeen+=1;
-                p.save();
-                
-
-              
-
-              })
-              if (!isExist ) {
-
-              
+                .then(p => {
+                  if (!p) return;
+                  p.nbNotificationsNotSeen += 1;
+                  p.save();
 
 
-              
-             
+
+
+                })
+              if (!isExist) {
+
+
+
+
+
+
                 notification.profiles.push(profile);
                 notification.isSeen = "false";
                 notification.publText = content.text,
@@ -175,10 +170,10 @@ module.exports = {
                 notification.save();
                 profile.save();
               } else {
-              
 
 
-               notification.isSeen = "false";
+
+                notification.isSeen = "false";
                 notification.date_notification = new Date();
                 notification.save();
               }
@@ -195,10 +190,8 @@ module.exports = {
 
       });
 
-     
-    } 
-    
-    else if(type=='joindre'){
+
+    } else if (type == 'joindre') {
       Notification.findOne(critere, function (err, notification) {
         if (err) {
           console.log(err);
@@ -207,7 +200,7 @@ module.exports = {
           notification.profileId = profileId;
           notification.date_notification = new Date();
           notification.type = type;
-         
+
 
           Profile.findById(userID, function (err, profile) {
             if (err) {
@@ -221,15 +214,15 @@ module.exports = {
             }
           });
           Profile.findById(profileId)
-          .then(p => {
-            if (!p) return;
+            .then(p => {
+              if (!p) return;
 
-            
-             p.nbNotificationsNotSeen++;
-            p.save();
-            
 
-          })
+              p.nbNotificationsNotSeen++;
+              p.save();
+
+
+            })
           notifData = {
             userID: notification.profileId,
             notifId: notification._id,
@@ -241,9 +234,10 @@ module.exports = {
 
 
 
-        
-    }})}
-    else if (type == "comment") {
+
+        }
+      })
+    } else if (type == "comment") {
       /* commenter sur un publication */
       var critere = {
         profileId: profileId,
@@ -267,6 +261,16 @@ module.exports = {
             title: 'Speegar',
             body: 'comment'
           };
+          Profile.findById(profileId)
+          .then(p => {
+            if (!p) return;
+
+
+
+            p.nbNotificationsNotSeen++;
+            p.save();
+
+          })
           FirebaseNotification.sendNotif(notifData);
           FirebasePushNotification.sendNotif(notifData);
 
@@ -319,22 +323,22 @@ module.exports = {
               }
 
 
-             
-            
-              
-             
+
+
+
+
 
               if (!isExist) {
                 Profile.findById(profileId)
-                .then(p => {
-                  if (!p) return;
+                  .then(p => {
+                    if (!p) return;
 
-                  
-               
-                  p.nbNotificationsNotSeen++;
-                  p.save();
 
-                })
+
+                    p.nbNotificationsNotSeen++;
+                    p.save();
+
+                  })
 
 
 
@@ -346,19 +350,19 @@ module.exports = {
                 notification.publType = content.type;
                 notification.save();
               } else {
-                
-                  Profile.findById(profileId)
-                .then(p => {
-                  if (!p) return;
 
-                  
-                   p.nbNotificationsNotSeen++;
-                  p.save();
-                  
+                Profile.findById(profileId)
+                  .then(p => {
+                    if (!p) return;
 
-                })
 
-                
+                    p.nbNotificationsNotSeen++;
+                    p.save();
+
+
+                  })
+
+
                 notification.isSeen = "false";
                 notification.date_notification = new Date();
                 notification.save();
@@ -381,9 +385,6 @@ module.exports = {
 
 
 
-      console.log("type msg")
-
-
 
 
       var critere = {
@@ -397,15 +398,15 @@ module.exports = {
         }
 
         if (!notification) {
-          console.log('notifcation not')
+        
 
-         
+
           var notification = new Notification();
           notification.profileId = profileId;
           notification.toProfileId = userID;
           notification.date_notification = new Date();
           notification.type = type;
-          notification.isActive='false'
+          notification.isActive = 'false'
 
           Profile.findById(userID, function (err, profile) {
             if (err) {
@@ -425,7 +426,7 @@ module.exports = {
             });
           });
           notification.date_notification = new Date();
-          notification.isActive='false'
+          notification.isActive = 'false'
           notification.save();
           notifData = {
             userID: notification.profileId,
@@ -433,96 +434,94 @@ module.exports = {
             title: 'Speegar',
             body: 'message'
           };
-  
+
           FirebaseNotification.sendNotif(notifData);
-  
-  
+
+
           FirebasePushNotification.sendNotif(notifData);
 
-       
-        } else{
+
+        } else {
 
           console.log(notification.isActive)
 
-          if(notification.isActive=='true')
-            {
-              notification.date_notification = new Date();
-              notification.isActive='false'
-              notification.save();
-              notifData = {
-                userID: notification.profileId,
-                notifId: notification._id,
-                title: 'Speegar',
-                body: 'message'
-              };
-      
-              FirebaseNotification.sendNotif(notifData);
-      
-      
-              FirebasePushNotification.sendNotif(notifData);
-              Profile.findById(profileId, function (err, pr) {
-                if (pr) {
-                 
-                  pr.nbMessgeNotifcationNotSeen++;
-                  pr.save();
-                
-                }
-              });
-              
+          if (notification.isActive == 'true') {
+            notification.date_notification = new Date();
+            notification.isActive = 'false'
+            notification.save();
+            notifData = {
+              userID: notification.profileId,
+              notifId: notification._id,
+              title: 'Speegar',
+              body: 'message'
+            };
 
-            }
-            else{
-              console.log('False');
+            FirebaseNotification.sendNotif(notifData);
 
-            }
-           
-           
-        
 
-         
+            FirebasePushNotification.sendNotif(notifData);
+            Profile.findById(profileId, function (err, pr) {
+              if (pr) {
 
-          
-//           if (notification.isSeen == 'true') {
-//             console.log('enter seen')
-//             notification.date_notification = new Date();
-//             notification.isSeen = "false";
-//             notification.save();
-//             Profile.findById(profileId, function (err, pr) {
-//               if (pr) {
-//                 console.log('here')
+                pr.nbMessgeNotifcationNotSeen++;
+                pr.save();
+
+              }
+            });
+
+
+          } else {
+            console.log('False');
+
+          }
 
 
 
 
 
 
-//  pr.nbMessgeNotifcationNotSeen++;
-//                 pr.save();
 
-//               }
-//             });
-
-
-
-
-
-
-//           } else {
-
-//             console.log('enter not seen')
-//             Profile.findById(profileId, function (err, pr) {
-//               if (pr) { const user = notification.profiles.map(item => String(item._id));
+          //           if (notification.isSeen == 'true') {
+          //             console.log('enter seen')
+          //             notification.date_notification = new Date();
+          //             notification.isSeen = "false";
+          //             notification.save();
+          //             Profile.findById(profileId, function (err, pr) {
+          //               if (pr) {
+          //                 console.log('here')
 
 
 
-//                 if (!_.includes(user, String(userID))) {
-//                         pr.nbMessgeNotifcationNotSeen++;
-//                            pr.save();
-//                 } 
-//               }
-//             });
 
-//           }
+
+
+          //  pr.nbMessgeNotifcationNotSeen++;
+          //                 pr.save();
+
+          //               }
+          //             });
+
+
+
+
+
+
+          //           } else {
+
+          //             console.log('enter not seen')
+          //             Profile.findById(profileId, function (err, pr) {
+          //               if (pr) { const user = notification.profiles.map(item => String(item._id));
+
+
+
+          //                 if (!_.includes(user, String(userID))) {
+          //                         pr.nbMessgeNotifcationNotSeen++;
+          //                            pr.save();
+          //                 } 
+          //               }
+          //             });
+
+          //           }
 
 
 
@@ -534,11 +533,11 @@ module.exports = {
 
 
 
-//         }
+          //         }
         }
 
 
-      
+
 
 
       })
@@ -562,9 +561,9 @@ module.exports = {
 					});	*/
         }
 
-      if (!notification) {
+        if (!notification) {
 
-     
+
           var notification = new Notification();
           notification.profileId = profileId;
           notification.toProfileId = userID
@@ -600,7 +599,7 @@ module.exports = {
 
           });
         } else {
-      
+
 
           notifData = {
             userID: notification.profileId,
@@ -610,20 +609,20 @@ module.exports = {
           };
 
           Profile.findById(profileId)
-          .then(p => {
+            .then(p => {
 
-          
 
-            
-            
-              p.nbNotificationsNotSeen+=1;
+
+
+
+              p.nbNotificationsNotSeen += 1;
               p.save();
-            
 
-            
-            
-         
-          })
+
+
+
+
+            })
           FirebaseNotification.sendNotif(notifData);
           FirebasePushNotification.sendNotif(notifData);
 
@@ -644,7 +643,7 @@ module.exports = {
 
 
 
-       
+
         }
 
 
@@ -662,16 +661,20 @@ module.exports = {
   removeNotification: function (profileId, publId, userID, type) {
 
 
-   Profile.findById(profileId, function (err, pr) {
+    Profile.findById(profileId, function (err, pr) {
       if (pr) {
 
-        
 
 
-          console.log(pr.nbNotificationsNotSeen >=0);
+
+        if(!type=='reagir'  &&  pr.nbNotificationsNotSeen >= 0)
+        {
           pr.nbNotificationsNotSeen--;
           pr.save();
-        
+
+        }
+       
+
       }
     });
   }
