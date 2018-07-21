@@ -45,13 +45,10 @@ app.use(function(req, res, next) {
     "https://integration.speegar.com",
     "http://localhost:4200"
   ];
-/*
-  var origin = req.headers.origin;
-  if (allowedOrigins.indexOf(origin) > -1) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  }*/
 
-res.setHeader("Access-Control-Allow-Origin", '*');
+  var origin = req.headers.origin;
+  res.setHeader("Access-Control-Allow-Origin", origin);
+  
 
   res.header(
     "Access-Control-Allow-Methods",
