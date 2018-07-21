@@ -20,7 +20,7 @@ require('../middlewars/auth')(router);
 router.route("/getNotifications").get(function(req, res) {
   try {
 
-    const start = Date.now();
+    
     var criteria = {};
 
 
@@ -41,6 +41,22 @@ router.route("/getNotifications").get(function(req, res) {
       
       } else {
         profile.nbNotificationsNotSeen=0;
+        Notification.find({profileId:req._id})
+        .where('type')
+        .ne("message")
+         .then(notif =>{
+          if(! notif) return;
+          notif.map(notification =>{
+            notification.isActive='true';
+            notification.save();
+          })
+          
+
+          
+        });
+
+
+
         profile.save();
       }});
     if (!req.query.lastNotificationId) {
@@ -158,7 +174,7 @@ router.route("/resetNewMessageNotifications").post(function(req,res){
 
           
         
-        Notification.find({profileId:req._id})
+        Notification.find({profileId:req._id,type:'message'})
         .then(notif =>{
           if(! notif) return;
           notif.map(notification =>{
