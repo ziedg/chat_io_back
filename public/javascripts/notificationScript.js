@@ -381,6 +381,10 @@ module.exports = {
 
 
 
+      console.log("type msg")
+
+
+
 
       var critere = {
         profileId: profileId,
@@ -393,6 +397,7 @@ module.exports = {
         }
 
         if (!notification) {
+          console.log('notifcation not')
 
          
           var notification = new Notification();
@@ -400,6 +405,7 @@ module.exports = {
           notification.toProfileId = userID;
           notification.date_notification = new Date();
           notification.type = type;
+          notification.isActive='false'
 
           Profile.findById(userID, function (err, profile) {
             if (err) {
@@ -418,49 +424,105 @@ module.exports = {
               }
             });
           });
-        } else {
-          if (notification.isSeen == 'true') {
-            notification.date_notification = new Date();
-            notification.isSeen = "false";
-            notification.save();
-            Profile.findById(profileId, function (err, pr) {
-              if (pr) {
+          notification.date_notification = new Date();
+          notification.isActive='false'
+          notification.save();
+          notifData = {
+            userID: notification.profileId,
+            notifId: notification._id,
+            title: 'Speegar',
+            body: 'message'
+          };
+  
+          FirebaseNotification.sendNotif(notifData);
+  
+  
+          FirebasePushNotification.sendNotif(notifData);
 
+       
+        } else{
 
+          console.log(notification.isActive)
 
-
-
-
- pr.nbMessgeNotifcationNotSeen++;
-                pr.save();
-
-              }
-            });
-
-
-
-
-
-
-          } else {
-            Profile.findById(profileId, function (err, pr) {
-              if (pr) {
-
-
-
-
-                const user = notification.profiles.map(item => String(item._id));
-
-
-
-                if (!_.includes(user, String(userID))) {
+          if(notification.isActive=='true')
+            {
+              notification.date_notification = new Date();
+              notification.isActive='false'
+              notification.save();
+              notifData = {
+                userID: notification.profileId,
+                notifId: notification._id,
+                title: 'Speegar',
+                body: 'message'
+              };
+      
+              FirebaseNotification.sendNotif(notifData);
+      
+      
+              FirebasePushNotification.sendNotif(notifData);
+              Profile.findById(profileId, function (err, pr) {
+                if (pr) {
+                 
                   pr.nbMessgeNotifcationNotSeen++;
                   pr.save();
+                
                 }
-              }
-            });
+              });
+              
 
-          }
+            }
+            else{
+              console.log('False');
+
+            }
+           
+           
+        
+
+         
+
+          
+//           if (notification.isSeen == 'true') {
+//             console.log('enter seen')
+//             notification.date_notification = new Date();
+//             notification.isSeen = "false";
+//             notification.save();
+//             Profile.findById(profileId, function (err, pr) {
+//               if (pr) {
+//                 console.log('here')
+
+
+
+
+
+
+//  pr.nbMessgeNotifcationNotSeen++;
+//                 pr.save();
+
+//               }
+//             });
+
+
+
+
+
+
+//           } else {
+
+//             console.log('enter not seen')
+//             Profile.findById(profileId, function (err, pr) {
+//               if (pr) { const user = notification.profiles.map(item => String(item._id));
+
+
+
+//                 if (!_.includes(user, String(userID))) {
+//                         pr.nbMessgeNotifcationNotSeen++;
+//                            pr.save();
+//                 } 
+//               }
+//             });
+
+//           }
 
 
 
@@ -472,20 +534,11 @@ module.exports = {
 
 
 
+//         }
         }
 
 
-        notifData = {
-          userID: notification.profileId,
-          notifId: notification._id,
-          title: 'Speegar',
-          body: 'message'
-        };
-
-        FirebaseNotification.sendNotif(notifData);
-
-
-        FirebasePushNotification.sendNotif(notifData);
+      
 
 
       })
@@ -509,7 +562,7 @@ module.exports = {
 					});	*/
         }
 
-        if (!notification) {
+      if (!notification) {
 
      
           var notification = new Notification();
@@ -607,64 +660,9 @@ module.exports = {
   },
 
   removeNotification: function (profileId, publId, userID, type) {
-    let critere = "";
-    if (type === "subscribe") {
-      critere = {
-        profileId,
-        type
-      };
-    } else {
-      critere = {
-        profileId,
-        type,
-        publId
-      };
-    }
-
-    Notification.findOne(critere, function (err, notification) {
-      if (err) {
-        /*return res.json({
-							status : 0,
-							err: err
-					});*/
-      } else if (!notification) {
-        return;
-
-      } else {
 
 
-
-
-        if (type == 'message') {
-
-          Profile.findById(profileId, function (err, pr) {
-            if (pr) {
-              if (pr.nbMessgeNotifcationNotSeen > 0) {
-                pr.nbMessgeNotifcationNotSeen--;
-                pr.save();
-              }
-            }
-          });
-
-
-        }
-        //notifcation length >=1;
-        // if (notification.profiles.length >= 1) {
-        //   for (i = 0; i < notification.profiles.length; i++) {
-        //     if (notification.profiles[i].id == userID) {
-        //       notification.profiles.splice(i, 1);
-        //       notification.save();
-        //       return;
-        //     }
-        //   }
-        // }
-
-      }
-    });
-
-
-
-    Profile.findById(profileId, function (err, pr) {
+   Profile.findById(profileId, function (err, pr) {
       if (pr) {
 
         

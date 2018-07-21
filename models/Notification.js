@@ -23,6 +23,10 @@ var NotificationSchema = new Schema({
         type: String,
         index: true
     },
+    isActive:{
+        type:String,
+        default:'true'
+    },
     profileId: {
         type: String,
         index: true

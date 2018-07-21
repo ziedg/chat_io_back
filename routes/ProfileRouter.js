@@ -160,6 +160,7 @@ router.route("/subscribe").post(function(req, res) {
           const payload = {
             title: "Speegar",
             icon: profile.profilePictureMin,
+            tag:profile._id,
 
             body: `${profile.lastName} ${
               profile.firstName

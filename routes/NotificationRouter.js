@@ -5,6 +5,7 @@ var router = express.Router();
 
 var Notification = require("../models/Notification");
 var Profile = require("../models/Profile");
+var notificationScript = require('../public/javascripts/notificationScript');
 
 var jwt = require("jsonwebtoken");
 var PropertiesReader = require("properties-reader");
@@ -149,6 +150,24 @@ router.route("/resetNewMessageNotifications").post(function(req,res){
         });
       
       } else {
+
+
+
+        //delete msg Notification ...
+
+
+          
+        
+        Notification.find({profileId:req._id})
+        .then(notif =>{
+          notif.map(notification =>{
+            notification.isActive='true';
+            notification.save();
+          })
+          
+
+          
+        });
 
         
      
