@@ -46,6 +46,12 @@ app.use(function(req, res, next) {
     "http://localhost:4200"
   ];
 
+var origin = req.headers.origin;
+
+    console.log('origin'+ origin);
+  
+
+
   res.header("Access-Control-Allow-Origin", "*");
 
   res.header(
