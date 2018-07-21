@@ -160,6 +160,7 @@ router.route("/resetNewMessageNotifications").post(function(req,res){
         
         Notification.find({profileId:req._id})
         .then(notif =>{
+          if(! notif) return;
           notif.map(notification =>{
             notification.isActive='true';
             notification.save();
