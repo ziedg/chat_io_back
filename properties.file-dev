@@ -7,7 +7,7 @@ environment=integration
 production=false
 
 [ssl]
-enable = true
+enable = false
 privkey1 = /etc/letsencrypt/archive/integration.speegar.com/privkey1.pem
 fullchain1 = /etc/letsencrypt/archive/integration.speegar.com/fullchain1.pem
 chain1 = /etc/letsencrypt/archive/integration.speegar.com/chain1.pem
