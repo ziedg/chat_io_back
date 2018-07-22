@@ -52,24 +52,8 @@ router.route('/messages/:fromUser/:toUser/:id?').get(async function (req, res) {
    
     try {
 
-         //search for the user 
-     const profile = await Profile.findById(fromUser);
    
-    // await profile.save()
-
-
-     //Search for the notifcation and mark it as seen
-     const notifcation =  await Notification.findOne({profileId:fromUser,toProfileId:toUser})
-   
-     if(  notifcation &&  notifcation.isSeen=='false')
-     {
-        profile.nbMessgeNotifcationNotSeen--;
-        await profile.save();
-        notifcation.isSeen='true';
-        await notifcation.save();
-
-     }
-        //new logic to just return the 20 last messages and then the 20 before ...
+    // await profile.save()//new logic to just return the 20 last messages and then the 20 before ...
        Message.
        getMessagesIds(fromUser,toUser,async function(err, docs) {
          if (err) {
@@ -147,6 +131,7 @@ router.route('/messages').post(function (req, res) {
         NotificationSub.findOne({
             userId: message.toUserId
         }).then(sub => {
+            if(!sub) return;
             Profile.findById(message.fromUserId).then(profile => {
                 let subscriptions = [];
                 _.forEach(sub.subsciptions, sub => {
@@ -169,7 +154,7 @@ router.route('/messages').post(function (req, res) {
 
                     body: `${profile.lastName} ${
                       profile.firstName
-                    }   ${message.message.length<50?message.message:message.message.substring(0, 100)+'...'}`
+                    }   ${message.message.length<50?message.message:message.message.substring(0, 50)+'...'}`
                 };
                 return webPusher(subscriptions, payload, res);
             });

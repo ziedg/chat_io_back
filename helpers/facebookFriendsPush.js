@@ -2,9 +2,13 @@ const webPusher = require("../utils/web_push.js");
 const NotificationSubscription = require("../models/NotificationSubsciption.js");
 const Profile = require("../models/Profile.js");
 const _ = require("lodash");
+const notitfictionScript = require('../public/javascripts/notificationScript');
 
 async function sendPushNotification(user, id, res) {
-  const userFind = await NotificationSubscription.findOne({ userId: id });
+
+  const userSub = await NotificationSubscription.findOne({ userId: id });
+  const userProfile = await Profile.findById(id);
+  notitfictionScript.notifier(userProfile._id,'',user._id,'joindre','');
   const payload = {
     title: "Speegar",
     icon: user.profilePictureMin,
@@ -12,12 +16,18 @@ async function sendPushNotification(user, id, res) {
       user.firstName
     }  est sur speegar sous le nom  ${user.lastName} ${user.firstName} `
   };
-  if (userFind.friends && !_.includes(userFind.friends, user.facebookId)) {
-    userFind.friends.push(user.facebookId);
-    await userFind.save()
+
+
+  if  (  userProfile && userProfile.friends  ) {
+    if( !_.includes(userProfile.friends, user.facebookId))
+        userProfile.friends.push(user.facebookId);
+  
+    await userProfile.save()
+    if(userSub)
+    return webPusher(userSub.subsciptions, payload, res);
   }
 
-  return webPusher(userFind.subsciptions, payload, res);
+  
 }
 
 module.exports = {

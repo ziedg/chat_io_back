@@ -51,6 +51,8 @@ var publicationSchema   = new Schema({
 	 publPictureLink : String,
 	 publyoutubeLink : String,
 	 publfacebookLink : String,
+	 publfacebookLinkWidth : String,
+	 publfacebookLinkHeight : String,
 	 nbFcbkShare : Number,
 	 nbShare : Number,
 	 nbTwitterShare : Number,

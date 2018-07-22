@@ -3,7 +3,7 @@ const _ = require("lodash");
 
 async function findByUserId(user, id) {
   const userFind = await Profile.findById(id);
-  if (user.subscribers.indexOf(userFind._id) === -1) return userFind;
+  if (user.subscriptions.indexOf(userFind._id) === -1) return userFind;
 }
 
 module.exports = {

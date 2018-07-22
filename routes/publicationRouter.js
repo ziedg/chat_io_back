@@ -132,6 +132,8 @@ router
             publication.publClass = body.publClass;
             publication.publyoutubeLink = body.publyoutubeLink;
             publication.publfacebookLink = body.publfacebookLink;
+            publication.publfacebookLinkWidth = body.publfacebookLinkWidth;
+            publication.publfacebookLinkHeight = body.publfacebookLinkHeight;
             publication.publExternalLink = body.publExternalLink;
             publication.nbFcbkShare = 0;
             publication.nbTwitterShare = 0;
@@ -295,7 +297,7 @@ router.route("/likePublication").post(function(req, res) {
           err,
           publicationLikes
         ) {
-          if (publicationLikes.likes.indexOf(req._id) == -1) {
+          if (  publicationLikes.dislikes.indexOf(req._id) == -1  && publicationLikes.likes.indexOf(req._id) == -1) {
             var userInteractions = new Object();
             userInteractions.userId = req.body.profileId;
             userInteractions.profilefirstname = req.body.profilefirstname;
@@ -331,7 +333,9 @@ router.route("/likePublication").post(function(req, res) {
         if (publication.profileId != req._id) {
           Profile.findById(req._id).then(profile => {
             NotificationSub.findOne({ userId: publication.profileId }).then(
+             
               sub => {
+                if(!sub ) return;
                 let subscriptions = [];
                 _.forEach(sub.subsciptions, sub => {
                   subscription = {
@@ -346,6 +350,7 @@ router.route("/likePublication").post(function(req, res) {
                 const payload = {
                   title: "Speegar",
                   icon: profile.profilePictureMin,
+                  tag:publication._id,
                   body: `${profile.lastName} ${
                     profile.firstName
                   } a réagi a votre publication`
@@ -471,7 +476,7 @@ router.route("/dislikePublication").post( async function(req, res) {
         err,
         publicationLikes
       ) {
-        if (publicationLikes.dislikes.indexOf(req._id) == -1) {
+        if (  publicationLikes.dislikes.indexOf(req._id) == -1 && publicationLikes.likes.indexOf(req._id)==-1 ) {
           var userInteractions = new Object();
           userInteractions.userId = req.body.profileId;
           userInteractions.profilefirstname = req.body.profilefirstname;
@@ -506,6 +511,7 @@ router.route("/dislikePublication").post( async function(req, res) {
         Profile.findById(req._id).then(profile => {
           NotificationSub.findOne({ userId: publication.profileId }).then(
             sub => {
+              if(! sub) return;
               let subscriptions = [];
               _.forEach(sub.subsciptions, sub => {
                 subscription = {
@@ -520,6 +526,7 @@ router.route("/dislikePublication").post( async function(req, res) {
               const payload = {
                 title: "Speegar",
                 icon: profile.profilePictureMin,
+                tag:publication._id,
                 body: `${profile.lastName} ${
                   profile.firstName
                 } a réagi a votre publication`
@@ -800,6 +807,8 @@ router.route("/removePublication").post(function(req, res) {
 
 router.route("/sharePublication").post(function(req, res) {
   try {
+    console.log("sharing");
+    console.log(req.body);
     Publication.findById(req.body.publId, function(err, pub) {
       if (err) {
         res.json({
@@ -857,6 +866,8 @@ router.route("/sharePublication").post(function(req, res) {
         publication.publPictureLink = pub.publPictureLink;
         publication.publyoutubeLink = pub.publyoutubeLink;
         publication.publfacebookLink = pub.publfacebookLink;
+        publication.publfacebookLinkWidth = pub.publfacebookLinkWidth;
+        publication.publfacebookLinkHeight = pub.publfacebookLinkHeight;
         publication.isShared = true;
         publication.nbLikes = 0;
         publication.nbDislikes = 0;

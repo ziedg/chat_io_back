@@ -5,6 +5,7 @@ var router = express.Router();
 
 var Notification = require("../models/Notification");
 var Profile = require("../models/Profile");
+var notificationScript = require('../public/javascripts/notificationScript');
 
 var jwt = require("jsonwebtoken");
 var PropertiesReader = require("properties-reader");
@@ -19,7 +20,7 @@ require('../middlewars/auth')(router);
 router.route("/getNotifications").get(function(req, res) {
   try {
 
-    const start = Date.now();
+    
     var criteria = {};
 
 
@@ -40,6 +41,22 @@ router.route("/getNotifications").get(function(req, res) {
       
       } else {
         profile.nbNotificationsNotSeen=0;
+        Notification.find({profileId:req._id})
+        .where('type')
+        .ne("message")
+         .then(notif =>{
+          if(! notif) return;
+          notif.map(notification =>{
+            notification.isActive='true';
+            notification.save();
+          })
+          
+
+          
+        });
+
+
+
         profile.save();
       }});
     if (!req.query.lastNotificationId) {
@@ -123,6 +140,64 @@ router.route("/checkNewNotifications").get(function(req, res) {
     });
   } catch (error) {
     console.log("error when getNbNotificationsNotSeen", error);
+    return res.json({
+      status: 3,
+      error: "SP_ER_TECHNICAL_ERROR"
+    });
+  }
+});
+
+router.route("/resetNewMessageNotifications").post(function(req,res){
+  try {
+   
+    Profile.findById(req._id, function(err, profile) {
+      if (err) {
+         return res.json({
+          status: 3,
+          error: "SP_ER_TECHNICAL_ERROR"
+        });
+      
+      }
+
+      if (!profile) {
+         return res.json({
+          status: 2,
+          error: "SP_ER_PROFILE_NOT_FOUND"
+        });
+      
+      } else {
+
+
+
+        //delete msg Notification ...
+
+
+          
+        
+        Notification.find({profileId:req._id,type:'message'})
+        .then(notif =>{
+          if(! notif) return;
+          notif.map(notification =>{
+            notification.isActive='true';
+            notification.save();
+          })
+          
+
+          
+        });
+
+        
+     
+    
+     
+       
+          profile.nbMessgeNotifcationNotSeen=0;
+          profile.save();
+        
+      }
+    });
+  } catch (error) {
+    console.log("error when resetNbNotificationsNotSeen", error);
     return res.json({
       status: 3,
       error: "SP_ER_TECHNICAL_ERROR"
@@ -336,7 +411,7 @@ router.route("/api/ionic-push-subscribe").post((req, res) => {
 
   const data = req.body;
   const userId = data.userId;
-
+  const token = data.token;
   
   var db = admin.database()
   var userRef = db.ref("itokens").child('/'+userId)
@@ -379,6 +454,22 @@ router.route("/api/ionic-push-subscribe").post((req, res) => {
       });
     }
   });
+    var registrationToken = token;
+    var message = {
+        notification: {
+            title : 'test push',
+            body : 'this is a test body'
+        },
+        token: registrationToken
+    };
+    admin.messaging().send(message)
+        .then((response) => {
+            // Response is a message ID string.
+            console.log('Successfully sent message:', response);
+        })
+        .catch((error) => {
+            console.log('Error sending message:', error);
+        });
 });
 
 
