@@ -33,7 +33,7 @@ var query = [{
 var job = new CronJob(
   "* 00 * * * *",
   async function () {
-try {
+    try {
       const limit = Number(properties.get('config.limit'))
       const popularProfiles = await Profile.aggregate(query)
 
@@ -53,14 +53,14 @@ try {
 
 
       });
-const PopularProfiless = await Profile.find()
+      const PopularProfiless = await Profile.find()
         .sort({
           nbReactions: -1
         })
         .limit(limit)
-await popularProfile.remove({})
-_.map(PopularProfiless, async profile => {
-    const popularProf = new popularProfile(JSON.parse(JSON.stringify(profile)));
+      await popularProfile.remove({})
+      _.map(PopularProfiless, async profile => {
+        const popularProf = new popularProfile(JSON.parse(JSON.stringify(profile)));
         await popularProf.save();
       });
     } catch (e) {

@@ -1,7 +1,8 @@
 const keys = require("./config/keys.js");
 const webPush = require("web-push");
-module.exports = (subscriptions, { title, body, icon ,tag}, res) => {
+module.exports = (subscriptions, { title, body,type=null, icon ,tag}, res) => {
   const vapidKeys = keys.VAPIDKEYS;
+  const url = keys.SERVERURL;
 
   webPush.setVapidDetails(
     "mailto:ziedsaidig@gmail.com",
@@ -12,7 +13,7 @@ module.exports = (subscriptions, { title, body, icon ,tag}, res) => {
   const payload = {
     notification: {
       title: title,
-      body: body,
+      body: {body,url,type},
       icon: icon,
       vibrate: [100, 50, 100],
       data: {
@@ -25,6 +26,7 @@ module.exports = (subscriptions, { title, body, icon ,tag}, res) => {
   if(tag){
     payload.notification['tag']=tag;
   }
+ 
 
   Promise.all(
     subscriptions.map(subscription => {

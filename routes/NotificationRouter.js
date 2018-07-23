@@ -129,8 +129,7 @@ router.route("/checkNewNotifications").get(function(req, res) {
       
       } else {
 
-        
-     console.log(profile.nbNotificationsNotSeen);
+      
     
         res.json({
           status: 0,
@@ -417,7 +416,7 @@ router.route("/api/ionic-push-subscribe").post((req, res) => {
   var userRef = db.ref("itokens").child('/'+userId)
   userRef.set(data);
 
-  console.log(userId)
+
   IonicNotificationSub.findOne({ userId: userId }).then(sub => {
     if (sub) {
 

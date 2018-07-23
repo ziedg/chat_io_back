@@ -10,7 +10,7 @@ module.exports =(filename,destination) => {
   const password = properties.get("security.scp.secret").toString();
   const path = properties.get("pictures.storage.folder").toString();
 
-  console.log(filename,destination)
+
   sharp(filename)
   .resize(1000)
   .toFile(destination)

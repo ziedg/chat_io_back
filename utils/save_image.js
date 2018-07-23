@@ -22,7 +22,7 @@ module.exports = (publication, files, res, resp, typ) => {
     const filePath = files[0].path;
     const destination = `${path + "/" + publLink}`;
     var ext = pathNode.extname(publLink);
-    console.log(destination, path);
+
     if (ext.toLowerCase() !== ".gif") {
       sharp(filePath)
         .resize(1000)

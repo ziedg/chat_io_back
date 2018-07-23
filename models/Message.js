@@ -74,9 +74,8 @@ module.exports.getMessagesIds = (fromUser, toUser,callback) => {
 
 //Get All messages between two users with parameters : begin index and limit
 
-module.exports.getMessages = (fromUser, toUser,beginIndex=0,limit=20) => {
-    console.log(beginIndex)
-    console.log(limit)
+module.exports.getMessages = (fromUser, toUser,beginIndex=0,limit=20) =>
+{
         const queryData = {
             $or : [
                 { $and: [{'toUserId': toUser},{ 'fromUserId': fromUser }] },

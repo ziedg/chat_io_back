@@ -73,13 +73,13 @@ router.route('/messages/:fromUser/:toUser/:id?').get(async function (req, res) {
            });
 
            index = _.indexOf(docs, String(firstMessageSentId)) ;
-           console.log(index)
+         
                if (index === -1){
                 let index2= docs.length-20 >= 0 ? docs.length-20 : 0;
                 let results = await Message.getMessages(fromUser,toUser,index2)
                 return res.json(results)
                 }else {
-                    console.log('! index ==-1')
+                   
             
                 let index2= index-20 > 0 ? index-20 : 0;
                 let results = 

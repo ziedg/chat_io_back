@@ -616,7 +616,6 @@ router.route("/removeDislikePublication").post(function(req, res) {
 
 router.route("/getInteractions").post(function(req, res) {
   try {
-    console.log(req.body);
     var publication = new Publication();
     var page = parseInt(req.body.page);
 

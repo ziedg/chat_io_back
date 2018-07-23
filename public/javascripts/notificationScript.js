@@ -136,11 +136,12 @@ module.exports = {
               };
               FirebaseNotification.sendNotif(notifData);
               FirebasePushNotification.sendNotif(notifData);
-            }
-
               var db = admin.database()
               var userRef = db.ref("inotifs").child('/' + notifData.userID)
               userRef.set(notifData);
+            }
+
+            
 
 
 
@@ -676,9 +677,7 @@ module.exports = {
 
 
 
- 
-        console.log(pr.nbMessgeNotifcationNotSeen)
-        console.log(type)
+      
         // pr.nbNotificationsNotSeen--;
         // pr.save();
 

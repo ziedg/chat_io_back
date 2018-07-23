@@ -43,6 +43,7 @@ var profileSchema = new Schema(
       default:0
     },
 
+
     nbNotificationsNotSeen: Number,
     nbMessgeNotifcationNotSeen:{type:Number,default:0},
     facebookId: String,
