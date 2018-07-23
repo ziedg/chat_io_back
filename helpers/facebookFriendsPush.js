@@ -11,6 +11,8 @@ async function sendPushNotification(user, id, res) {
   notitfictionScript.notifier(userProfile._id,'',user._id,'joindre','');
   const payload = {
     title: "Speegar",
+    tag:user._id,
+    type:'joindre',
     icon: user.profilePictureMin,
     body: ` votre ami(e) facebook ${user.lastName} ${
       user.firstName

@@ -161,6 +161,7 @@ router.route("/subscribe").post(function(req, res) {
             title: "Speegar",
             icon: profile.profilePictureMin,
             tag:profile._id,
+            type:'subscribe',
 
             body: `${profile.lastName} ${
               profile.firstName
@@ -492,7 +493,7 @@ router.route("/updateProfilePicture").post(function(req, res) {
                           "/" +
                           req.files.profilePicture[0].filename;
 
-                        console.log(c.profilePictureMin);
+                    
                         c.save();
                       }
                     });
