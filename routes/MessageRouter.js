@@ -62,7 +62,7 @@ router.route('/messages/:fromUser/:toUser/:id?').get(async function (req, res) {
             Message.getMessage(docs[docs.length-1], (err, lastMessage) => {
                 if (err) {
                 }
-                if(lastMessage){
+                if(lastMessage && lastMessage.fromUserId != fromUser){
                     lastMessage.isSeen = true
                     lastMessage.seenDate = Date.now()
                     lastMessage.save()

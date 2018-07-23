@@ -806,6 +806,8 @@ router.route("/removePublication").post(function(req, res) {
 
 router.route("/sharePublication").post(function(req, res) {
   try {
+    console.log("sharing");
+    console.log(req.body);
     Publication.findById(req.body.publId, function(err, pub) {
       if (err) {
         res.json({
@@ -863,8 +865,8 @@ router.route("/sharePublication").post(function(req, res) {
         publication.publPictureLink = pub.publPictureLink;
         publication.publyoutubeLink = pub.publyoutubeLink;
         publication.publfacebookLink = pub.publfacebookLink;
-        publication.publfacebookLinkWidth = body.publfacebookLinkWidth;
-        publication.publfacebookLinkHeight = body.publfacebookLinkHeight;
+        publication.publfacebookLinkWidth = pub.publfacebookLinkWidth;
+        publication.publfacebookLinkHeight = pub.publfacebookLinkHeight;
         publication.isShared = true;
         publication.nbLikes = 0;
         publication.nbDislikes = 0;

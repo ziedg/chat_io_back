@@ -1,5 +1,5 @@
 [server]
-port.http = 3002
+port.http = 5000
 port.https = 3005
 storage.image =https://storage1.speegar.com/images
 ip=173.249.14.90
@@ -7,7 +7,7 @@ environment=production
 production=true
 
 [ssl]
-enable =true
+enable =false
 privkey1 = /etc/letsencrypt/archive/speegar.com/privkey1.pem
 fullchain1 = /etc/letsencrypt/archive/speegar.com/fullchain1.pem
 chain1 = /etc/letsencrypt/archive/speegar.com/chain1.pem
