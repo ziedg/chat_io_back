@@ -86,9 +86,9 @@ module.exports = function(passport) {
 			user.familyName=profile.name.familyName;
 			user.emails=profile.emails;
 			user.photos=profile.photos;
-			console.log("before done "+ user.id)
+	//		console.log("before done "+ user.id)
 			done(null, user);
-			console.log("after done "+ user.id)
+	//		console.log("after done "+ user.id)
     }));
 
 };

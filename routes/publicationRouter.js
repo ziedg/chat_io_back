@@ -806,8 +806,8 @@ router.route("/removePublication").post(function(req, res) {
 
 router.route("/sharePublication").post(function(req, res) {
   try {
-    console.log("sharing");
-    console.log(req.body);
+   // console.log("sharing");
+   // console.log(req.body);
     Publication.findById(req.body.publId, function(err, pub) {
       if (err) {
         res.json({

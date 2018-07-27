@@ -35,7 +35,7 @@ module.exports.sendNotif = function (data) {
                     status: 'success',
                     resp: ''+response
                 });
-                console.log('Successfully sent message:', response);
+     //           console.log('Successfully sent message:', response);
             })
             .catch(function(error) {
                 var db = admin.database()
