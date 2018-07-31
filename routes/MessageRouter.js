@@ -196,8 +196,7 @@ router.route('/messages').post(function (req, res) {
                   {
                       console.log("popping conversation from");
                       console.log(conversations[j].lastMessage);
-                    profile2.conversations.pop(conversations[j]);
-                    profile2.conversations.push(conversation2);
+                    profile2.conversations[j]=conversation2;
                     console.log("updating message from");
                     i++; 
                     break;
@@ -232,9 +231,9 @@ router.route('/messages').post(function (req, res) {
               {
                 console.log("pop to");
                 console.log(conversationss[j].lastMessage);
-                profile.conversations.pop(conversationss[j]);
+                profile.conversations[j]=conversation1;
 
-                profile.conversations.push(conversation1);
+
                 
                 console.log("push to");
                 i++; 
