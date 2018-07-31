@@ -1,8 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var Message = require('../models/Message');
-var Profile = require('../models/Profile')
+var Profile = require('../models/Profile');
 var Notification = require('../models/Notification');
+var Conversation = require('../models/Conversation');
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('./properties.file');
 var jwt = require('jsonwebtoken');
@@ -113,8 +114,111 @@ router.route('/messages').post(function (req, res) {
             });
 
         }
-        FirebaseNotification.sendMessage(message);
 
+
+       //adding to history
+       var id =message.toUserId;
+       var id2 =message.fromUserId;
+       console.log(req.body.toUserId);
+       Profile.findById(req.body.toUserId, function(err, profile) {
+        if (err) {
+            return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
+            });
+        }
+        if (!profile) {
+           return ;
+           
+          }
+
+          Profile.findById(req.body.fromUserId, (err, profile2) => {
+            if (err) {
+               return  res.json({
+                    status: 3,
+                    error: 'SP_ER_TECHNICAL_ERROR'
+                });
+            }
+            if (!profile2) {
+               return res.json({
+                  status: 2,
+                  error: "SP_ER_PROFILE_NOT_FOUND"
+                });
+              
+              }
+              var conversations=profile2.conversations;
+              var i=0;
+              var conversation2 = new Conversation();
+              conversation2.lastMessage=message;
+              conversation2._id=id;
+              conversation2.firstName=profile.firstName;
+              conversation2.lastName=profile.lastName;
+              conversation2.profilePicture=profile.profilePicture;
+              if (conversations==undefined){
+                  console.log("pushing message undefined from");
+              
+                profile2.conversations.push(conversation2);
+              }else {
+              for (j=0;j<conversations.length;j++){
+                  if((conversations[j].lastMessage.toUserId.toString()==id.toString() && conversations[j].lastMessage.fromUserId.toString()==id2.toString()) ||(conversations[j].lastMessage.toUserId.toString()==id2.toString() && conversations[j].lastMessage.fromUserId.toString()==id.toString()))
+                  {
+                      console.log("popping conversation from");
+                      console.log(conversations[j].lastMessage);
+                    profile2.conversations.pop(conversations[j]);
+                    profile2.conversations.push(conversation2);
+                    console.log("updating message from");
+                    i++; 
+                  }
+              }
+              if(i==0){
+                console.log("update for first time from");
+                profile2.conversations.push(conversation2);
+               
+              }}
+           
+         profile2.save();
+         console.log(profile2.conversations);
+    
+
+           
+          var conversationss=profile.conversations;
+          var i=0;
+          var conversation1 = new Conversation();
+              conversation1.lastMessage=message;
+              conversation1._id=id2;
+              conversation1.firstName=profile2.firstName;
+              conversation1.lastName=profile2.lastName;
+              conversation1.profilePicture=profile2.profilePicture;
+          if (conversationss==undefined){
+              console.log("pushing for the undefined to");
+              profile.conversations.push(conversation1);
+              
+          }else {
+          for (j=0;j<conversationss.length;j++){
+              if((conversationss[j].lastMessage.toUserId.toString()==id.toString() && conversationss[j].lastMessage.fromUserId.toString()==id2.toString()) ||(conversationss[j].lastMessage.toUserId.toString()==id2.toString() && conversationss[j].lastMessage.fromUserId.toString()==id.toString()))
+              {
+                console.log(conversationss[j].lastMessage);
+                profile.conversations.pop(conversationss[j]);
+                console.log("pop to");
+                profile.conversations.push(conversation1);
+                
+                console.log("push to");
+                i++; 
+              }
+          }
+          if(i==0){
+              console.log("pushing for the first time to");
+              profile.conversations.push(conversation1);
+             
+          }}
+
+     profile.save();    
+     console.log(profile.conversations);
+          
+    });
+  
+});  
+FirebaseNotification.sendMessage(message);
         //Ahmed Svp teste mon ici 
 
         //debut
@@ -250,7 +354,24 @@ router.route('/suggestions/:_id').get(async (req, res) => {
 //History 
 router.route('/messagingHistory/:_id').get(async (req, res) => {
     var id = req.params._id;
-    const messages = await (Message.haveConversation(id))
+
+
+    Profile.findOne({
+        _id: id
+    }, (err, profile) => {
+        if (err) {
+            return res.json({
+                status: 3,
+                error: 'SP_ER_TECHNICAL_ERROR'
+            });
+        }
+        var conversations = profile.conversations.slice();
+        console.log("this is a test");
+        console.log(conversations);
+        return res.json(conversations)
+
+    });
+    /*const messages = await (Message.haveConversation(id))
     if (messages.length > 0) {
 
         let HistoryIds = [];
@@ -290,7 +411,7 @@ router.route('/messagingHistory/:_id').get(async (req, res) => {
             return res.json(finalProfiles);
         })
     } else return res.json([]);
-
+*/
 });
 
 
