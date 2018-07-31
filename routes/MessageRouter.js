@@ -64,6 +64,30 @@ router.route('/messages/:fromUser/:toUser/:id?').get(async function (req, res) {
                 if (err) {
                 }
                 if(lastMessage && lastMessage.fromUserId != fromUser){
+
+                    //updating lastMessage in profile
+                    Profile.findById(req.params.fromUser, function(err, profile) {
+                        if (err) {
+                            return res.json({
+                                status: 3,
+                                error: 'SP_ER_TECHNICAL_ERROR'
+                            });
+                        }
+                        if (!profile) {
+                           }else {
+                               var conversations =profile.conversations;
+                           for (j=0;j<conversations.length;j++){
+                            if((conversations[j].lastMessage.toUserId.toString()==fromUser.toString() && conversations[j].lastMessage.fromUserId.toString()==lastMessage.fromUserId.toString()))
+                            {
+                                profile.conversations[j].lastMessage.isSeen = true
+                                profile.conversations[j].lastMessage.seenDate = Date.now()
+                                console.log(conversations[j].lastMessage)
+                            }}
+                            profile.save();
+                        }
+                          });
+
+
                     lastMessage.isSeen = true
                     lastMessage.seenDate = Date.now()
                     lastMessage.save()
@@ -114,7 +138,15 @@ router.route('/messages').post(function (req, res) {
             });
 
         }
+        FirebaseNotification.sendMessage(message);
 
+        notificationScript.notifier(
+            message.toUserId,
+            "",
+            message.fromUserId,
+            "message",
+            ""
+        );
 
        //adding to history
        var id =message.toUserId;
@@ -168,6 +200,7 @@ router.route('/messages').post(function (req, res) {
                     profile2.conversations.push(conversation2);
                     console.log("updating message from");
                     i++; 
+                    break;
                   }
               }
               if(i==0){
@@ -197,13 +230,15 @@ router.route('/messages').post(function (req, res) {
           for (j=0;j<conversationss.length;j++){
               if((conversationss[j].lastMessage.toUserId.toString()==id.toString() && conversationss[j].lastMessage.fromUserId.toString()==id2.toString()) ||(conversationss[j].lastMessage.toUserId.toString()==id2.toString() && conversationss[j].lastMessage.fromUserId.toString()==id.toString()))
               {
+                console.log("pop to");
                 console.log(conversationss[j].lastMessage);
                 profile.conversations.pop(conversationss[j]);
-                console.log("pop to");
+
                 profile.conversations.push(conversation1);
                 
                 console.log("push to");
                 i++; 
+                break;
               }
           }
           if(i==0){
@@ -218,18 +253,10 @@ router.route('/messages').post(function (req, res) {
     });
   
 });  
-FirebaseNotification.sendMessage(message);
+
         //Ahmed Svp teste mon ici 
 
         //debut
-
-        notificationScript.notifier(
-            message.toUserId,
-            "",
-            message.fromUserId,
-            "message",
-            ""
-        );
 
 
         NotificationSub.findOne({
