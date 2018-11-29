@@ -140,8 +140,9 @@ if('local' == properties.get('server.environment').toString()){
     console.log('the server is launched with local environment configuration on the port ' + http_port+ ', '+new Date());
 }  else {
 
-    var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE) ;
-    server.listen(httpport);
+    //var httpport = parseInt(http_port) + parseInt(process.env.NODE_APP_INSTANCE) ;
+    var httpport=3002
+    server.listen(3002);
     console.log('the server is launched on the port ' + httpport +', mode ssl is '+ properties.get("ssl.enable") + ', '+new Date());
 
 }

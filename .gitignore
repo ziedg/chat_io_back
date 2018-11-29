@@ -1,3 +1,5 @@
 node_modules/
 /node_modules
 properties.file
+package.json
+package-lock.json
